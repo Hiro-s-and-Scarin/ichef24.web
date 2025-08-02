@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next"
 export function LanguageToggle() {
   const { i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
+  
+  console.log('LanguageToggle rendered, current language:', i18n.language)
 
   const languages = [
     { code: 'pt', name: 'Português', flag: '🇧🇷' },
@@ -17,9 +19,13 @@ export function LanguageToggle() {
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
 
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode)
+  const handleLanguageChange = async (languageCode: string) => {
+    console.log('Changing language to:', languageCode)
+    await i18n.changeLanguage(languageCode)
     setIsOpen(false)
+    console.log('Language changed to:', i18n.language)
+    // Força reload para garantir que as traduções sejam aplicadas
+    window.location.reload()
   }
 
   return (
