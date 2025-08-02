@@ -23,39 +23,19 @@ export function LanguageToggle() {
   }
 
   return (
-    <div>
-      {/* Teste simples primeiro */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => alert('Botão funcionando!')}
-          className="relative w-8 h-8 text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-        >
-          <Globe className="w-4 h-4" />
-          <span className="sr-only">Toggle language</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
-      >
-        {languages.map((language) => (
-          <DropdownMenuItem
-            key={language.code}
-            onClick={() => handleLanguageChange(language.code)}
-            className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors cursor-pointer ${
-              i18n.language === language.code
-                ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-            }`}
-          >
-            <span className="text-lg">{language.flag}</span>
-            <span className="font-medium">{language.name}</span>
-            {i18n.language === language.code && (
-              <div className="ml-auto w-2 h-2 bg-orange-500 rounded-full"></div>
-            )}
-          </DropdownMenuItem>
-        ))}
-    </div>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => {
+        alert('Botão funcionando! Idioma atual: ' + i18n.language)
+        // Alternar entre PT e EN para teste
+        const newLang = i18n.language === 'pt' ? 'en' : 'pt'
+        i18n.changeLanguage(newLang)
+      }}
+      className="relative w-8 h-8 text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+    >
+      <Globe className="w-4 h-4" />
+      <span className="sr-only">Toggle language</span>
+    </Button>
   )
 } 
