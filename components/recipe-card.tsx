@@ -123,7 +123,7 @@ export function RecipeCard({ recipe, onFavorite, isFavorite = false, onEdit, onE
               className="flex-1 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 text-sm"
             >
               <Eye className="w-4 h-4 mr-2" />
-                    {t('common.view')}
+                    {t('recipe.view')}
             </Button>
             
             {onEdit && (

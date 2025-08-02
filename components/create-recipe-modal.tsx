@@ -187,9 +187,9 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 onChange={(e) => handleInputChange("difficulty", e.target.value)}
                 className="w-full h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
               >
-                                 <option value="Fácil">{t('form.difficulty.easy')}</option>
-                 <option value="Médio">{t('form.difficulty.medium')}</option>
-                 <option value="Difícil">{t('form.difficulty.hard')}</option>
+                                 <option value={t('form.difficulty.easy')}>{t('form.difficulty.easy')}</option>
+                 <option value={t('form.difficulty.medium')}>{t('form.difficulty.medium')}</option>
+                 <option value={t('form.difficulty.hard')}>{t('form.difficulty.hard')}</option>
               </select>
             </div>
 
@@ -241,7 +241,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 <Input
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
-                                     placeholder={t('form.tags.custom')}
+                                     placeholder={t('form.custom.tag')}
                   className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                   onKeyPress={(e) => e.key === "Enter" && addTag()}
                 />
