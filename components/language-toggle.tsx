@@ -21,11 +21,13 @@ export function LanguageToggle() {
 
   const handleLanguageChange = async (languageCode: string) => {
     console.log('Changing language to:', languageCode)
-    await i18n.changeLanguage(languageCode)
-    setIsOpen(false)
-    console.log('Language changed to:', i18n.language)
-    // Força reload para garantir que as traduções sejam aplicadas
-    window.location.reload()
+    try {
+      await i18n.changeLanguage(languageCode)
+      console.log('Language changed successfully to:', i18n.language)
+      setIsOpen(false)
+    } catch (error) {
+      console.error('Error changing language:', error)
+    }
   }
 
   return (
