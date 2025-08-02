@@ -9,8 +9,6 @@ import { useTranslation } from "react-i18next"
 export function LanguageToggle() {
   const { i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
-  
-  console.log('LanguageToggle rendered, current language:', i18n.language)
 
   const languages = [
     { code: 'pt', name: 'Português', flag: '🇧🇷' },
@@ -19,23 +17,18 @@ export function LanguageToggle() {
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
 
-  const handleLanguageChange = async (languageCode: string) => {
-    console.log('Changing language to:', languageCode)
-    try {
-      await i18n.changeLanguage(languageCode)
-      console.log('Language changed successfully to:', i18n.language)
-      setIsOpen(false)
-    } catch (error) {
-      console.error('Error changing language:', error)
-    }
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode)
+    setIsOpen(false)
   }
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
+    <div>
+      {/* Teste simples primeiro */}
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => alert('Botão funcionando!')}
           className="relative w-8 h-8 text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
         >
           <Globe className="w-4 h-4" />
@@ -63,7 +56,6 @@ export function LanguageToggle() {
             )}
           </DropdownMenuItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    </div>
   )
 } 
