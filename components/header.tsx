@@ -56,21 +56,16 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => alert('Login botão funcionando!')}
-            className="text-gray-600 hover:text-gray-800 hover:bg-orange-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 text-sm"
-          >
-            {t('header.login')}
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={() => alert('Start botão funcionando!')}
-            className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 text-sm"
-          >
-            {t('header.start')}
-          </Button>
+          <Link href="/login">
+            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800 hover:bg-orange-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 text-sm">
+              {t('header.login')}
+            </Button>
+          </Link>
+          <Link href="/plans">
+            <Button size="sm" className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 text-sm">
+              {t('header.start')}
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
