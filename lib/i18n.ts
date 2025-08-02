@@ -611,6 +611,52 @@ const resources = {
       'common.beginner': 'Beginner',
       'common.intermediate': 'Intermediate',
       'common.or': 'or',
+    },
+    en: {
+      translation: {
+        // Navigation
+        'header.home': 'Home',
+        'header.history': 'History',
+        'header.favorites': 'Favorites',
+        'header.community': 'Community',
+        'header.plans': 'Plans',
+        'header.login': 'Login',
+        'header.start': 'Start',
+        
+        // History Page
+        'history.title': 'Recipe History',
+        'history.subtitle': 'All your AI-generated recipes',
+        'history.search.placeholder': 'Search recipes...',
+        'history.filters': 'Filters',
+        
+        // Common
+        'common.view': 'View',
+        'common.edit': 'Edit',
+        'common.share': 'Share',
+        'common.easy': 'Easy',
+        'common.medium': 'Medium',
+        'common.hard': 'Hard',
+        
+        // Recipe
+        'recipe.view': 'View',
+        'recipe.nutrition': 'Nutritional Information',
+        'recipe.calories': 'Calories',
+        'recipe.protein': 'Protein',
+        'recipe.carbs': 'Carbohydrates',
+        'recipe.fat': 'Fat',
+        
+        // Forms
+        'form.ingredients': 'Ingredients',
+        'form.instructions': 'Instructions',
+        'form.time': 'Prep Time',
+        'form.servings': 'Servings',
+        'form.difficulty': 'Difficulty',
+        'form.tags': 'Tags',
+        'form.custom.tag': 'Add custom tag',
+        'form.difficulty.easy': 'Easy',
+        'form.difficulty.medium': 'Medium', 
+        'form.difficulty.hard': 'Hard',
+      }
     }
   }
 }
