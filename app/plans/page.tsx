@@ -7,13 +7,20 @@ import { Badge } from "@/components/ui/badge"
 import { ChefHat, Check, Sparkles, Crown, Zap, Users, Clock, Heart } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useGetPlans, useSubscribeToPlan } from "@/network/hooks/plans/usePlans"
+import { useAuth } from "@/contexts/auth-context"
 import { useTranslation } from "react-i18next"
 
 export default function PlansPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
-  const plans = [
+  // TanStack Query hooks
+  const { data: plansData, isLoading } = useGetPlans()
+  const subscribeToPlan = useSubscribeToPlan()
+
+  const mockPlans = [
     {
       name: t('plans.free.name'),
       subtitle: t('plans.free'),
@@ -72,6 +79,17 @@ export default function PlansPage() {
       popular: false,
     },
   ]
+
+  // Use real data from API or fallback to mock for development
+  const plans = plansData || mockPlans
+
+  const handleSubscribe = async (planId: string) => {
+    try {
+      await subscribeToPlan.mutateAsync({ planId })
+    } catch (error) {
+      console.error("Erro ao assinar plano:", error)
+    }
+  }
 
   const features = [
     {
@@ -133,9 +151,19 @@ export default function PlansPage() {
             </div>
           </div>
 
-          {/* Plans Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {plans.map((plan, index) => (
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <p className="mt-2 text-gray-500">Carregando planos...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Plans Grid */}
+              <div className="grid md:grid-cols-3 gap-8 mb-16">
+                {plans.map((plan, index) => (
               <Card
                 key={index}
                 className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 ${
@@ -203,22 +231,17 @@ export default function PlansPage() {
                         : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
                     }`}
                     variant={plan.popular ? "default" : "outline"}
-                    asChild
+                    onClick={() => handleSubscribe(plan.id || `plan-${index}`)}
+                    disabled={subscribeToPlan.isPending}
                   >
-                    <Link
-                      href={
-                        plan.price.monthly === 0
-                          ? "/register"
-                          : "/register?plan=" + plan.name.toLowerCase().replace(" ", "-")
-                      }
-                    >
-                      {plan.cta}
-                    </Link>
+                    {subscribeToPlan.isPending ? "Processando..." : plan.cta}
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
+            </>
+          )}
 
           {/* Features Section */}
           <div className="text-center mb-12">

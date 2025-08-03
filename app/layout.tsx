@@ -4,9 +4,11 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
+import { QueryProvider } from "@/lib/providers/query-provider"
 import { Header } from "@/components/header"
 import { AuthProvider } from "@/contexts/auth-context"
 import { I18nProvider } from "@/components/i18n-provider"
+import { Toaster } from "sonner"
 import { usePathname } from "next/navigation"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -28,19 +30,22 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={inter.className}>
-        <I18nProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AuthProvider>
-              {!isAuthPage && <Header />}
-              {children}
-            </AuthProvider>
-          </ThemeProvider>
-        </I18nProvider>
+        <QueryProvider>
+          <I18nProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AuthProvider>
+                {!isAuthPage && <Header />}
+                {children}
+                <Toaster position="top-right" />
+              </AuthProvider>
+            </ThemeProvider>
+          </I18nProvider>
+        </QueryProvider>
       </body>
     </html>
   )

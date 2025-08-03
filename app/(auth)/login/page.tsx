@@ -13,6 +13,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useLogin } from "@/network/hooks/auth/useAuth"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -30,7 +31,8 @@ type LoginFormData = yup.InferType<typeof loginSchema>
 export default function LoginPage() {
   const [error, setError] = useState("")
 
-  const { login, isLoading } = useAuth()
+  const { isLoading } = useAuth()
+  const loginMutation = useLogin()
   const router = useRouter()
 
   // React Hook Form com validação Yup
@@ -56,14 +58,12 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const success = await login(data.email, data.password)
-      if (success) {
-        router.push("/")
-      } else {
-        setError("Email ou senha inválidos. Tente novamente.")
-      }
-    } catch (err) {
-      setError("Email ou senha inválidos. Tente novamente.")
+      await loginMutation.mutateAsync({
+        email: data.email,
+        password: data.password
+      })
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Email ou senha inválidos. Tente novamente.")
     }
   }
 
@@ -166,10 +166,10 @@ export default function LoginPage() {
               {/* Login Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
                 className="w-full bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 py-6 text-lg"
               >
-                {isLoading ? (
+                {loginMutation.isPending ? (
                   "Entrando..."
                 ) : (
                   <>

@@ -14,6 +14,7 @@ import { RecipeCard } from "@/components/recipe-card"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Pagination } from "@/components/pagination"
 import { FilterModal } from "@/components/filter-modal"
+import { useGetFavoriteRecipes, useToggleFavoriteRecipe } from "@/network/hooks/recipes/useRecipes"
 import { useTranslation } from "react-i18next"
 
 export default function FavoritesPage() {
@@ -26,7 +27,16 @@ export default function FavoritesPage() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-  const [favorites, setFavorites] = useState([
+  // TanStack Query hooks
+  const { data: favorites, isLoading } = useGetFavoriteRecipes({
+    page: currentPage,
+    limit: 6,
+    search: searchTerm,
+    tags: selectedFilters
+  })
+  const { removeFromFavorites } = useToggleFavoriteRecipe()
+
+  const mockFavorites = [
     {
       id: 1,
       title: "Risotto de Frango com Limão",
@@ -253,8 +263,12 @@ export default function FavoritesPage() {
 
   const { user } = useAuth()
 
-  const removeFavorite = (id: number) => {
-    setFavorites((prev) => prev.filter((recipe) => recipe.id !== id))
+  const removeFavorite = async (id: string) => {
+    try {
+      await removeFromFavorites.mutateAsync(id)
+    } catch (error) {
+      console.error("Erro ao remover dos favoritos:", error)
+    }
   }
 
   const openRecipeModal = (recipe: any) => {
@@ -262,25 +276,9 @@ export default function FavoritesPage() {
     setIsRecipeModalOpen(true)
   }
 
-  // Filter and pagination logic
-  const favoritesPerPage = 6
-  const filteredFavorites = favorites.filter((recipe) => {
-    const matchesSearch = 
-      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    
-    const matchesFilters = selectedFilters.length === 0 || 
-      selectedFilters.some(filter => 
-        recipe.tags.some(tag => tag.toLowerCase().includes(filter.toLowerCase())) ||
-        recipe.title.toLowerCase().includes(filter.toLowerCase()) ||
-        recipe.description.toLowerCase().includes(filter.toLowerCase())
-      )
-    
-    return matchesSearch && matchesFilters
-  })
-  const totalPages = Math.ceil(filteredFavorites.length / favoritesPerPage)
-  const currentFavorites = filteredFavorites.slice((currentPage - 1) * favoritesPerPage, currentPage * favoritesPerPage)
+  // Use real data from API or fallback to mock for development
+  const currentFavorites = favorites || mockFavorites.slice(0, 6)
+  const totalPages = Math.ceil((currentFavorites.length || 0) / 6)
 
   const handleApplyFilters = (filters: string[]) => {
     setSelectedFilters(filters)
@@ -354,17 +352,29 @@ export default function FavoritesPage() {
             </CardContent>
           </Card>
 
-          {/* Favorites Grid/List */}
-          <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto" : "space-y-4"}>
-            {currentFavorites.map((recipe) => (
-              <RecipeCard
-                key={recipe.id}
-                recipe={recipe}
-                onFavorite={removeFavorite}
-                isFavorite={true}
-              />
-            ))}
-          </div>
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <p className="mt-2 text-gray-500">Carregando favoritos...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Favorites Grid/List */}
+              <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto" : "space-y-4"}>
+                {currentFavorites.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    onFavorite={() => removeFavorite(recipe.id)}
+                    isFavorite={true}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -377,7 +387,7 @@ export default function FavoritesPage() {
             </div>
           )}
 
-          {filteredFavorites.length === 0 && (
+          {!isLoading && currentFavorites.length === 0 && (
             <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
               <CardContent className="p-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">

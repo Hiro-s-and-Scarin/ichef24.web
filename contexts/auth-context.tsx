@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
+import { useLogin, useRegister, useLogout, useMe } from "@/network/hooks/auth/useAuth"
 
 interface User {
   id: string
@@ -25,89 +26,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const loginMutation = useLogin()
+  const registerMutation = useRegister()
+  const logoutMutation = useLogout()
+  const { data: userData, isLoading: isUserLoading } = useMe()
+
   useEffect(() => {
-    // Check if user is logged in on app start
-    try {
-      const savedUser = localStorage.getItem("user")
-      if (savedUser) {
-        setUser(JSON.parse(savedUser))
+    if (userData) {
+      const mappedUser: User = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        plan: userData.subscription?.plan === "pro" ? "chef" : userData.subscription?.plan === "premium" ? "master" : "free",
+        avatar: userData.avatar
       }
-    } catch (error) {
-      console.error("Error loading user from localStorage:", error)
+      setUser(mappedUser)
+    } else {
+      setUser(null)
     }
-    setIsLoading(false)
-  }, [])
+    setIsLoading(isUserLoading)
+  }, [userData, isUserLoading])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Mock validation - in real app, this would be an API call
-    if (email && password.length >= 6) {
-      const mockUser: User = {
-        id: "1",
-        name: email.split("@")[0],
-        email,
-        plan: "free",
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      }
-
-      setUser(mockUser)
-      try {
-        localStorage.setItem("user", JSON.stringify(mockUser))
-      } catch (error) {
-        console.error("Error saving user to localStorage:", error)
-      }
-      setIsLoading(false)
+    try {
+      await loginMutation.mutateAsync({ email, password })
       return true
+    } catch (error) {
+      console.error("Login error:", error)
+      return false
     }
-
-    setIsLoading(false)
-    return false
   }
 
   const register = async (name: string, email: string, password: string, plan = "free"): Promise<boolean> => {
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Mock validation
-    if (name && email && password.length >= 6) {
-      const mockUser: User = {
-        id: Date.now().toString(),
+    try {
+      await registerMutation.mutateAsync({
         name,
         email,
-        plan: plan as "free" | "chef" | "master",
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      }
-
-      setUser(mockUser)
-      try {
-        localStorage.setItem("user", JSON.stringify(mockUser))
-      } catch (error) {
-        console.error("Error saving user to localStorage:", error)
-      }
-      setIsLoading(false)
+        password,
+        confirmPassword: password
+      })
       return true
+    } catch (error) {
+      console.error("Register error:", error)
+      return false
     }
-
-    setIsLoading(false)
-    return false
   }
 
   const logout = () => {
+    logoutMutation.mutate()
     setUser(null)
-    try {
-      localStorage.removeItem("user")
-    } catch (error) {
-      console.error("Error removing user from localStorage:", error)
-    }
   }
 
-  return <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        login, 
+        register, 
+        logout, 
+        isLoading: isLoading || loginMutation.isPending || registerMutation.isPending 
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

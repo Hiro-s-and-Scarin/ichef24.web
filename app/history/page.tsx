@@ -29,6 +29,15 @@ import { RecipeCard } from "@/components/recipe-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Pagination } from "@/components/pagination";
 import { FilterModal } from "@/components/filter-modal";
+import { 
+  useGetMyRecipes, 
+  usePostRecipe, 
+  usePutRecipe, 
+  useDeleteRecipe,
+  useToggleFavoriteRecipe,
+  useGenerateRecipeWithAI,
+  useImproveRecipeWithAI
+} from "@/network/hooks/recipes/useRecipes";
 import { useTranslation } from "react-i18next";
 // Estado consolidado para a página de histórico
 interface HistoryPageState {
@@ -87,7 +96,22 @@ export default function HistoryPage() {
     isFilterModalOpen,
   } = pageState;
 
-  const [recipes, setRecipes] = useState([
+  // TanStack Query hooks
+  const { data: recipes, isLoading } = useGetMyRecipes({
+    page: currentPage,
+    limit: 6,
+    search: searchTerm,
+    tags: selectedFilters
+  })
+  
+  const createRecipe = usePostRecipe()
+  const updateRecipe = usePutRecipe("")
+  const deleteRecipe = useDeleteRecipe()
+  const { addToFavorites, removeFromFavorites } = useToggleFavoriteRecipe()
+  const generateAIRecipe = useGenerateRecipeWithAI()
+  const improveRecipeWithAI = useImproveRecipeWithAI()
+
+  const [mockRecipes, setMockRecipes] = useState([
     {
       id: 1,
       title: "Risotto de Frango com Limão",
@@ -341,12 +365,23 @@ export default function HistoryPage() {
     setPageState((prev) => ({ ...prev, ...updates }));
   };
 
-  const toggleFavorite = (id: number) => {
-    updatePageState({
-      favoriteIds: favoriteIds.includes(id)
-        ? favoriteIds.filter((fId: number) => fId !== id)
-        : [...favoriteIds, id],
-    });
+  const toggleFavorite = async (id: string) => {
+    const isFavorite = favoriteIds.includes(Number(id))
+    try {
+      if (isFavorite) {
+        await removeFromFavorites.mutateAsync(id)
+        updatePageState({
+          favoriteIds: favoriteIds.filter((fId: number) => fId !== Number(id)),
+        });
+      } else {
+        await addToFavorites.mutateAsync(id)
+        updatePageState({
+          favoriteIds: [...favoriteIds, Number(id)],
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao alterar favorito:", error)
+    }
   };
 
   const openRecipeModal = (recipe: any) => {
@@ -363,16 +398,23 @@ export default function HistoryPage() {
     });
   };
 
-  const handleCreateRecipe = (newRecipe: any) => {
-    setRecipes((prev) => [newRecipe, ...prev]);
+  const handleCreateRecipe = async (newRecipe: any) => {
+    try {
+      await createRecipe.mutateAsync(newRecipe)
+      updatePageState({ isCreateModalOpen: false })
+    } catch (error) {
+      console.error("Erro ao criar receita:", error)
+    }
   };
 
-  const handleEditRecipe = (updatedRecipe: any) => {
-    setRecipes((prev) =>
-      prev.map((recipe) =>
-        recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-      )
-    );
+  const handleEditRecipe = async (updatedRecipe: any) => {
+    try {
+      const putRecipeWithId = usePutRecipe(updatedRecipe.id)
+      await putRecipeWithId.mutateAsync(updatedRecipe)
+      updatePageState({ isEditModalOpen: false })
+    } catch (error) {
+      console.error("Erro ao editar receita:", error)
+    }
   };
 
   const openEditAIModal = (recipe: any) => {
@@ -382,47 +424,27 @@ export default function HistoryPage() {
     });
   };
 
-  const handleAIRecipeEdit = (updatedRecipe: any) => {
-    setRecipes((prev) =>
-      prev.map((recipe) =>
-        recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-      )
-    );
+  const handleAIRecipeEdit = async (recipeId: string, prompt: string) => {
+    try {
+      await improveRecipeWithAI.mutateAsync({ recipeId, prompt })
+      updatePageState({ isEditAIModalOpen: false })
+    } catch (error) {
+      console.error("Erro ao melhorar receita com IA:", error)
+    }
   };
 
-  const handleAIRecipeCreate = (newRecipe: any) => {
-    setRecipes((prev) => [newRecipe, ...prev]);
+  const handleAIRecipeCreate = async (aiRequest: any) => {
+    try {
+      await generateAIRecipe.mutateAsync(aiRequest)
+      updatePageState({ isCreateAIModalOpen: false })
+    } catch (error) {
+      console.error("Erro ao gerar receita com IA:", error)
+    }
   };
 
-  // Filter and pagination logic
-  const recipesPerPage = 6;
-  const filteredRecipes = recipes.filter((recipe) => {
-    const matchesSearch =
-      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-    const matchesFilters =
-      selectedFilters.length === 0 ||
-      selectedFilters.some(
-        (filter) =>
-          filter &&
-          (recipe.tags.some((tag) =>
-            tag.toLowerCase().includes(filter.toLowerCase())
-          ) ||
-            recipe.title.toLowerCase().includes(filter.toLowerCase()) ||
-            recipe.description.toLowerCase().includes(filter.toLowerCase()))
-      );
-
-    return matchesSearch && matchesFilters;
-  });
-  const totalPages = Math.ceil(filteredRecipes.length / recipesPerPage);
-  const currentRecipes = filteredRecipes.slice(
-    (currentPage - 1) * recipesPerPage,
-    currentPage * recipesPerPage
-  );
+  // Use real data from API or fallback to mock for development
+  const currentRecipes = recipes || mockRecipes.slice(0, 6)
+  const totalPages = Math.ceil((currentRecipes.length || 0) / 6)
 
   const handleApplyFilters = (filters: string[]) => {
     updatePageState({
@@ -529,25 +551,37 @@ export default function HistoryPage() {
             </CardContent>
           </Card>
 
-          {/* Recipes Grid/List */}
-          <div
-            className={
-              viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto"
-                : "space-y-4"
-            }
-          >
-            {currentRecipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.id}
-                recipe={recipe}
-                onFavorite={toggleFavorite}
-                isFavorite={favoriteIds.includes(recipe.id)}
-                onEdit={openEditModal}
-                onEditWithAI={openEditAIModal}
-              />
-            ))}
-          </div>
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <p className="mt-2 text-gray-500">Carregando receitas...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Recipes Grid/List */}
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto"
+                    : "space-y-4"
+                }
+              >
+                {currentRecipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    onFavorite={() => toggleFavorite(recipe.id)}
+                    isFavorite={favoriteIds.includes(Number(recipe.id))}
+                    onEdit={openEditModal}
+                    onEditWithAI={openEditAIModal}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -560,7 +594,7 @@ export default function HistoryPage() {
             </div>
           )}
 
-          {filteredRecipes.length === 0 && (
+          {!isLoading && currentRecipes.length === 0 && (
             <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
               <CardContent className="p-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
