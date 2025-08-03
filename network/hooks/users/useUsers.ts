@@ -8,7 +8,11 @@ import {
   putUser, 
   deleteUser,
   getUserPreferences,
-  putUserPreferences
+  putUserPreferences,
+  getCommunityPosts,
+  getTopChefs,
+  getTrendingPosts,
+  postCommunityMessage
 } from "@/network/actions/users/actionUsers"
 import { queryKeys } from "@/lib/query-keys"
 import { User } from "@/types"
@@ -111,6 +115,71 @@ export function usePutUserPreferences(userId: string) {
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar preferências")
       console.error("Error updating preferences:", error)
+    },
+  })
+
+  return mutate
+}
+
+// Community hooks
+export function useGetCommunityPosts(params: { 
+  page?: number; 
+  limit?: number; 
+  search?: string; 
+  tab?: string 
+} = {}) {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.users.community(params),
+    queryFn: async () => await getCommunityPosts(params),
+    retry: 0,
+  })
+
+  return {
+    data: data?.data,
+    isLoading,
+  }
+}
+
+export function useGetTopChefs() {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.users.topChefs,
+    queryFn: async () => await getTopChefs(),
+    retry: 0,
+  })
+
+  return {
+    data,
+    isLoading,
+  }
+}
+
+export function useGetTrendingPosts() {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.users.trending,
+    queryFn: async () => await getTrendingPosts(),
+    retry: 0,
+  })
+
+  return {
+    data,
+    isLoading,
+  }
+}
+
+export function usePostCommunityMessage() {
+  const queryClient = useQueryClient()
+
+  const mutate = useMutation({
+    mutationFn: async (body: { message: string; postId?: string }) => {
+      return await postCommunityMessage(body)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.community() })
+      toast.success("Mensagem enviada com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erro ao enviar mensagem")
+      console.error("Error posting message:", error)
     },
   })
 

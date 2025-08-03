@@ -38,3 +38,37 @@ export async function putUserPreferences(userId: string, preferences: Partial<Us
   const { data } = await api.put(`/users/${userId}/preferences`, preferences)
   return data.preferences
 }
+
+// Community actions
+export async function getCommunityPosts(params: { 
+  page?: number; 
+  limit?: number; 
+  search?: string; 
+  tab?: string 
+} = {}): Promise<{
+  data: any[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}> {
+  const { data } = await api.get("/community/posts", { params })
+  return data
+}
+
+export async function getTopChefs(): Promise<any[]> {
+  const { data } = await api.get("/community/top-chefs")
+  return data.chefs
+}
+
+export async function getTrendingPosts(): Promise<any[]> {
+  const { data } = await api.get("/community/trending")
+  return data.posts
+}
+
+export async function postCommunityMessage(body: { message: string; postId?: string }): Promise<{ message: string }> {
+  const { data } = await api.post("/community/messages", body)
+  return data
+}

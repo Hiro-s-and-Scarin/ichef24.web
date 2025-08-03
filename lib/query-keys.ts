@@ -18,6 +18,9 @@ export const queryKeys = {
     detail: (id: string) => ["users", "detail", id] as const,
     profile: (id: string) => ["users", "profile", id] as const,
     preferences: (id: string) => ["users", "preferences", id] as const,
+    community: (params?: any) => ["users", "community", params] as const,
+    topChefs: ["users", "top-chefs"] as const,
+    trending: ["users", "trending"] as const,
   },
   plans: {
     all: ["plans"] as const,
