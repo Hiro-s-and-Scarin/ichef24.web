@@ -409,8 +409,7 @@ export default function HistoryPage() {
 
   const handleEditRecipe = async (updatedRecipe: any) => {
     try {
-      const putRecipeWithId = usePutRecipe(updatedRecipe.id)
-      await putRecipeWithId.mutateAsync(updatedRecipe)
+      await updateRecipe.mutateAsync(updatedRecipe)
       updatePageState({ isEditModalOpen: false })
     } catch (error) {
       console.error("Erro ao editar receita:", error)

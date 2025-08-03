@@ -49,193 +49,31 @@ export default function FavoritesPage() {
       date: "Hoje",
       rating: 5,
       ingredients: [
-        "400g de arroz arbóreo",
-        "500g de peito de frango em cubos",
+        "400g de arroz arbório",
+        "500g de peito de frango cortado em cubos",
         "1 litro de caldo de galinha",
-        "1 cebola média picada",
-        "2 dentes de alho picados",
-        "1/2 xícara de vinho branco",
+        "1 cebola pequena picada",
+        "2 dentes de alho",
+        "100ml de vinho branco",
+        "80g de manteiga",
+        "80g de queijo parmesão ralado",
         "Suco de 1 limão",
-        "Raspas de 1 limão",
-        "50g de parmesão ralado",
-        "2 colheres de sopa de manteiga",
-        "Salsinha e tomilho frescos",
         "Sal e pimenta a gosto",
+        "Salsa fresca picada"
       ],
       instructions: [
-        "Aqueça o caldo de galinha em uma panela e mantenha em fogo baixo.",
-        "Em uma panela grande, refogue a cebola e o alho na manteiga até ficarem dourados.",
-        "Adicione o frango e cozinhe até dourar por todos os lados.",
-        "Acrescente o arroz e mexa por 2 minutos até os grãos ficarem nacarados.",
-        "Adicione o vinho branco e mexa até evaporar.",
-        "Adicione o caldo quente, uma concha por vez, mexendo sempre até ser absorvido.",
-        "Continue o processo por cerca de 18-20 minutos até o arroz ficar cremoso.",
-        "Finalize com parmesão, suco e raspas de limão, ervas frescas.",
-        "Tempere com sal e pimenta. Sirva imediatamente.",
-      ],
-      nutrition: {
-        calories: 420,
-        protein: "28g",
-        carbs: "45g",
-        fat: "12g",
-      },
+        "Tempere o frango com sal, pimenta e suco de limão.",
+        "Em uma panela, refogue a cebola e o alho na manteiga.",
+        "Adicione o frango e cozinhe até dourar.",
+        "Acrescente o arroz e mexa por 2 minutos.",
+        "Adicione o vinho branco e deixe evaporar.",
+        "Vá adicionando o caldo quente aos poucos, mexendo sempre.",
+        "Cozinhe por cerca de 18-20 minutos até o arroz estar cremoso.",
+        "Finalize com queijo parmesão e salsa."
+      ]
     },
     {
-      id: 3,
-      title: "Salmão Grelhado com Aspargos",
-      description: "Salmão perfeitamente grelhado com aspargos e molho de limão",
-      image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop&crop=center",
-      time: "25 min",
-      servings: "2 pessoas",
-      difficulty: "Médio",
-      tags: ["Peixe", "Saudável", "Proteína"],
-      date: "2 dias atrás",
-      rating: 5,
-      ingredients: ["2 filés de salmão", "500g de aspargos", "2 limões", "Azeite", "Alho", "Sal e pimenta"],
-      instructions: [
-        "Tempere o salmão com sal, pimenta e limão.",
-        "Grelhe o salmão por 4-5 minutos de cada lado.",
-        "Refogue os aspargos com alho.",
-        "Sirva com molho de limão.",
-      ],
-    },
-    {
-      id: 5,
-      title: "Curry de Grão-de-Bico",
-      description: "Curry aromático e picante com grão-de-bico e leite de coco",
-      image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=400&h=300&fit=crop&crop=center",
-      time: "30 min",
-      servings: "4 pessoas",
-      difficulty: "Médio",
-      tags: ["Indiano", "Vegano", "Picante"],
-      date: "1 semana atrás",
-      rating: 5,
-      ingredients: [
-        "2 xícaras de grão-de-bico cozido",
-        "400ml de leite de coco",
-        "1 cebola grande",
-        "3 dentes de alho",
-        "Gengibre fresco",
-        "Curry em pó",
-        "Cúrcuma",
-        "Tomates pelados",
-      ],
-      instructions: [
-        "Refogue cebola, alho e gengibre.",
-        "Adicione as especiarias e cozinhe por 1 minuto.",
-        "Acrescente tomates e grão-de-bico.",
-        "Adicione leite de coco e cozinhe por 15 minutos.",
-        "Sirva com arroz basmati.",
-      ],
-    },
-    {
-      id: 7,
-      title: "Pasta Carbonara Autêntica",
-      description: "Pasta carbonara tradicional com guanciale, ovos e queijo pecorino",
-      image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop&crop=center",
-      time: "25 min",
-      servings: "2 pessoas",
-      difficulty: "Médio",
-      tags: ["Italiano", "Pasta", "Tradicional"],
-      date: "2 semanas atrás",
-      rating: 5,
-      ingredients: [
-        "400g de spaghetti",
-        "200g de guanciale",
-        "4 gemas de ovo",
-        "50g de queijo pecorino",
-        "Pimenta preta moída",
-        "Sal",
-      ],
-      instructions: [
-        "Cozinhe a pasta em água salgada.",
-        "Frite o guanciale até ficar crocante.",
-        "Misture as gemas com queijo e pimenta.",
-        "Combine pasta com guanciale e molho de ovos.",
-        "Sirva imediatamente.",
-      ],
-    },
-    {
-      id: 9,
-      title: "Tiramisu Clássico",
-      description: "Sobremesa italiana com café, mascarpone e cacau",
-      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop&crop=center",
-      time: "30 min",
-      servings: "6 pessoas",
-      difficulty: "Fácil",
-      tags: ["Italiano", "Sobremesa", "Café"],
-      date: "2 semanas atrás",
-      rating: 5,
-      ingredients: [
-        "6 gemas de ovo",
-        "150g de açúcar",
-        "500g de mascarpone",
-        "200ml de café forte",
-        "Biscoitos tipo champagne",
-        "Cacau em pó",
-      ],
-      instructions: [
-        "Bata as gemas com açúcar até ficar claro.",
-        "Misture com mascarpone.",
-        "Monte camadas de biscoitos e creme.",
-        "Polvilhe com cacau e leve à geladeira.",
-      ],
-    },
-    {
-      id: 11,
-      title: "Pasta Carbonara Autêntica",
-      description: "Pasta carbonara tradicional com guanciale, ovos e queijo pecorino",
-      image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop&crop=center",
-      time: "25 min",
-      servings: "2 pessoas",
-      difficulty: "Médio",
-      tags: ["Italiano", "Pasta", "Tradicional"],
-      date: "2 semanas atrás",
-      rating: 5,
-      ingredients: [
-        "400g de spaghetti",
-        "200g de guanciale",
-        "4 gemas de ovo",
-        "50g de queijo pecorino",
-        "Pimenta preta moída",
-        "Sal",
-      ],
-      instructions: [
-        "Cozinhe a pasta em água salgada.",
-        "Frite o guanciale até ficar crocante.",
-        "Misture as gemas com queijo e pimenta.",
-        "Combine pasta com guanciale e molho de ovos.",
-        "Sirva imediatamente.",
-      ],
-    },
-    {
-      id: 13,
-      title: "Tiramisu Clássico",
-      description: "Sobremesa italiana com café, mascarpone e cacau",
-      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop&crop=center",
-      time: "30 min",
-      servings: "6 pessoas",
-      difficulty: "Fácil",
-      tags: ["Italiano", "Sobremesa", "Café"],
-      date: "2 semanas atrás",
-      rating: 5,
-      ingredients: [
-        "6 gemas de ovo",
-        "150g de açúcar",
-        "500g de mascarpone",
-        "200ml de café forte",
-        "Biscoitos tipo champagne",
-        "Cacau em pó",
-      ],
-      instructions: [
-        "Bata as gemas com açúcar até ficar claro.",
-        "Misture com mascarpone.",
-        "Monte camadas de biscoitos e creme.",
-        "Polvilhe com cacau e leve à geladeira.",
-      ],
-    },
-    {
-      id: 15,
+      id: 2,
       title: "Brigadeiro Gourmet",
       description: "Brigadeiro gourmet com chocolate belga e cobertura de chocolate",
       image: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop&crop=center",
@@ -249,19 +87,19 @@ export default function FavoritesPage() {
         "395g de leite condensado",
         "30g de chocolate em pó",
         "15g de manteiga",
-        "Chocolate granulado para decorar",
+        "Chocolate granulado para decorar"
       ],
       instructions: [
         "Misture o leite condensado com o chocolate em pó.",
         "Adicione a manteiga e cozinhe em fogo baixo.",
         "Mexa até desgrudar do fundo da panela.",
         "Deixe esfriar e faça bolinhas.",
-        "Passe no chocolate granulado.",
-      ],
-    },
-  ])
+        "Passe no chocolate granulado."
+      ]
+    }
+  ];
 
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const removeFavorite = async (id: string) => {
     try {
@@ -287,16 +125,48 @@ export default function FavoritesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
-
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
           <div className="flex items-center justify-between">
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold text-gray-800 dark:text-white">Receitas Favoritas</h1>
-              <p className="text-xl text-gray-600 dark:text-gray-300">Suas receitas salvas e favoritas</p>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <Heart className="text-red-500 fill-red-500" />
+                Receitas Favoritas
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300">Suas receitas mais queridas em um só lugar</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Button variant="outline" asChild>
+                <Link href="/">Voltar ao Início</Link>
+              </Button>
             </div>
           </div>
+
+          {/* Stats Card */}
+          <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-500">{currentFavorites.length}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Favoritos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-500">4.8</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Nota Média</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-500">25min</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Tempo Médio</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-500">3</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Dificuldade Média</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Search and Filters */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
@@ -305,48 +175,40 @@ export default function FavoritesPage() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder="Buscar favoritos..."
+                    placeholder="Buscar nas suas receitas favoritas..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    className="pl-10 border-gray-200 dark:border-gray-600"
                   />
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  {/* Active Filters Display */}
-                  {selectedFilters.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {selectedFilters.slice(0, 3).map((filter) => (
-                        <Badge
-                          key={filter}
-                          variant="secondary"
-                          className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
-                        >
-                          {filter}
-                        </Badge>
-                      ))}
-                      {selectedFilters.length > 3 && (
-                        <Badge variant="secondary" className="bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                          +{selectedFilters.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Filter Button */}
+                <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={() => setIsFilterModalOpen(true)}
-                    className="flex items-center gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    className="border-gray-200 dark:border-gray-600"
                   >
-                    <Filter className="w-4 h-4" />
-                    {t('favorites.filters')}
-                    {selectedFilters.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 bg-orange-500 text-white text-xs">
-                        {selectedFilters.length}
-                      </Badge>
-                    )}
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filtros
                   </Button>
+                  <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
+                    <Button
+                      variant={viewMode === "grid" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("grid")}
+                      className="px-3"
+                    >
+                      Grid
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className="px-3"
+                    >
+                      Lista
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -393,13 +255,13 @@ export default function FavoritesPage() {
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
                   <Heart className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{t('favorites.no.found')}</h3>
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Nenhum favorito encontrado</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  {t('favorites.adjust.search')}{" "}
-                  <Link href="/" className="text-orange-600 dark:text-orange-400 hover:underline">
-                    {t('favorites.back.home')}
-                  </Link>
+                  Você ainda não tem receitas favoritas. Comece explorando e salvando suas receitas preferidas!
                 </p>
+                <Button asChild>
+                  <Link href="/">Explorar Receitas</Link>
+                </Button>
               </CardContent>
             </Card>
           )}
@@ -411,16 +273,14 @@ export default function FavoritesPage() {
         recipe={selectedRecipe}
         isOpen={isRecipeModalOpen}
         onClose={() => setIsRecipeModalOpen(false)}
-        onFavorite={removeFavorite}
-        isFavorite={true}
       />
 
       {/* Filter Modal */}
       <FilterModal
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        onApplyFilters={handleApplyFilters}
         selectedFilters={selectedFilters}
+        onApplyFilters={handleApplyFilters}
       />
     </div>
   )
