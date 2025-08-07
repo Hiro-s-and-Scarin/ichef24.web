@@ -7,8 +7,8 @@ export interface Recipe {
   servings: string
   difficulty: "easy" | "medium" | "hard"
   tags: string[]
-  ingredients: string[]
-  instructions: string[]
+  ingredients: Array<{ name: string; amount: string }> // ✅ Compatível com DTO
+  instructions: Array<{ step: number; description: string }> // ✅ Compatível com DTO
   nutrition?: {
     calories: number
     protein: string
@@ -64,23 +64,22 @@ export interface RecipeResponse {
   }
 }
 
+// ✅ Tipo compatível com o DTO do backend
 export interface CreateRecipeData {
   title: string
-  description: string
-  image?: string
-  time: string
-  servings: string
-  difficulty: "easy" | "medium" | "hard"
-  tags: string[]
-  ingredients: string[]
-  instructions: string[]
-  nutrition?: {
-    calories: number
-    protein: string
-    carbs: string
-    fat: string
-  }
-  isPublic: boolean
+  description?: string
+  ingredients: Array<{ name: string; amount: string }> // ✅ Compatível
+  steps: Array<{ step: number; description: string }> // ✅ Compatível
+  cooking_time?: number // ✅ Compatível
+  servings?: number // ✅ Compatível
+  difficulty_level?: number // ✅ Compatível (1-5)
+  cuisine_type?: string // ✅ Compatível
+  tags?: string[] // ✅ Compatível
+  image_url?: string // ✅ Compatível
+  is_ai_generated?: boolean // ✅ Compatível
+  ai_prompt?: string // ✅ Compatível
+  ai_model_version?: string // ✅ Compatível
+  is_public?: boolean // ✅ Compatível
 }
 
 export interface AIRecipeRequest {

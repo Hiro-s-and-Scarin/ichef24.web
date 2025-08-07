@@ -19,14 +19,15 @@ import { Pagination } from "@/components/pagination";
 import { FilterModal } from "@/components/filter-modal";
 import { useGetMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
 import { useTranslation } from "react-i18next";
+import { Recipe as RecipeType } from "@/types/recipe";
 
 export function HistoryPageContent() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
-  const [recipeToEdit, setRecipeToEdit] = useState<any>(null);
-  const [recipeToEditWithAI, setRecipeToEditWithAI] = useState<any>(null);
+  const [selectedRecipe, setSelectedRecipe] = useState<RecipeType | null>(null);
+  const [recipeToEdit, setRecipeToEdit] = useState<RecipeType | null>(null);
+  const [recipeToEditWithAI, setRecipeToEditWithAI] = useState<RecipeType | null>(null);
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -43,99 +44,99 @@ export function HistoryPageContent() {
     search: searchTerm,
     tags: selectedFilters
   });
-  const { deleteRecipe } = useDeleteRecipe();
+  const deleteRecipeMutation = useDeleteRecipe();
 
-  const mockRecipes = [
+  const mockRecipes: RecipeType[] = [
     {
-      id: 1,
+      id: "1",
       title: "Pasta Carbonara Italiana",
       description: "Receita autêntica de carbonara com ovos, queijo pecorino e guanciale",
       image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d1e5?w=400&h=300&fit=crop",
       time: "30 min",
       servings: "4 pessoas",
-      difficulty: "Médio",
+      difficulty: "medium",
       tags: ["Italiano", "Massa", "Queijo"],
-      date: "2 dias atrás",
-      rating: 4.8,
-      views: 156,
-      likes: 23,
       ingredients: [
-        "400g de espaguete",
-        "200g de guanciale",
-        "4 ovos inteiros",
-        "100g de queijo pecorino romano",
-        "Pimenta preta moída na hora",
-        "Sal a gosto"
+        { name: "Espaguete", amount: "400g" },
+        { name: "Guanciale", amount: "200g" },
+        { name: "Ovos inteiros", amount: "4" },
+        { name: "Queijo pecorino romano", amount: "100g" },
+        { name: "Pimenta preta moída", amount: "a gosto" },
+        { name: "Sal", amount: "a gosto" }
       ],
       instructions: [
-        "Corte o guanciale em cubos pequenos e frite até dourar.",
-        "Cozinhe o espaguete al dente em água salgada.",
-        "Misture ovos com queijo pecorino e pimenta.",
-        "Combine tudo fora do fogo, mexendo rapidamente.",
-        "Sirva imediatamente com mais queijo por cima."
-      ]
+        { step: 1, description: "Corte o guanciale em cubos pequenos e frite até dourar." },
+        { step: 2, description: "Cozinhe o espaguete al dente em água salgada." },
+        { step: 3, description: "Misture ovos com queijo pecorino e pimenta." },
+        { step: 4, description: "Combine tudo fora do fogo, mexendo rapidamente." },
+        { step: 5, description: "Sirva imediatamente com mais queijo por cima." }
+      ],
+      userId: "1",
+      isPublic: true,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z"
     },
     {
-      id: 2,
+      id: "2",
       title: "Risotto de Cogumelos",
       description: "Risotto cremoso com mix de cogumelos frescos e parmesão",
       image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
       time: "45 min",
       servings: "6 pessoas",
-      difficulty: "Avançado",
+      difficulty: "hard",
       tags: ["Italiano", "Vegetariano", "Cremoso"],
-      date: "1 semana atrás",
-      rating: 4.9,
-      views: 203,
-      likes: 41,
       ingredients: [
-        "350g de arroz arbório",
-        "500g de mix de cogumelos",
-        "1 litro de caldo de legumes",
-        "1 cebola média",
-        "100ml de vinho branco",
-        "80g de manteiga",
-        "100g de parmesão ralado"
+        { name: "Arroz arbório", amount: "350g" },
+        { name: "Mix de cogumelos", amount: "500g" },
+        { name: "Caldo de legumes", amount: "1 litro" },
+        { name: "Cebola média", amount: "1" },
+        { name: "Vinho branco", amount: "100ml" },
+        { name: "Manteiga", amount: "80g" },
+        { name: "Parmesão ralado", amount: "100g" }
       ],
       instructions: [
-        "Refogue a cebola picada na manteiga.",
-        "Adicione os cogumelos e cozinhe até murcharem.",
-        "Acrescente o arroz e mexa por 2 minutos.",
-        "Adicione o vinho e deixe evaporar.",
-        "Vá adicionando o caldo quente aos poucos.",
-        "Finalize com parmesão e manteiga."
-      ]
+        { step: 1, description: "Refogue a cebola picada na manteiga." },
+        { step: 2, description: "Adicione os cogumelos e cozinhe até murcharem." },
+        { step: 3, description: "Acrescente o arroz e mexa por 2 minutos." },
+        { step: 4, description: "Adicione o vinho e deixe evaporar." },
+        { step: 5, description: "Vá adicionando o caldo quente aos poucos." },
+        { step: 6, description: "Finalize com parmesão e manteiga." }
+      ],
+      userId: "1",
+      isPublic: true,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z"
     },
     {
-      id: 3,
+      id: "3",
       title: "Brownie Fudge Duplo Chocolate",
       description: "Brownie ultra cremoso com pedaços de chocolate e cobertura fudge",
       image: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop",
       time: "60 min",
       servings: "12 pessoas",
-      difficulty: "Fácil",
+      difficulty: "easy",
       tags: ["Sobremesa", "Chocolate", "Americano"],
-      date: "2 semanas atrás",
-      rating: 5.0,
-      views: 342,
-      likes: 67,
       ingredients: [
-        "200g de chocolate meio amargo",
-        "150g de manteiga",
-        "200g de açúcar",
-        "3 ovos",
-        "100g de farinha de trigo",
-        "100g de chocolate em pedaços",
-        "Pitada de sal"
+        { name: "Chocolate meio amargo", amount: "200g" },
+        { name: "Manteiga", amount: "150g" },
+        { name: "Açúcar", amount: "200g" },
+        { name: "Ovos", amount: "3" },
+        { name: "Farinha de trigo", amount: "100g" },
+        { name: "Chocolate em pedaços", amount: "100g" },
+        { name: "Sal", amount: "pitada" }
       ],
       instructions: [
-        "Derreta o chocolate com a manteiga.",
-        "Misture açúcar e ovos até esbranquiçar.",
-        "Combine chocolate derretido com a mistura de ovos.",
-        "Adicione farinha peneirada e sal.",
-        "Acrescente pedaços de chocolate.",
-        "Asse por 25-30 minutos."
-      ]
+        { step: 1, description: "Derreta o chocolate com a manteiga." },
+        { step: 2, description: "Misture açúcar e ovos até esbranquiçar." },
+        { step: 3, description: "Combine chocolate derretido com a mistura de ovos." },
+        { step: 4, description: "Adicione farinha peneirada e sal." },
+        { step: 5, description: "Acrescente pedaços de chocolate." },
+        { step: 6, description: "Asse por 25-30 minutos." }
+      ],
+      userId: "1",
+      isPublic: true,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z"
     }
   ];
 
@@ -143,13 +144,13 @@ export function HistoryPageContent() {
 
   const removeRecipe = async (id: string) => {
     try {
-      await deleteRecipe.mutateAsync(id);
+      await deleteRecipeMutation.mutateAsync(id);
     } catch (error) {
       console.error("Erro ao remover receita:", error);
     }
   };
 
-  const openRecipeModal = (recipe: any) => {
+  const openRecipeModal = (recipe: RecipeType) => {
     setSelectedRecipe(recipe);
     setIsRecipeModalOpen(true);
   };
@@ -163,12 +164,12 @@ export function HistoryPageContent() {
     setCurrentPage(1); // Reset to first page when filters change
   };
 
-  const openEditModal = (recipe: any) => {
+  const openEditModal = (recipe: RecipeType) => {
     setRecipeToEdit(recipe);
     setIsEditModalOpen(true);
   };
 
-  const openEditAIModal = (recipe: any) => {
+  const openEditAIModal = (recipe: RecipeType) => {
     setRecipeToEditWithAI(recipe);
     setIsEditAIModalOpen(true);
   };
@@ -190,6 +191,22 @@ export function HistoryPageContent() {
   const handleAIRecipeEdit = (updatedRecipe: any) => {
     console.log('AI Recipe updated:', updatedRecipe);
   };
+
+  // Função para adaptar RecipeType para o formato esperado pelos componentes
+  const adaptRecipeForComponents = (recipe: RecipeType) => ({
+    id: parseInt(recipe.id),
+    title: recipe.title,
+    description: recipe.description,
+    image: recipe.image || "",
+    time: recipe.time,
+    servings: recipe.servings,
+    difficulty: recipe.difficulty,
+    tags: recipe.tags,
+    rating: recipe.rating || 0,
+    ingredients: recipe.ingredients.map(ing => `${ing.name} ${ing.amount}`),
+    instructions: recipe.instructions.map(inst => inst.description),
+    nutrition: recipe.nutrition
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -310,11 +327,11 @@ export function HistoryPageContent() {
                   {currentRecipes.map((recipe) => (
                     <div key={recipe.id} className="relative">
                       <RecipeCard
-                        recipe={recipe}
+                        recipe={adaptRecipeForComponents(recipe)}
                         onFavorite={() => {}}
                         isFavorite={false}
-                        onEdit={openEditModal}
-                        onEditWithAI={openEditAIModal}
+                        onEdit={(adaptedRecipe) => openEditModal(recipe)}
+                        onEditWithAI={(adaptedRecipe) => openEditAIModal(recipe)}
                       />
                       <button
                         onClick={() => removeRecipe(recipe.id)}
@@ -355,13 +372,13 @@ export function HistoryPageContent() {
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Star className="w-4 h-4 text-yellow-400" />
-                                  <span>{recipe.rating}</span>
+                                  <span>{recipe.rating || 0}</span>
                                 </div>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                                  <span>👁️ {recipe.views}</span>
-                                  <span>❤️ {recipe.likes}</span>
+                                  <span>👁️ 0</span>
+                                  <span>❤️ 0</span>
                                 </div>
                               </div>
                             </div>
@@ -420,9 +437,11 @@ export function HistoryPageContent() {
 
       {/* Recipe Modal */}
       <RecipeModal
-        recipe={selectedRecipe}
+        recipe={selectedRecipe ? adaptRecipeForComponents(selectedRecipe) : null}
         isOpen={isRecipeModalOpen}
         onClose={() => setIsRecipeModalOpen(false)}
+        onFavorite={() => {}}
+        isFavorite={false}
       />
 
       {/* Create Recipe Modal */}
