@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isAuthPage = pathname === '/login' || pathname === '/register'
+  const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password'
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>

@@ -68,7 +68,7 @@ export default function ResetPassword() {
               Agora você pode fazer login com sua nova senha.
             </p>
             <div className="pt-4">
-              <Link href="/login">
+              <Link href="/">
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
                   Fazer Login
                 </Button>
@@ -163,7 +163,7 @@ export default function ResetPassword() {
                 Reenviar Código
               </Link>
               <Link 
-                href="/login"
+                href="/"
                 className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />

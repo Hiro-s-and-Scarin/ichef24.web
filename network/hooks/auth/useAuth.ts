@@ -43,7 +43,7 @@ export function useLogin() {
       toast.success("Login realizado com sucesso!")
       
       setTimeout(() => {
-        router.push("/")
+        router.push("/dashboard")
       }, 100)
     },
     onError: (error: any) => {
@@ -64,7 +64,7 @@ export function useRegister() {
     },
     onSuccess: (data) => {
       toast.success("Conta criada com sucesso! Faça login para continuar.")
-      router.push("/login")
+      router.push("/")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao criar conta")
@@ -113,7 +113,7 @@ export function useLogout() {
       destroyCookie(null, 'jwt')
       queryClient.clear()
       toast.success("Logout realizado com sucesso!")
-      router.push("/login")
+      router.push("/")
     },
     onError: (error: any) => {
       destroyCookie(null, 'jwt')
@@ -121,7 +121,7 @@ export function useLogout() {
       
       queryClient.clear()
       toast.error(error.response?.data?.message || "Erro ao fazer logout")
-      router.push("/login")
+      router.push("/")
     },
   })
 
@@ -153,7 +153,7 @@ export function useSendResetPassword() {
       toast.success(data.message || "Código de verificação enviado para seu email!")
       
       setTimeout(() => {
-        router.push("/reset-password")
+        router.push("/auth/reset-password")
       }, 1000)
     },
     onError: (error: any) => {
@@ -177,9 +177,7 @@ export function useConfirmCodeResetPassword() {
       destroyCookie(null, 'reset_password')
       
       toast.success("Senha alterada com sucesso!")
-      setTimeout(() => {
-        router.push("/login")
-      }, 1500)
+    
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Código inválido ou expirado")

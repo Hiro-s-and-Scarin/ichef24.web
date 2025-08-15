@@ -29,18 +29,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-
-    // if (error.response && error.response.status === 401) {
-    //   if (typeof window !== "undefined") {
-    //     const currentPath = window.location.pathname;
-    //     const allowedPaths = ['/login', '/register', '/plans'];
-    //     
-    //     if (!allowedPaths.includes(currentPath)) {
-    //       document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
-    //       window.location.href = "/login";
-    //     }
-    //   }
-    // }
     return Promise.reject(error);
   }
 );

@@ -60,7 +60,7 @@ export default function ForgotPassword() {
                   Confirmar Código
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/">
                 <Button variant="outline" className="w-full">
                   Voltar ao Login
                 </Button>
@@ -114,7 +114,7 @@ export default function ForgotPassword() {
 
             <div className="text-center">
               <Link 
-                href="/login"
+                href="/"
                 className="inline-flex items-center text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />

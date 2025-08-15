@@ -56,7 +56,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          <Link href="/login">
+          <Link href="/">
             <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800 hover:bg-orange-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 text-sm">
               {t('header.login')}
             </Button>
@@ -146,7 +146,7 @@ export function Header() {
                 </div>
               ) : (
                 <Link 
-                  href="/login" 
+                  href="/" 
                   className="flex items-center gap-4 px-4 py-4 rounded-xl text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-900/20 dark:hover:to-yellow-900/20 transition-all duration-300 group"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

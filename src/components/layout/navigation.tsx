@@ -53,7 +53,7 @@ export function Navigation() {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-gray-700/50" asChild>
-              <Link href="/login">Entrar</Link>
+              <Link href="/">Entrar</Link>
             </Button>
             <Button
               className="bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#f54703] text-white border-0"
@@ -86,7 +86,7 @@ export function Navigation() {
                   className="text-gray-300 hover:text-white hover:bg-gray-700/50 justify-start"
                   asChild
                 >
-                  <Link href="/login" onClick={() => setIsOpen(false)}>
+                  <Link href="/" onClick={() => setIsOpen(false)}>
                     Entrar
                   </Link>
                 </Button>

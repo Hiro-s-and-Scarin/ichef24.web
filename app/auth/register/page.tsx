@@ -16,11 +16,9 @@ import { Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
-import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
+
 
 function RegisterPageContent() {
-  // Captura token da URL (Google/Facebook OAuth)
-  useTokenCapture()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -325,7 +323,7 @@ function RegisterPageContent() {
             <div className="text-center">
               <p className="text-gray-600 dark:text-gray-300">
                 Já tem uma conta?{" "}
-                <Link href="/login" className="text-orange-500 hover:underline dark:text-orange-400 font-medium">
+                <Link href="/" className="text-orange-500 hover:underline dark:text-orange-400 font-medium">
                   Faça login
                 </Link>
               </p>
@@ -333,10 +331,10 @@ function RegisterPageContent() {
           </CardContent>
         </Card>
 
-        {/* Back to Home */}
+        {/* Back to Dashboard */}
         <div className="text-center mt-6">
-          <Link href="/" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-            ← Voltar para o início
+          <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+            ← Ir para o Dashboard
           </Link>
         </div>
       </div>

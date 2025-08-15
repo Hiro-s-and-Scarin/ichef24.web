@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { initiateGoogleAuth, initiateFacebookAuth } from "@/network/actions/auth/socialAuth"
-import { setCookie } from 'nookies'
-import { useAuth } from "@/contexts/auth-context"
 
 export function useGoogleAuth() {
   const router = useRouter()
-  const { setUser } = useAuth()
 
   const handleGoogleAuth = async () => {
     try {
@@ -24,7 +21,6 @@ export function useGoogleAuth() {
 
 export function useFacebookAuth() {
   const router = useRouter()
-  const { setUser } = useAuth()
 
   const handleFacebookAuth = async () => {
     try {
