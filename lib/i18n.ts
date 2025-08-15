@@ -358,6 +358,12 @@ const resources = {
       'common.beginner': 'Iniciante',
       'common.intermediate': 'Intermediário',
       'common.or': 'ou',
+      
+      // Currency
+      'currency.brl': 'R$',
+      'currency.usd': '$',
+      'currency.eur': '€',
+      'currency.gbp': '£',
     }
   },
   en: {
@@ -611,6 +617,12 @@ const resources = {
       'common.beginner': 'Beginner',
       'common.intermediate': 'Intermediate',
       'common.or': 'or',
+      
+      // Currency
+      'currency.brl': 'R$',
+      'currency.usd': '$',
+      'currency.eur': '€',
+      'currency.gbp': '£',
     },
     en: {
       translation: {

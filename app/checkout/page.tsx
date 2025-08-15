@@ -2,11 +2,12 @@
 
 import { Suspense } from "react"
 import { Elements } from '@stripe/react-stripe-js'
-import { stripePromise } from '@/lib/stripe'
+import { stripePromise, getStripeConfigForLanguage } from '@/lib/stripe'
 import { StripeCheckout } from '@/components/stripe-checkout'
 import { useSearchParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
 
 interface PlanDetails {
   id: string
@@ -19,6 +20,7 @@ interface PlanDetails {
 function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { i18n } = useTranslation()
 
   const planDetails: PlanDetails = {
     id: searchParams.get("planId") || "plan-1",
@@ -61,14 +63,14 @@ function CheckoutContent() {
             </p>
           </div>
 
-          {/* Stripe Elements */}
-          <Elements stripe={stripePromise}>
-            <StripeCheckout
-              planDetails={planDetails}
-              onSuccess={handleSuccess}
-              onBack={handleBack}
-            />
-          </Elements>
+                                {/* Stripe Elements */}
+                      <Elements stripe={stripePromise} options={getStripeConfigForLanguage(i18n.language)}>
+                        <StripeCheckout
+                          planDetails={planDetails}
+                          onSuccess={handleSuccess}
+                          onBack={handleBack}
+                        />
+                      </Elements>
         </div>
       </div>
     </div>

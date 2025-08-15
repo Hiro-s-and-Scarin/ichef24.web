@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 
 import { useGetPlans } from "@/network/hooks/plans/usePlans"
 import { Plan } from "@/types"
+import { useCurrencyFormatter } from "@/lib/currency"
 
 export function PlansPageContent() {
   const router = useRouter()
@@ -16,6 +17,9 @@ export function PlansPageContent() {
 
   // TanStack Query hooks
   const { data: plansData, isLoading } = useGetPlans()
+  
+  // Hook para formatação de moeda baseada no idioma
+  const { formatCurrency } = useCurrencyFormatter()
 
   // Função para obter ícone baseado no tipo de plano
   const getPlanIcon = (planType: string) => {
@@ -177,15 +181,14 @@ export function PlansPageContent() {
 
                       <div className="py-6">
                         <div className="text-4xl font-bold text-gray-800 dark:text-white">
-                          R${" "}
                           {billingCycle === "monthly"
-                            ? plan.amount.toFixed(2).replace(".", ",")
-                            : (plan.amount * 12 * 0.8).toFixed(2).replace(".", ",")}
+                            ? formatCurrency(plan.amount)
+                            : formatCurrency(plan.amount * 12 * 0.8)}
                           {plan.amount > 0 && <span className="text-lg text-gray-500 dark:text-gray-400">/mês</span>}
                         </div>
                         {billingCycle === "yearly" && plan.amount > 0 && (
                           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            ou R$ {(plan.amount * 12 * 0.8).toFixed(2).replace(".", ",")} por ano (20% off)
+                            ou {formatCurrency(plan.amount * 12 * 0.8)} por ano (20% off)
                           </p>
                         )}
                       </div>

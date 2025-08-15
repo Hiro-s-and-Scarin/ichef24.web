@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Lock, Shield, Loader2, CreditCard } from 'lucide-react'
 import { useCreatePayment } from '@/network/hooks/stripe'
 import { useCurrentUser } from '@/network/hooks/users/useUsers'
+import { useCurrencyFormatter } from '@/lib/currency'
 
 interface PlanDetails {
   id: string
@@ -57,6 +58,9 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
   // Hooks do projeto
   const { data: currentUser, isLoading: isLoadingUser } = useCurrentUser()
   const createPaymentMutation = useCreatePayment()
+  
+  // Hook para formatação de moeda baseada no idioma
+  const { formatCurrency } = useCurrencyFormatter()
   
   // React Hook Form
   const { handleSubmit, formState: { isValid } } = useForm<CheckoutFormData>({
@@ -198,7 +202,7 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
           <div className="flex items-center justify-between">
             <span className="text-gray-600 dark:text-gray-300">Valor:</span>
             <span className="text-2xl font-bold text-orange-600">
-              R$ {planDetails.price.toFixed(2).replace(".", ",")}
+              {formatCurrency(planDetails.price)}
             </span>
           </div>
           
