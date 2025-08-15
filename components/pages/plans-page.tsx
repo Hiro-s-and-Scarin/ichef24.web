@@ -4,23 +4,18 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChefHat, Check, Sparkles, Crown, Zap, Users, Clock, Heart, CreditCard } from "lucide-react"
-import Link from "next/link"
+import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-import { useGetPlans, useSubscribeToPlan } from "@/network/hooks/plans/usePlans"
-import { useAuth } from "@/contexts/auth-context"
-import { useTranslation } from "react-i18next"
+import { useGetPlans } from "@/network/hooks/plans/usePlans"
 import { Plan } from "@/types"
 
 export function PlansPageContent() {
-  const { t } = useTranslation()
   const router = useRouter()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
   // TanStack Query hooks
   const { data: plansData, isLoading } = useGetPlans()
-  const subscribeToPlan = useSubscribeToPlan()
 
   // Função para obter ícone baseado no tipo de plano
   const getPlanIcon = (planType: string) => {
@@ -103,28 +98,7 @@ export function PlansPageContent() {
     router.push(`/checkout?planId=${plan.stripe_subscription_id}&planName=${plan.name}&price=${plan.amount}&billingCycle=${plan.billing_cycle}`)
   }
 
-  const features = [
-    {
-      icon: <Zap className="w-6 h-6 text-[#ff7518]" />,
-      title: "IA Avançada",
-      description: "Algoritmos de última geração para receitas personalizadas",
-    },
-    {
-      icon: <Heart className="w-6 h-6 text-[#ff7518]" />,
-      title: "Favoritos Ilimitados",
-      description: "Salve todas as suas receitas preferidas sem limite",
-    },
-    {
-      icon: <Users className="w-6 h-6 text-[#ff7518]" />,
-      title: "Comunidade",
-      description: "Conecte-se com outros apaixonados por culinária",
-    },
-    {
-      icon: <Clock className="w-6 h-6 text-[#ff7518]" />,
-      title: "Suporte 24/7",
-      description: "Ajuda sempre que você precisar, a qualquer hora",
-    },
-  ]
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -175,7 +149,7 @@ export function PlansPageContent() {
             <>
               {/* Plans Grid */}
               <div className="grid md:grid-cols-3 gap-8 mb-16">
-                {plans.map((plan: Plan, index: number) => (
+                {plans.map((plan: Plan) => (
                   <Card
                     key={plan.id}
                     className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 ${
