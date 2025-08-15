@@ -105,7 +105,16 @@ export function FavoritesPageContent() {
     }
   ];
 
-  const { user } = useAuth();
+  // const { user } = useAuth(); // Comentado temporariamente
+
+  // Usuário mock temporário para desenvolvimento
+  const user = {
+    id: "1",
+    name: "Usuário Teste",
+    email: "teste@ichef24.com",
+    plan: "free" as const,
+    avatar: undefined
+  }
 
   const removeFavorite = async (id: string | number) => {
     try {

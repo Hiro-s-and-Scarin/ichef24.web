@@ -1,32 +1,29 @@
 export interface Recipe {
-  id: string
+  id: string | number
+  user_id: string | number
   title: string
-  description: string
-  image?: string
-  time: string
-  servings: string
-  difficulty: "easy" | "medium" | "hard"
-  tags: string[]
-  ingredients: Array<{ name: string; amount: string }> // ✅ Compatível com DTO
-  instructions: Array<{ step: number; description: string }> // ✅ Compatível com DTO
-  nutrition?: {
-    calories: number
-    protein: string
-    carbs: string
-    fat: string
-  }
-  userId: string
-  user?: {
-    id: string
-    name: string
-    avatar?: string
-  }
-  rating?: number
-  reviews?: Review[]
-  isFavorite?: boolean
-  isPublic: boolean
+  description?: string
+  ingredients: Array<{ name: string; amount: string }>
+  steps: Array<{ step: number; description: string }>
+  cooking_time?: number
+  servings?: number
+  difficulty_level?: number // 1-5
+  cuisine_type?: string
+  tags?: string[]
+  image_url?: string
+  is_ai_generated: boolean
+  ai_prompt?: string
+  ai_model_version?: string
+  is_public: boolean
+  views_count: number
+  likes_count: number
   createdAt: string
   updatedAt: string
+  user?: {
+    id: string | number
+    name: string
+    avatar_url?: string
+  }
 }
 
 export interface Review {
@@ -64,31 +61,25 @@ export interface RecipeResponse {
   }
 }
 
-// ✅ Tipo compatível com o DTO do backend
 export interface CreateRecipeData {
   title: string
   description?: string
-  ingredients: Array<{ name: string; amount: string }> // ✅ Compatível
-  steps: Array<{ step: number; description: string }> // ✅ Compatível
-  cooking_time?: number // ✅ Compatível
-  servings?: number // ✅ Compatível
-  difficulty_level?: number // ✅ Compatível (1-5)
-  cuisine_type?: string // ✅ Compatível
-  tags?: string[] // ✅ Compatível
-  image_url?: string // ✅ Compatível
-  is_ai_generated?: boolean // ✅ Compatível
-  ai_prompt?: string // ✅ Compatível
-  ai_model_version?: string // ✅ Compatível
-  is_public?: boolean // ✅ Compatível
+  ingredients: Array<{ name: string; amount: string }>
+  steps: Array<{ step: number; description: string }>
+  cooking_time?: number
+  servings?: number
+  difficulty_level?: number
+  cuisine_type?: string
+  tags?: string[]
+  image_url?: string
+  is_ai_generated?: boolean
+  ai_prompt?: string
+  ai_model_version?: string
+  is_public?: boolean
 }
 
 export interface AIRecipeRequest {
-  prompt: string
-  preferences?: {
-    diet?: string[]
-    allergies?: string[]
-    time?: string
-    difficulty?: string
-    servings?: number
-  }
+  first_message: string
+  new_recipe?: string
+  old_recipe?: string
 }

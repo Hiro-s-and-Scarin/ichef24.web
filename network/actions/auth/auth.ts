@@ -1,47 +1,53 @@
 import { api } from "@/lib/api"
-import { LoginFormData, RegisterFormData, User, AuthResponse, ResetPasswordData, ConfirmResetPasswordData } from "@/types/auth"
+import type { 
+  LoginFormData, 
+  RegisterFormData, 
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+  ConfirmResetPasswordFormData 
+} from "@/lib/schemas/auth.schema"
 
-export async function postLogin(body: LoginFormData): Promise<AuthResponse> {
-  const { data } = await api.post("/auth/login", body)
-  return data
+export const postLogin = async (body: LoginFormData) => {
+  const response = await api.post("/auth", body)
+  return response.data
 }
 
-export async function postRegister(body: RegisterFormData): Promise<AuthResponse> {
-  const { data } = await api.post("/auth/register", body)
-  return data
+export const postRegister = async (body: RegisterFormData) => {
+  const response = await api.post("/users", body)
+  return response.data
 }
 
-export async function postForgotPassword(email: string): Promise<{ message: string }> {
-  const { data } = await api.post("/auth/forgot-password", { email })
-  return data
+export const getMe = async () => {
+  const response = await api.get("/users/me")
+  return response.data.data
 }
 
-export async function getMe(): Promise<User> {
-  const { data } = await api.get("/auth/me")
-  return data.user
+export const postLogout = async () => {
+  const response = await api.get("/auth/logout")
+  return response.data
 }
 
-export async function postLogout(): Promise<{ message: string }> {
-  const { data } = await api.post("/auth/logout")
-  return data
+export const putUpdateProfile = async (body: any) => {
+  const response = await api.put("/users/me", body)
+  return response.data.data
 }
 
-export async function postSendResetPassword(body: ResetPasswordData): Promise<{ message: string }> {
-  const { data } = await api.post("/auth/send-reset-password", body)
-  return data
+export const putUpdatePassword = async (body: { currentPassword: string; newPassword: string }) => {
+  const response = await api.post("/auth/reset-password", body)
+  return response.data
 }
 
-export async function postConfirmCodeResetPassword(body: ConfirmResetPasswordData): Promise<{ passwordUpdated: any }> {
-  const { data } = await api.post("/auth/confirm-code-reset-password", body)
-  return data
+export const postForgotPassword = async (email: string) => {
+  const response = await api.post("/auth/forgot-password", { email })
+  return response.data
 }
 
-export async function putUpdateProfile(body: Partial<User>): Promise<User> {
-  const { data } = await api.put("/auth/profile", body)
-  return data.user
+export const postSendResetPassword = async (body: ResetPasswordFormData) => {
+  const response = await api.post("/auth/send-reset-password", body)
+  return response.data
 }
 
-export async function putUpdatePassword(body: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
-  const { data } = await api.put("/auth/password", body)
-  return data
+export const postConfirmCodeResetPassword = async (body: ConfirmResetPasswordFormData) => {
+  const response = await api.post("/auth/confirm-forgot-password", body)
+  return response.data
 }

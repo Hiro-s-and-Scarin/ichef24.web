@@ -13,9 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, X, Save, ChefHat, Clock, ChevronDown, Send, Sparkles, Bot } from "lucide-react"
 import { allRecipeTags } from "@/lib/recipe-tags"
 import { useTranslation } from "react-i18next"
-import { usePutRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useUpdateRecipe } from "@/network/hooks/recipes/useRecipes"
 import { CreateRecipeData } from "@/types/recipe"
 import { editRecipeSchema, EditRecipeFormData } from "./edit-recipe.schema"
+import { toast } from "sonner"
 
 interface Recipe {
   id: string
@@ -61,7 +62,7 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
   const [isGenerating, setIsGenerating] = useState(false)
   const [showChat, setShowChat] = useState(false)
 
-  const putRecipeMutation = usePutRecipe(recipe?.id || "")
+  const putRecipeMutation = useUpdateRecipe()
 
   const {
     control,
@@ -154,30 +155,23 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
   }
 
   const onSubmit = async (data: EditRecipeFormData) => {
+    if (!recipe?.id) return
+
     try {
-      // Garantir que os dados obrigatórios estejam presentes
-      const recipeData: CreateRecipeData = {
-        title: data.title,
-        description: data.description,
-        ingredients: data.ingredients || [],
-        steps: data.steps || [],
-        cooking_time: data.cooking_time,
-        servings: data.servings,
-        difficulty_level: data.difficulty_level,
-        cuisine_type: data.cuisine_type || "",
-        tags: data.tags?.filter(tag => tag !== undefined) || [],
-        image_url: data.image_url,
-        is_ai_generated: data.is_ai_generated,
-        ai_prompt: data.ai_prompt,
-        ai_model_version: data.ai_model_version,
-        is_public: data.is_public
+      const recipeData = {
+        ...data,
+        tags: data.tags?.filter((tag): tag is string => tag !== undefined) || []
       }
-      
-      await putRecipeMutation.mutateAsync(recipeData)
+
+      await putRecipeMutation.mutateAsync({
+        id: recipe.id,
+        body: recipeData as CreateRecipeData
+      } as any)
       onClose()
-      if (onSave) onSave(data)
+      toast.success("Receita atualizada com sucesso!")
     } catch (error) {
-      // Erro já tratado pelo hook
+      console.error("Error updating recipe:", error)
+      toast.error("Erro ao atualizar receita")
     }
   }
 

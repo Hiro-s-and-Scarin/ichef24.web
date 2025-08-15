@@ -1,50 +1,33 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { getCommunityPosts, getTopChefs, getTrendingPosts } from "@/network/actions/users/actionUsers";
-import { CommunityPageContent } from "@/components/pages/community-page";
+"use client"
 
-export default async function CommunityPage() {
-  const queryClient = new QueryClient();
-  
-  // Prefetch all community data
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ["users", "community"],
-      queryFn: async () => {
-        try {
-          return await getCommunityPosts({});
-        } catch (error) {
-          console.error("Erro ao pré-buscar posts da comunidade durante o build:", error);
-          return [];
-        }
-      },
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ["users", "top-chefs"],
-      queryFn: async () => {
-        try {
-          return await getTopChefs();
-        } catch (error) {
-          console.error("Erro ao pré-buscar top chefs durante o build:", error);
-          return [];
-        }
-      },
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ["users", "trending"],
-      queryFn: async () => {
-        try {
-          return await getTrendingPosts();
-        } catch (error) {
-          console.error("Erro ao pré-buscar posts em alta durante o build:", error);
-          return [];
-        }
-      },
-    }),
-  ]);
+import { useState } from "react"
+import { CommunityPage } from "@/components/pages/community-page"
+import { useCommunityPosts, useCreateCommunityPost } from "@/network/hooks"
+import { CreateCommunityPostData } from "@/types/community"
+import { toast } from "sonner"
+
+export default function Community() {
+  const [isCreatingPost, setIsCreatingPost] = useState(false)
+  const { data: postsData, isLoading } = useCommunityPosts()
+  const createPostMutation = useCreateCommunityPost()
+
+  const handleCreatePost = async (data: CreateCommunityPostData) => {
+    try {
+      await createPostMutation.mutateAsync(data)
+      setIsCreatingPost(false)
+      toast.success("Post criado com sucesso!")
+    } catch (error) {
+      console.error("Error creating post:", error)
+    }
+  }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <CommunityPageContent />
-    </HydrationBoundary>
-  );
+    <CommunityPage
+      posts={postsData?.data || []}
+      isLoading={isLoading}
+      onCreatePost={handleCreatePost}
+      isCreatingPost={isCreatingPost}
+      onToggleCreatePost={() => setIsCreatingPost(!isCreatingPost)}
+    />
+  )
 }

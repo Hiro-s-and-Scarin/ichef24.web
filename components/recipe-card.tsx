@@ -2,171 +2,175 @@
 
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Users, Star, Heart, Eye, ChefHat, Edit, Sparkles, Share2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Heart, Clock, Users, Star, Eye } from "lucide-react"
 import Image from "next/image"
-import { RecipeModal } from "./recipe-modal"
-import { useTranslation } from "react-i18next"
-
-interface Recipe {
-  id: number
-  title: string
-  description: string
-  image: string
-  time: string
-  servings: string
-  difficulty: string
-  tags: string[]
-  rating: number
-  ingredients: string[]
-  instructions: string[]
-  nutrition?: {
-    calories: number
-    protein: string
-    carbs: string
-    fat: string
-  }
-}
+import Link from "next/link"
+import { Recipe } from "@/types/recipe"
+import { useAddToFavorites, useRemoveFromFavorites } from "@/network/hooks"
 
 interface RecipeCardProps {
   recipe: Recipe
-  onFavorite?: (id: number) => void
-  isFavorite?: boolean
-  onEdit?: (recipe: Recipe) => void
-  onEditWithAI?: (recipe: Recipe) => void
 }
 
-export function RecipeCard({ recipe, onFavorite, isFavorite = false, onEdit, onEditWithAI }: RecipeCardProps) {
-  const { t } = useTranslation()
-  const [showModal, setShowModal] = useState(false)
+export function RecipeCard({ recipe }: RecipeCardProps) {
+  const [isFavorite, setIsFavorite] = useState(false)
+  const addToFavoritesMutation = useAddToFavorites()
+  const removeFromFavoritesMutation = useRemoveFromFavorites()
+
+  const handleToggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        await removeFromFavoritesMutation.mutateAsync(recipe.id)
+        setIsFavorite(false)
+      } else {
+        await addToFavoritesMutation.mutateAsync(recipe.id)
+        setIsFavorite(true)
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error)
+    }
+  }
+
+  const getDifficultyText = (level?: number) => {
+    if (!level) return "Não especificado"
+    switch (level) {
+      case 1: return "Muito Fácil"
+      case 2: return "Fácil"
+      case 3: return "Intermediário"
+      case 4: return "Difícil"
+      case 5: return "Muito Difícil"
+      default: return "Não especificado"
+    }
+  }
+
+  const getDifficultyColor = (level?: number) => {
+    if (!level) return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+    switch (level) {
+      case 1:
+      case 2:
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+      case 3:
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"
+      case 4:
+      case 5:
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+    }
+  }
 
   return (
-    <>
-      <Card className="group relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 hover:scale-[1.02]">
-        <div className="relative h-48 overflow-hidden">
+    <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col">
+      {/* Recipe Image */}
+      <div className="relative h-48 w-full">
+        {recipe.image_url ? (
           <Image
-            src={recipe.image || "/placeholder.jpg"}
+            src={recipe.image_url}
             alt={recipe.title}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          
-          {/* Favorite Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onFavorite?.(recipe.id)}
-            className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-0"
-          >
-            <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
-          </Button>
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 flex items-center justify-center">
+            <span className="text-4xl">🍳</span>
+          </div>
+        )}
+        
+        {/* Favorite Button */}
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={handleToggleFavorite}
+          className="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
+        >
+          <Heart 
+            className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`} 
+          />
+        </Button>
 
-          {/* Tags */}
-          <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-            {recipe.tags.slice(0, 2).map((tag, index) => (
-              <Badge
-                key={index}
-                className="bg-white/90 text-gray-800 text-xs font-medium backdrop-blur-sm"
-              >
+        {/* AI Generated Badge */}
+        {recipe.is_ai_generated && (
+          <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+            IA
+          </Badge>
+        )}
+      </div>
+
+      <CardContent className="p-4 flex-1 flex flex-col">
+        {/* Recipe Title */}
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-2 line-clamp-2">
+          {recipe.title}
+        </h3>
+
+        {/* Recipe Description */}
+        {recipe.description && (
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+            {recipe.description}
+          </p>
+        )}
+
+        {/* Recipe Tags */}
+        {recipe.tags && recipe.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {recipe.tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}
-            {recipe.tags.length > 2 && (
-              <Badge className="bg-white/90 text-gray-800 text-xs font-medium backdrop-blur-sm">
-                +{recipe.tags.length - 2}
+            {recipe.tags.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{recipe.tags.length - 3}
               </Badge>
             )}
           </div>
+        )}
+
+        {/* Recipe Stats */}
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+          {recipe.cooking_time && (
+            <div className="flex items-center space-x-1">
+              <Clock className="w-4 h-4" />
+              <span>{recipe.cooking_time}min</span>
+            </div>
+          )}
+          {recipe.servings && (
+            <div className="flex items-center space-x-1">
+              <Users className="w-4 h-4" />
+              <span>{recipe.servings} porções</span>
+            </div>
+          )}
         </div>
 
-        <CardContent className="p-4 space-y-3">
-          {/* Title */}
-          <div className="space-y-1">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-lg line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-              {recipe.title}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-              {recipe.description}
-            </p>
-          </div>
+        {/* Difficulty Level */}
+        {recipe.difficulty_level && (
+          <Badge className={`mb-3 w-fit ${getDifficultyColor(recipe.difficulty_level)}`}>
+            {getDifficultyText(recipe.difficulty_level)}
+          </Badge>
+        )}
 
-          {/* Stats */}
-          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span>{recipe.time}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{recipe.servings}</span>
-              </div>
+        {/* Recipe Stats */}
+        <div className="flex items-center justify-between mt-auto">
+          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-1">
+              <Eye className="w-4 h-4" />
+              <span>{recipe.views_count || 0}</span>
             </div>
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < recipe.rating ? "fill-orange-500 text-orange-500" : "text-gray-300"
-                  }`}
-                />
-              ))}
+            <div className="flex items-center space-x-1">
+              <Heart className="w-4 h-4" />
+              <span>{recipe.likes_count || 0}</span>
             </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
-            <Button
-              onClick={() => setShowModal(true)}
-              className="flex-1 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 text-sm"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-                    {t('recipe.view')}
+          
+          {/* View Recipe Button */}
+          <Link href={`/recipe/${recipe.id}`}>
+            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+              Ver Receita
             </Button>
-            
-            {onEdit && (
-              <Button
-                onClick={() => onEdit(recipe)}
-                variant="outline"
-                size="icon"
-                className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-gray-600 dark:text-orange-400 dark:hover:bg-gray-700"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            )}
-            
-            {onEditWithAI && (
-              <Button
-                onClick={() => onEditWithAI(recipe)}
-                variant="outline"
-                size="icon"
-                className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-gray-600 dark:text-orange-400 dark:hover:bg-gray-700"
-              >
-                <Sparkles className="w-4 h-4" />
-              </Button>
-            )}
-            
-            <Button
-              variant="outline"
-              size="icon"
-              className="border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700"
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recipe Modal */}
-      <RecipeModal
-        recipe={recipe}
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onFavorite={onFavorite}
-        isFavorite={isFavorite}
-      />
-    </>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   )
 } 

@@ -3,7 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import type { LoginFormData, RegisterFormData, ResetPasswordData, ConfirmResetPasswordData } from "@/types/auth"
+import type { 
+  LoginFormData, 
+  RegisterFormData, 
+  ResetPasswordFormData, 
+  ConfirmResetPasswordFormData,
+  ForgotPasswordFormData
+} from "@/lib/schemas/auth.schema"
 import { 
   getMe, 
   postLogin, 
@@ -27,7 +33,7 @@ export function useLogin() {
       return await postLogin(body)
     },
     onSuccess: (response) => {
-      setCookie(null, 'jwt', response.data, {
+      setCookie(null, 'jwt', response.data.token, {
         maxAge: 30 * 24 * 60 * 60,
         path: '/',
       })
@@ -126,7 +132,7 @@ export function useSendResetPassword() {
   const router = useRouter()
 
   const mutate = useMutation({
-    mutationFn: async (body: ResetPasswordData) => {
+    mutationFn: async (body: ResetPasswordFormData) => {
       return await postSendResetPassword(body)
     },
     onSuccess: (data, variables) => {
@@ -163,7 +169,7 @@ export function useConfirmCodeResetPassword() {
   const router = useRouter()
   
   const mutate = useMutation({
-    mutationFn: async (body: ConfirmResetPasswordData) => {
+    mutationFn: async (body: ConfirmResetPasswordFormData) => {
       return await postConfirmCodeResetPassword(body)
     },
     onSuccess: (data) => {

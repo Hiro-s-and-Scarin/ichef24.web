@@ -3,6 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import { useLogin, useRegister, useLogout, useMe } from "@/network/hooks/auth/useAuth"
+import { User as AuthUser } from "@/types/auth"
 
 interface User {
   id: string
@@ -37,8 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: userData.id,
         name: userData.name,
         email: userData.email,
-        plan: userData.subscription?.plan === "pro" ? "chef" : userData.subscription?.plan === "premium" ? "master" : "free",
-        avatar: userData.avatar
+        plan: "free", // Default plan for now
+        avatar: userData.avatar_url
       }
       setUser(mappedUser)
     } else {

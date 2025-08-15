@@ -3,142 +3,183 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Filter, X } from "lucide-react"
-import { recipeTagsByCategory } from "@/lib/recipe-tags"
-import { useTranslation } from "react-i18next"
+import { X } from "lucide-react"
+import { RecipeParams } from "@/types/recipe"
 
-export interface FilterModalProps {
+interface FilterModalProps {
   isOpen: boolean
   onClose: () => void
-  onApplyFilters: (filters: string[]) => void
-  selectedFilters: string[]
+  filters: RecipeParams
+  onFiltersChange: (filters: Partial<RecipeParams>) => void
 }
 
-export function FilterModal({ isOpen, onClose, onApplyFilters, selectedFilters }: FilterModalProps) {
-  const { t } = useTranslation()
-  const [localFilters, setLocalFilters] = useState<string[]>(selectedFilters)
+const difficultyOptions = [
+  { value: "1", label: "Muito Fácil" },
+  { value: "2", label: "Fácil" },
+  { value: "3", label: "Intermediário" },
+  { value: "4", label: "Difícil" },
+  { value: "5", label: "Muito Difícil" }
+]
 
-  const toggleFilter = (filter: string) => {
-    setLocalFilters(prev => 
-      prev.includes(filter) 
-        ? prev.filter(f => f !== filter)
-        : [...prev, filter]
+const cuisineTypes = [
+  "Italiana", "Brasileira", "Japonesa", "Mexicana", "Indiana", 
+  "Francesa", "Chinesa", "Tailandesa", "Mediterrânea", "Árabe"
+]
+
+const timeRanges = [
+  { value: "15", label: "Até 15 min" },
+  { value: "30", label: "Até 30 min" },
+  { value: "45", label: "Até 45 min" },
+  { value: "60", label: "Até 1 hora" },
+  { value: "120", label: "Até 2 horas" }
+]
+
+export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: FilterModalProps) {
+  const [localFilters, setLocalFilters] = useState<RecipeParams>(filters)
+  const [selectedTags, setSelectedTags] = useState<string[]>(filters.tags || [])
+
+  const handleApplyFilters = () => {
+    onFiltersChange({
+      ...localFilters,
+      tags: selectedTags,
+      page: 1
+    })
+    onClose()
+  }
+
+  const handleResetFilters = () => {
+    const resetFilters: RecipeParams = {
+      page: 1,
+      limit: 12
+    }
+    setLocalFilters(resetFilters)
+    setSelectedTags([])
+    onFiltersChange(resetFilters)
+    onClose()
+  }
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
     )
   }
 
-  const clearAllFilters = () => {
-    setLocalFilters([])
-  }
-
-  const applyFilters = () => {
-    onApplyFilters(localFilters)
-    onClose()
-  }
-
-  const handleClose = () => {
-    setLocalFilters(selectedFilters) // Reset to original state
-    onClose()
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-gray-200 dark:border-gray-700">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-gray-800 dark:text-white">
-            Filtros
+          <DialogTitle className="flex items-center justify-between">
+            <span>Filtros</span>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Selected Filters */}
-          {localFilters.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Filtros Selecionados ({localFilters.length})
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  {t('filter.clear')}
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {localFilters.map((filter) => (
-                  <Badge
-                    key={filter}
-                    variant="secondary"
-                    className="bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:hover:bg-orange-900/50"
-                  >
-                    {filter}
-                    <button
-                      onClick={() => toggleFilter(filter)}
-                      className="ml-1 hover:text-red-500"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Filter Categories */}
-          <div className="space-y-6">
-            {recipeTagsByCategory.map((category) => (
-              <div key={category.name} className="space-y-3">
-                <h3 className="text-lg font-medium text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                  {category.name}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {category.tags.map((filter) => (
-                    <Button
-                      key={filter}
-                      variant={localFilters.includes(filter) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleFilter(filter)}
-                      className={
-                        localFilters.includes(filter)
-                          ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
-                          : "text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                      }
-                    >
-                      {filter}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            ))}
+          {/* Search */}
+          <div className="space-y-2">
+            <Label htmlFor="search">Buscar receitas</Label>
+            <Input
+              id="search"
+              placeholder="Digite o nome da receita..."
+              value={localFilters.search || ""}
+              onChange={(e) => setLocalFilters(prev => ({ ...prev, search: e.target.value }))}
+            />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+          {/* Difficulty Level */}
+          <div className="space-y-2">
+            <Label>Nível de Dificuldade</Label>
+            <Select
+              value={localFilters.difficulty?.[0] || ""}
+              onValueChange={(value) => setLocalFilters(prev => ({ ...prev, difficulty: value ? [value] : undefined }))}
             >
-              {t('common.cancel')}
-            </Button>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={clearAllFilters}
-                className="text-red-500 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-600 dark:hover:bg-red-900/20"
-              >
-                {t('common.clear')}
-              </Button>
-              <Button
-                onClick={applyFilters}
-                className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white"
-              >
-                {t('filter.apply')} ({localFilters.length})
-              </Button>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o nível" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Todos os níveis</SelectItem>
+                {difficultyOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Cooking Time */}
+          <div className="space-y-2">
+            <Label>Tempo de Cozimento</Label>
+            <Select
+              value={localFilters.time || ""}
+              onValueChange={(value) => setLocalFilters(prev => ({ ...prev, time: value || undefined }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tempo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Qualquer tempo</SelectItem>
+                {timeRanges.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Cuisine Types */}
+          <div className="space-y-2">
+            <Label>Tipos de Culinária</Label>
+            <div className="flex flex-wrap gap-2">
+              {cuisineTypes.map(cuisine => (
+                <Badge
+                  key={cuisine}
+                  variant={selectedTags.includes(cuisine) ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30"
+                  onClick={() => toggleTag(cuisine)}
+                >
+                  {cuisine}
+                </Badge>
+              ))}
             </div>
+          </div>
+
+          {/* Sort By */}
+          <div className="space-y-2">
+            <Label>Ordenar por</Label>
+            <Select
+              value={localFilters.sortBy || ""}
+              onValueChange={(value) => setLocalFilters(prev => ({ ...prev, sortBy: value as any || undefined }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a ordenação" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Padrão</SelectItem>
+                <SelectItem value="newest">Mais recentes</SelectItem>
+                <SelectItem value="oldest">Mais antigas</SelectItem>
+                <SelectItem value="title">Título A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-4">
+            <Button variant="outline" onClick={handleResetFilters} className="flex-1">
+              Limpar Filtros
+            </Button>
+            <Button onClick={handleApplyFilters} className="flex-1 bg-orange-500 hover:bg-orange-600">
+              Aplicar Filtros
+            </Button>
           </div>
         </div>
       </DialogContent>

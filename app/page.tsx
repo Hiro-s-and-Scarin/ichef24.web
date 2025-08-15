@@ -3,25 +3,194 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { ChefHat, Send, Sparkles, User, Crown, ArrowRight, Clock, Users, Star } from "lucide-react"
+import { ChefHat, Send, Sparkles, User, Crown, ArrowRight, Clock, Users, Star, Bot, X } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useTranslation } from "react-i18next"
+import { useAuth } from "@/contexts/auth-context"
+import { useCreateChatSession, useCreateChatMessage } from "@/network/hooks/chat/useChat"
+import { useGenerateRecipeWithAI } from "@/network/hooks/recipes/useRecipes"
+import { toast } from "sonner"
+import { CreateChatSessionData, CreateChatMessageData } from "@/types/chat"
+import { AIRecipeRequest } from "@/types/recipe"
+
+interface ChatFormData {
+  prompt: string
+}
+
+interface ChatMessage {
+  id: string
+  type: 'user' | 'ai'
+  content: string
+  timestamp: string
+}
 
 export default function HomePage() {
   const { t } = useTranslation()
-  const [prompt, setPrompt] = useState("")
+  // const { user } = useAuth() // Comentado temporariamente
   const [mode, setMode] = useState<"amateur" | "professional">("amateur")
+  const [showChat, setShowChat] = useState(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [currentSessionId, setCurrentSessionId] = useState<string | number | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [firstMessage, setFirstMessage] = useState<string>("") // Para controlar se é primeira mensagem ou modificação
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (prompt.trim()) {
-      // Aqui você pode implementar a lógica de geração de receita
-      console.log("Gerando receita com prompt:", prompt)
+  // Usuário mock temporário para desenvolvimento
+  const user = {
+    id: "1",
+    name: "Usuário Teste",
+    email: "teste@ichef24.com",
+    plan: "free" as const,
+    avatar: undefined
+  }
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ChatFormData>()
+
+  // Hooks para chat e IA
+  const createChatSession = useCreateChatSession()
+  const createChatMessage = useCreateChatMessage()
+  const generateRecipeWithAI = useGenerateRecipeWithAI()
+
+  const handleChatSubmit = async (data: ChatFormData) => {
+    if (!data.prompt.trim()) return
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: data.prompt,
+      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     }
+
+    // Adicionar mensagem do usuário na tela imediatamente
+    setChatMessages(prev => [...prev, userMessage])
+    setIsGenerating(true)
+    reset()
+
+    try {
+      // 1. Se não há sessão ativa, criar uma nova
+      if (!currentSessionId) {
+        const sessionData: CreateChatSessionData = {
+          title: `Chat sobre: ${data.prompt.substring(0, 50)}...`,
+          ai_model_version: mode === "professional" ? "gpt-4" : "gpt-3.5-turbo"
+        }
+        
+        const newSession = await createChatSession.mutateAsync(sessionData)
+        setCurrentSessionId(String(newSession.id))
+      }
+
+      // 2. Salvar mensagem do usuário no backend
+      if (currentSessionId) {
+        const userMessageData: CreateChatMessageData = {
+          message_type: 'USER',
+          content: data.prompt,
+          tokens_used: Math.ceil(data.prompt.length / 4),
+          metadata: { mode, timestamp: new Date().toISOString() }
+        }
+
+        await createChatMessage.mutateAsync({
+          sessionId: currentSessionId,
+          body: userMessageData
+        })
+      }
+
+      // 3. Fazer requisição para OpenAI e gerar receita
+      const aiRequest: AIRecipeRequest = {
+        first_message: data.prompt
+      }
+
+      const generatedRecipe = await generateRecipeWithAI.mutateAsync(aiRequest)
+
+      // 4. Criar mensagem da IA com a resposta
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: `Receita ${!firstMessage ? 'criada' : 'modificada'} com sucesso! "${generatedRecipe.title}" - ${generatedRecipe.description}`,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }
+
+      // 5. Adicionar mensagem da IA na tela
+      setChatMessages(prev => [...prev, aiMessage])
+
+      // 6. Salvar mensagem da IA no backend (com referência à receita gerada)
+      if (currentSessionId) {
+        const aiMessageData: CreateChatMessageData = {
+          message_type: 'AI',
+          content: aiMessage.content,
+          tokens_used: Math.ceil(aiMessage.content.length / 4),
+          recipe_generated_id: String(generatedRecipe.id), // Referência à receita criada
+          metadata: { 
+            mode, 
+            recipe_id: String(generatedRecipe.id),
+            is_first_message: !firstMessage,
+            timestamp: new Date().toISOString() 
+          }
+        }
+
+        await createChatMessage.mutateAsync({
+          sessionId: currentSessionId,
+          body: aiMessageData
+        })
+      }
+
+      // 7. Atualizar estado para próximas mensagens
+      if (!firstMessage) {
+        setFirstMessage(data.prompt)
+      }
+
+      toast.success(`Receita ${!firstMessage ? 'criada' : 'modificada'} com sucesso!`)
+      
+    } catch (error) {
+      console.error("Erro ao gerar receita:", error)
+      toast.error("Erro ao gerar receita. Tente novamente.")
+      
+      // Adicionar mensagem de erro na tela
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: "Desculpe, ocorreu um erro ao gerar sua receita. Tente novamente.",
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }
+      setChatMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // Função para criar nova receita
+  const handleNewRecipe = () => {
+    setFirstMessage("") // Reset para primeira mensagem
+    setChatMessages([{
+      id: "welcome",
+      type: 'ai',
+      content: `Olá! Sou o iChef24 AI. Como posso ajudá-lo a criar uma receita hoje?
+
+💡 **Como usar:**
+• Primeira mensagem: Descreva a receita que quer criar
+• Mensagens seguintes: Descreva as modificações que quer fazer
+
+Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione nozes"`,
+      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    }])
+  }
+
+  const openChat = () => {
+    // if (!user) { // Comentado temporariamente
+    //   toast.error("Faça login para usar o chat de IA")
+    //   return
+    // }
+    setShowChat(true)
+    handleNewRecipe() // Usar a função que já existe
+  }
+
+  const closeChat = () => {
+    setShowChat(false)
+    setChatMessages([])
+    setCurrentSessionId(null)
+    setFirstMessage("") // Reset para primeira mensagem
   }
 
   return (
@@ -46,22 +215,29 @@ export default function HomePage() {
 
           {/* Input Form */}
           <div className="max-w-xl mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(handleChatSubmit)} className="space-y-4">
               <div className="relative">
                 <Input
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Peça ao iChef24 para criar uma receita..."
+                  {...register("prompt", { required: "Digite sua solicitação" })}
+                  placeholder="Ex: Faça um bolo de chocolate, Crie um risotto italiano..."
                   className="w-full h-12 px-4 pr-12 text-base bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                 />
                 <Button
                   type="submit"
                   size="icon"
+                  disabled={isGenerating}
                   className="absolute right-1 top-1 h-10 w-10 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 rounded-lg"
                 >
-                  <Send className="w-4 h-4" />
+                  {isGenerating ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
+              {errors.prompt && (
+                <p className="text-red-500 text-sm text-left">{errors.prompt.message}</p>
+              )}
 
               {/* Mode Toggle */}
               <div className="flex items-center justify-center gap-3">
@@ -94,6 +270,17 @@ export default function HomePage() {
                   Profissional
                 </Button>
               </div>
+
+              {/* Chat Button */}
+              <Button
+                type="button"
+                onClick={openChat}
+                variant="outline"
+                className="w-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
+              >
+                <Bot className="w-4 h-4 mr-2" />
+                Abrir Chat com IA
+              </Button>
             </form>
           </div>
 
@@ -113,8 +300,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-
 
         {/* Features Cards */}
         <div className="grid md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
@@ -166,6 +351,112 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
+
+      {/* Chat Modal */}
+      {showChat && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col">
+            {/* Chat Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">iChef24 AI Chat</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {!firstMessage ? 'Criando nova receita' : 'Modificando receita'} • Modo: {mode === "amateur" ? "Amador" : "Profissional"}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeChat}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {chatMessages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl p-3 ${
+                      message.type === 'user'
+                        ? 'bg-orange-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                    <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Loading indicator enquanto gera resposta */}
+              {isGenerating && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl p-3 max-w-[80%]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {!firstMessage ? 'Criando sua receita...' : 'Modificando sua receita...'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              {/* Toggle Buttons */}
+              <div className="flex gap-2 mb-3">
+                <Button
+                  type="button"
+                  variant={!firstMessage ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleNewRecipe}
+                  className="flex-1"
+                >
+                  ✨ Nova Receita
+                </Button>
+                <Button
+                  type="button"
+                  variant={firstMessage ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1"
+                  disabled={!firstMessage}
+                >
+                  🔧 Modificar Receita
+                </Button>
+              </div>
+              
+              <form onSubmit={handleSubmit(handleChatSubmit)} className="flex gap-2">
+                <Input
+                  {...register("prompt", { required: "Digite sua mensagem" })}
+                  placeholder={!firstMessage ? "Descreva sua receita dos sonhos..." : "Descreva o que você quer modificar..."}
+                  className="flex-1"
+                  disabled={isGenerating}
+                />
+                <Button
+                  type="submit"
+                  disabled={isGenerating}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

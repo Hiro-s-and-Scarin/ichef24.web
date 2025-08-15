@@ -3,72 +3,52 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { 
-  getUsers, 
+  getAllUsers, 
   getUserById, 
-  putUser, 
-  deleteUser,
-  getUserPreferences,
-  putUserPreferences,
-  getCommunityPosts,
-  getTopChefs,
-  getTrendingPosts,
-  postCommunityMessage
+  getCurrentUser,
+  updateUser, 
+  toggleUserStatus, 
+  activeUser, 
+  deleteUser 
 } from "@/network/actions/users/actionUsers"
+import { UpdateUserData } from "@/types/user"
 import { queryKeys } from "@/lib/query-keys"
-import { User } from "@/types"
 
-export function useGetUsers(params: { search?: string; page?: number; limit?: number } = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.all,
-    queryFn: async () => await getUsers(params),
-    retry: 0,
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: queryKeys.users.me,
+    queryFn: async () => await getCurrentUser(),
+    staleTime: 1000 * 60 * 5,
   })
-
-  return {
-    data: data?.data,
-    isLoading,
-  }
 }
 
-export function useGetUserById(id: string) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.detail(id),
+export function useUsers(params: { page?: number; limit?: number } = {}) {
+  return useQuery({
+    queryKey: [...queryKeys.users.all, params],
+    queryFn: async () => await getAllUsers(params),
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: [...queryKeys.users.one, id],
     queryFn: async () => await getUserById(id),
     enabled: !!id,
-    retry: 0,
+    staleTime: 1000 * 60 * 5,
   })
-
-  return {
-    data,
-    isLoading,
-  }
 }
 
-export function useGetUserPreferences(userId: string) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.preferences(userId),
-    queryFn: async () => await getUserPreferences(userId),
-    enabled: !!userId,
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
-
-export function usePutUser(id: string) {
+export function useUpdateUser() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
-    mutationFn: async (body: Partial<User>) => {
-      return await putUser(id, body)
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: UpdateUserData }) => {
+      return await updateUser(id, body)
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables.id] })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(id) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me })
       toast.success("Usuário atualizado com sucesso!")
     },
     onError: (error: any) => {
@@ -76,112 +56,60 @@ export function usePutUser(id: string) {
       console.error("Error updating user:", error)
     },
   })
+}
 
-  return mutate
+export function useToggleUserStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return await toggleUserStatus(id)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      toast.success("Status do usuário alterado com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erro ao alterar status do usuário")
+      console.error("Error toggling user status:", error)
+    },
+  })
+}
+
+export function useActiveUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: { is_active: boolean } }) => {
+      return await activeUser(id, body)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      toast.success("Usuário ativado/desativado com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erro ao alterar status do usuário")
+      console.error("Error activating/deactivating user:", error)
+    },
+  })
 }
 
 export function useDeleteUser() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
+  return useMutation({
     mutationFn: async (id: string) => {
       return await deleteUser(id)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
-      toast.success("Usuário excluído com sucesso!")
+      toast.success("Usuário deletado com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao excluir usuário")
+      toast.error(error.response?.data?.message || "Erro ao deletar usuário")
       console.error("Error deleting user:", error)
     },
   })
-
-  return mutate
-}
-
-export function usePutUserPreferences(userId: string) {
-  const queryClient = useQueryClient()
-
-  const mutate = useMutation({
-    mutationFn: async (preferences: Partial<User["preferences"]>) => {
-      return await putUserPreferences(userId, preferences)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.preferences(userId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me })
-      toast.success("Preferências atualizadas com sucesso!")
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao atualizar preferências")
-      console.error("Error updating preferences:", error)
-    },
-  })
-
-  return mutate
-}
-
-// Community hooks
-export function useGetCommunityPosts(params: { 
-  page?: number; 
-  limit?: number; 
-  search?: string; 
-  tab?: string 
-} = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.community(params),
-    queryFn: async () => await getCommunityPosts(params),
-    retry: 0,
-  })
-
-  return {
-    data: data?.data,
-    isLoading,
-  }
-}
-
-export function useGetTopChefs() {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.topChefs,
-    queryFn: async () => await getTopChefs(),
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
-
-export function useGetTrendingPosts() {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.users.trending,
-    queryFn: async () => await getTrendingPosts(),
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
-
-export function usePostCommunityMessage() {
-  const queryClient = useQueryClient()
-
-  const mutate = useMutation({
-    mutationFn: async (body: { message: string; postId?: string }) => {
-      return await postCommunityMessage(body)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.community() })
-      toast.success("Mensagem enviada com sucesso!")
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao enviar mensagem")
-      console.error("Error posting message:", error)
-    },
-  })
-
-  return mutate
 }

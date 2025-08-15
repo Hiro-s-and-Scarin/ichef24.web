@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, X, Save, ChefHat, Clock, ChevronDown } from "lucide-react"
 import { allRecipeTags } from "@/lib/recipe-tags"
 import { useTranslation } from "react-i18next"
-import { usePostRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useCreateRecipe } from "@/network/hooks/recipes/useRecipes"
 import { createRecipeSchema, CreateRecipeFormData } from "./create-recipe.schema"
 import { CreateRecipeData } from "@/types/recipe"
 
@@ -28,7 +28,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
   const [newTag, setNewTag] = useState("")
   const [isTagSelectOpen, setIsTagSelectOpen] = useState(false)
 
-  const createRecipeMutation = usePostRecipe()
+  const createRecipeMutation = useCreateRecipe()
 
   const {
     control,

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Heart, Share2, Clock, Users, Star, History, Filter, Trash2 } from "lucide-react";
+import { Search, Heart, Share2, Clock, Users, Star, History, Filter, Trash2, Edit, ChefHat } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { RecipeModal } from "@/components/recipe-modal";
@@ -17,9 +17,11 @@ import { useAuth } from "@/contexts/auth-context";
 import { RecipeCard } from "@/components/recipe-card";
 import { Pagination } from "@/components/pagination";
 import { FilterModal } from "@/components/filter-modal";
-import { useGetMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
+import { useMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
 import { useTranslation } from "react-i18next";
 import { Recipe as RecipeType } from "@/types/recipe";
+import { toast } from "sonner";
+import { RecipeParams } from "@/types/recipe";
 
 export function HistoryPageContent() {
   const { t } = useTranslation();
@@ -37,24 +39,38 @@ export function HistoryPageContent() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
+  // Filtros para a API
+  const [filters, setFilters] = useState<RecipeParams>({
+    page: currentPage,
+    limit: 6
+  });
+
+  const handleFiltersChange = (newFilters: Partial<RecipeParams>) => {
+    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+    setCurrentPage(1);
+  };
+
   // TanStack Query hooks
-  const { data: recipes, isLoading } = useGetMyRecipes({
+  const { data: recipesData, isLoading } = useMyRecipes({
     page: currentPage,
     limit: 6,
-    search: searchTerm,
-    tags: selectedFilters
-  });
+  })
+
+  const recipes = recipesData?.data || []
+  const pagination = recipesData?.pagination
+
   const deleteRecipeMutation = useDeleteRecipe();
 
   const mockRecipes: RecipeType[] = [
     {
       id: "1",
+      user_id: "1",
       title: "Pasta Carbonara Italiana",
       description: "Receita autêntica de carbonara com ovos, queijo pecorino e guanciale",
-      image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d1e5?w=400&h=300&fit=crop",
-      time: "30 min",
-      servings: "4 pessoas",
-      difficulty: "medium",
+      image_url: "https://images.unsplash.com/photo-1621996346565-e3dbc353d1e5?w=400&h=300&fit=crop",
+      cooking_time: 30,
+      servings: 4,
+      difficulty_level: 3,
       tags: ["Italiano", "Massa", "Queijo"],
       ingredients: [
         { name: "Espaguete", amount: "400g" },
@@ -64,26 +80,29 @@ export function HistoryPageContent() {
         { name: "Pimenta preta moída", amount: "a gosto" },
         { name: "Sal", amount: "a gosto" }
       ],
-      instructions: [
+      steps: [
         { step: 1, description: "Corte o guanciale em cubos pequenos e frite até dourar." },
         { step: 2, description: "Cozinhe o espaguete al dente em água salgada." },
         { step: 3, description: "Misture ovos com queijo pecorino e pimenta." },
         { step: 4, description: "Combine tudo fora do fogo, mexendo rapidamente." },
         { step: 5, description: "Sirva imediatamente com mais queijo por cima." }
       ],
-      userId: "1",
-      isPublic: true,
+      is_ai_generated: false,
+      is_public: true,
+      views_count: 45,
+      likes_count: 12,
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z"
     },
     {
       id: "2",
+      user_id: "1",
       title: "Risotto de Cogumelos",
       description: "Risotto cremoso com mix de cogumelos frescos e parmesão",
-      image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
-      time: "45 min",
-      servings: "6 pessoas",
-      difficulty: "hard",
+      image_url: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
+      cooking_time: 45,
+      servings: 6,
+      difficulty_level: 4,
       tags: ["Italiano", "Vegetariano", "Cremoso"],
       ingredients: [
         { name: "Arroz arbório", amount: "350g" },
@@ -94,7 +113,7 @@ export function HistoryPageContent() {
         { name: "Manteiga", amount: "80g" },
         { name: "Parmesão ralado", amount: "100g" }
       ],
-      instructions: [
+      steps: [
         { step: 1, description: "Refogue a cebola picada na manteiga." },
         { step: 2, description: "Adicione os cogumelos e cozinhe até murcharem." },
         { step: 3, description: "Acrescente o arroz e mexa por 2 minutos." },
@@ -102,19 +121,22 @@ export function HistoryPageContent() {
         { step: 5, description: "Vá adicionando o caldo quente aos poucos." },
         { step: 6, description: "Finalize com parmesão e manteiga." }
       ],
-      userId: "1",
-      isPublic: true,
+      is_ai_generated: false,
+      is_public: true,
+      views_count: 67,
+      likes_count: 23,
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z"
     },
     {
       id: "3",
+      user_id: "1",
       title: "Brownie Fudge Duplo Chocolate",
       description: "Brownie ultra cremoso com pedaços de chocolate e cobertura fudge",
-      image: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop",
-      time: "60 min",
-      servings: "12 pessoas",
-      difficulty: "easy",
+      image_url: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop",
+      cooking_time: 60,
+      servings: 12,
+      difficulty_level: 2,
       tags: ["Sobremesa", "Chocolate", "Americano"],
       ingredients: [
         { name: "Chocolate meio amargo", amount: "200g" },
@@ -125,7 +147,7 @@ export function HistoryPageContent() {
         { name: "Chocolate em pedaços", amount: "100g" },
         { name: "Sal", amount: "pitada" }
       ],
-      instructions: [
+      steps: [
         { step: 1, description: "Derreta o chocolate com a manteiga." },
         { step: 2, description: "Misture açúcar e ovos até esbranquiçar." },
         { step: 3, description: "Combine chocolate derretido com a mistura de ovos." },
@@ -133,27 +155,61 @@ export function HistoryPageContent() {
         { step: 5, description: "Acrescente pedaços de chocolate." },
         { step: 6, description: "Asse por 25-30 minutos." }
       ],
-      userId: "1",
-      isPublic: true,
+      is_ai_generated: false,
+      is_public: true,
+      views_count: 89,
+      likes_count: 34,
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z"
     }
   ];
 
-  const { user } = useAuth();
+  // const { user } = useAuth(); // Comentado temporariamente
 
-  const removeRecipe = async (id: string) => {
+  // Usuário mock temporário para desenvolvimento
+  const user = {
+    id: "1",
+    name: "Usuário Teste",
+    email: "teste@ichef24.com",
+    plan: "free" as const,
+    avatar: undefined
+  }
+
+  const handleDeleteRecipe = async (recipeId: string) => {
     try {
-      await deleteRecipeMutation.mutateAsync(id);
+      await deleteRecipeMutation.mutateAsync(recipeId)
+      toast.success("Receita excluída com sucesso!")
     } catch (error) {
-      console.error("Erro ao remover receita:", error);
+      console.error("Error deleting recipe:", error)
+      toast.error("Erro ao excluir receita")
     }
-  };
+  }
 
   const openRecipeModal = (recipe: RecipeType) => {
     setSelectedRecipe(recipe);
     setIsRecipeModalOpen(true);
   };
+
+  // Função para adaptar RecipeType para o formato esperado pelo RecipeModal
+  const adaptRecipeForModal = (recipe: RecipeType) => ({
+    id: typeof recipe.id === 'string' ? parseInt(recipe.id) : recipe.id,
+    title: recipe.title,
+    description: recipe.description || "",
+    image: recipe.image_url || "",
+    time: `${recipe.cooking_time || 0} min`,
+    servings: `${recipe.servings || 1} pessoas`,
+    difficulty: `Nível ${recipe.difficulty_level || 1}`,
+    tags: recipe.tags || [],
+    rating: 0, // Não temos rating no tipo Recipe
+    ingredients: recipe.ingredients?.map(ing => `${ing.name} ${ing.amount}`) || [],
+    instructions: recipe.steps?.map(step => step.description) || [],
+    nutrition: {
+      calories: 0,
+      protein: "0g",
+      carbs: "0g",
+      fat: "0g"
+    }
+  });
 
   // Use real data from API or fallback to mock for development
   const currentRecipes = recipes || mockRecipes.slice(0, 6);
@@ -191,22 +247,6 @@ export function HistoryPageContent() {
   const handleAIRecipeEdit = (updatedRecipe: any) => {
     console.log('AI Recipe updated:', updatedRecipe);
   };
-
-  // Função para adaptar RecipeType para o formato esperado pelos componentes
-  const adaptRecipeForComponents = (recipe: RecipeType) => ({
-    id: parseInt(recipe.id),
-    title: recipe.title,
-    description: recipe.description,
-    image: recipe.image || "",
-    time: recipe.time,
-    servings: recipe.servings,
-    difficulty: recipe.difficulty,
-    tags: recipe.tags,
-    rating: recipe.rating || 0,
-    ingredients: recipe.ingredients.map(ing => `${ing.name} ${ing.amount}`),
-    instructions: recipe.instructions.map(inst => inst.description),
-    nutrition: recipe.nutrition
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -327,19 +367,27 @@ export function HistoryPageContent() {
                   {currentRecipes.map((recipe) => (
                     <div key={recipe.id} className="relative">
                       <RecipeCard
-                        recipe={adaptRecipeForComponents(recipe)}
-                        onFavorite={() => {}}
-                        isFavorite={false}
-                        onEdit={(adaptedRecipe) => openEditModal(recipe)}
-                        onEditWithAI={(adaptedRecipe) => openEditAIModal(recipe)}
+                        recipe={recipe}
                       />
-                      <button
-                        onClick={() => removeRecipe(recipe.id)}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors z-10"
-                        title="Remover receita"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="absolute top-2 right-2 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditModal(recipe)}
+                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeleteRecipe(String(recipe.id))}
+                          disabled={deleteRecipeMutation.isPending}
+                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-red-600 border-red-300 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -350,7 +398,7 @@ export function HistoryPageContent() {
                       <div className="flex">
                         <div className="w-32 h-24 relative flex-shrink-0">
                           <Image
-                            src={recipe.image || "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"}
+                            src={recipe.image_url || "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"}
                             alt={recipe.title}
                             fill
                             className="object-cover"
@@ -364,21 +412,21 @@ export function HistoryPageContent() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-2">
                                 <div className="flex items-center space-x-1">
                                   <Clock className="w-4 h-4" />
-                                  <span>{recipe.time}</span>
+                                  <span>{recipe.cooking_time} min</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Users className="w-4 h-4" />
-                                  <span>{recipe.servings}</span>
+                                  <span>{recipe.servings} pessoas</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
-                                  <Star className="w-4 h-4 text-yellow-400" />
-                                  <span>{recipe.rating || 0}</span>
+                                  <Star className="w-4 h-4" />
+                                  <span>Nível {recipe.difficulty_level}</span>
                                 </div>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                                  <span>👁️ 0</span>
-                                  <span>❤️ 0</span>
+                                  <span>👁️ {recipe.views_count}</span>
+                                  <span>❤️ {recipe.likes_count}</span>
                                 </div>
                               </div>
                             </div>
@@ -386,7 +434,7 @@ export function HistoryPageContent() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeRecipe(recipe.id)}
+                                onClick={() => handleDeleteRecipe(String(recipe.id))}
                                 className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -437,11 +485,30 @@ export function HistoryPageContent() {
 
       {/* Recipe Modal */}
       <RecipeModal
-        recipe={selectedRecipe ? adaptRecipeForComponents(selectedRecipe) : null}
+        recipe={selectedRecipe ? adaptRecipeForModal(selectedRecipe) : null}
         isOpen={isRecipeModalOpen}
         onClose={() => setIsRecipeModalOpen(false)}
         onFavorite={() => {}}
         isFavorite={false}
+      />
+
+      {/* Edit Recipe Modal */}
+      <EditRecipeModal
+        recipe={recipeToEdit ? {
+          id: String(recipeToEdit.id),
+          title: recipeToEdit.title,
+          description: recipeToEdit.description || "",
+          image: recipeToEdit.image_url,
+          time: `${recipeToEdit.cooking_time || 0} min`,
+          servings: `${recipeToEdit.servings || 1} pessoas`,
+          difficulty: `Nível ${recipeToEdit.difficulty_level || 1}`,
+          tags: recipeToEdit.tags || [],
+          ingredients: recipeToEdit.ingredients || [],
+          instructions: recipeToEdit.steps || []
+        } : null}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleEditRecipe}
       />
 
       {/* Create Recipe Modal */}
@@ -451,12 +518,11 @@ export function HistoryPageContent() {
         onSave={handleCreateRecipe}
       />
 
-      {/* Edit Recipe Modal */}
-      <EditRecipeModal
-        recipe={recipeToEdit}
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSave={handleEditRecipe}
+      {/* Create AI Recipe Modal */}
+      <CreateRecipeAIModal
+        isOpen={isCreateAIModalOpen}
+        onClose={() => setIsCreateAIModalOpen(false)}
+        onSave={handleAIRecipeCreate}
       />
 
       {/* Edit Recipe with AI Modal */}
@@ -467,19 +533,12 @@ export function HistoryPageContent() {
         recipe={recipeToEditWithAI}
       />
 
-      {/* Create Recipe with AI Modal */}
-      <CreateRecipeAIModal
-        isOpen={isCreateAIModalOpen}
-        onClose={() => setIsCreateAIModalOpen(false)}
-        onSave={handleAIRecipeCreate}
-      />
-
       {/* Filter Modal */}
       <FilterModal
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        selectedFilters={selectedFilters}
-        onApplyFilters={handleApplyFilters}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
       />
     </div>
   );

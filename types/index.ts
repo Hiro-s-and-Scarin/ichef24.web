@@ -34,6 +34,13 @@ export interface Plan {
   features: string[]
   limitations?: string[]
   isPopular: boolean
+  stripe_subscription_id: string
+  plan_type: string
+  billing_cycle: string
+  amount: number
+  currency: string
+  status: string
+  metadata?: any
 }
 
 export interface Subscription {
