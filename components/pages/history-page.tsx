@@ -18,6 +18,7 @@ import { RecipeCard } from "@/components/recipe-card";
 import { Pagination } from "@/components/pagination";
 import { FilterModal } from "@/components/filter-modal";
 import { useMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
+import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useTranslation } from "react-i18next";
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
@@ -61,119 +62,9 @@ export function HistoryPageContent() {
 
   const deleteRecipeMutation = useDeleteRecipe();
 
-  const mockRecipes: RecipeType[] = [
-    {
-      id: "1",
-      user_id: "1",
-      title: "Pasta Carbonara Italiana",
-      description: "Receita autêntica de carbonara com ovos, queijo pecorino e guanciale",
-      image_url: "https://images.unsplash.com/photo-1621996346565-e3dbc353d1e5?w=400&h=300&fit=crop",
-      cooking_time: 30,
-      servings: 4,
-      difficulty_level: 3,
-      tags: ["Italiano", "Massa", "Queijo"],
-      ingredients: [
-        { name: "Espaguete", amount: "400g" },
-        { name: "Guanciale", amount: "200g" },
-        { name: "Ovos inteiros", amount: "4" },
-        { name: "Queijo pecorino romano", amount: "100g" },
-        { name: "Pimenta preta moída", amount: "a gosto" },
-        { name: "Sal", amount: "a gosto" }
-      ],
-      steps: [
-        { step: 1, description: "Corte o guanciale em cubos pequenos e frite até dourar." },
-        { step: 2, description: "Cozinhe o espaguete al dente em água salgada." },
-        { step: 3, description: "Misture ovos com queijo pecorino e pimenta." },
-        { step: 4, description: "Combine tudo fora do fogo, mexendo rapidamente." },
-        { step: 5, description: "Sirva imediatamente com mais queijo por cima." }
-      ],
-      is_ai_generated: false,
-      is_public: true,
-      views_count: 45,
-      likes_count: 12,
-      createdAt: "2024-01-01T00:00:00Z",
-      updatedAt: "2024-01-01T00:00:00Z"
-    },
-    {
-      id: "2",
-      user_id: "1",
-      title: "Risotto de Cogumelos",
-      description: "Risotto cremoso com mix de cogumelos frescos e parmesão",
-      image_url: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
-      cooking_time: 45,
-      servings: 6,
-      difficulty_level: 4,
-      tags: ["Italiano", "Vegetariano", "Cremoso"],
-      ingredients: [
-        { name: "Arroz arbório", amount: "350g" },
-        { name: "Mix de cogumelos", amount: "500g" },
-        { name: "Caldo de legumes", amount: "1 litro" },
-        { name: "Cebola média", amount: "1" },
-        { name: "Vinho branco", amount: "100ml" },
-        { name: "Manteiga", amount: "80g" },
-        { name: "Parmesão ralado", amount: "100g" }
-      ],
-      steps: [
-        { step: 1, description: "Refogue a cebola picada na manteiga." },
-        { step: 2, description: "Adicione os cogumelos e cozinhe até murcharem." },
-        { step: 3, description: "Acrescente o arroz e mexa por 2 minutos." },
-        { step: 4, description: "Adicione o vinho e deixe evaporar." },
-        { step: 5, description: "Vá adicionando o caldo quente aos poucos." },
-        { step: 6, description: "Finalize com parmesão e manteiga." }
-      ],
-      is_ai_generated: false,
-      is_public: true,
-      views_count: 67,
-      likes_count: 23,
-      createdAt: "2024-01-01T00:00:00Z",
-      updatedAt: "2024-01-01T00:00:00Z"
-    },
-    {
-      id: "3",
-      user_id: "1",
-      title: "Brownie Fudge Duplo Chocolate",
-      description: "Brownie ultra cremoso com pedaços de chocolate e cobertura fudge",
-      image_url: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop",
-      cooking_time: 60,
-      servings: 12,
-      difficulty_level: 2,
-      tags: ["Sobremesa", "Chocolate", "Americano"],
-      ingredients: [
-        { name: "Chocolate meio amargo", amount: "200g" },
-        { name: "Manteiga", amount: "150g" },
-        { name: "Açúcar", amount: "200g" },
-        { name: "Ovos", amount: "3" },
-        { name: "Farinha de trigo", amount: "100g" },
-        { name: "Chocolate em pedaços", amount: "100g" },
-        { name: "Sal", amount: "pitada" }
-      ],
-      steps: [
-        { step: 1, description: "Derreta o chocolate com a manteiga." },
-        { step: 2, description: "Misture açúcar e ovos até esbranquiçar." },
-        { step: 3, description: "Combine chocolate derretido com a mistura de ovos." },
-        { step: 4, description: "Adicione farinha peneirada e sal." },
-        { step: 5, description: "Acrescente pedaços de chocolate." },
-        { step: 6, description: "Asse por 25-30 minutos." }
-      ],
-      is_ai_generated: false,
-      is_public: true,
-      views_count: 89,
-      likes_count: 34,
-      createdAt: "2024-01-01T00:00:00Z",
-      updatedAt: "2024-01-01T00:00:00Z"
-    }
-  ];
 
-  // const { user } = useAuth(); // Comentado temporariamente
 
-  // Usuário mock temporário para desenvolvimento
-  const user = {
-    id: "1",
-    name: "Usuário Teste",
-    email: "teste@ichef24.com",
-    plan: "free" as const,
-    avatar: undefined
-  }
+  const { data: currentUser } = useCurrentUser()
 
   const handleDeleteRecipe = async (recipeId: string) => {
     try {
@@ -201,8 +92,8 @@ export function HistoryPageContent() {
     difficulty: `Nível ${recipe.difficulty_level || 1}`,
     tags: recipe.tags || [],
     rating: 0, // Não temos rating no tipo Recipe
-    ingredients: recipe.ingredients?.map(ing => `${ing.name} ${ing.amount}`) || [],
-    instructions: recipe.steps?.map(step => step.description) || [],
+    ingredients: recipe.ingredients?.map((ing: any) => `${ing.name} ${ing.amount}`) || [],
+    instructions: recipe.steps?.map((step: any) => step.description) || [],
     nutrition: {
       calories: 0,
       protein: "0g",
@@ -211,8 +102,8 @@ export function HistoryPageContent() {
     }
   });
 
-  // Use real data from API or fallback to mock for development
-  const currentRecipes = recipes || mockRecipes.slice(0, 6);
+
+  const currentRecipes = recipes || [];
   const totalPages = Math.ceil((currentRecipes.length || 0) / 6);
 
   const handleApplyFilters = (filters: string[]) => {
@@ -383,7 +274,7 @@ export function HistoryPageContent() {
                           variant="outline"
                           onClick={() => handleDeleteRecipe(String(recipe.id))}
                           disabled={deleteRecipeMutation.isPending}
-                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-red-600 border-red-300 hover:bg-red-50"
+                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

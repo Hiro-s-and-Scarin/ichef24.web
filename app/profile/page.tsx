@@ -40,6 +40,18 @@ export default function Profile() {
   const { user } = useAuth()
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  // Loading state while user is being fetched
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando perfil...</p>
+        </div>
+      </div>
+    )
+  }
   
   const {
     register: registerProfile,
@@ -106,16 +118,7 @@ export default function Profile() {
     resetPassword()
   }
 
-  // if (!user) { // Comentado temporariamente
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-  //         <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando perfil...</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">

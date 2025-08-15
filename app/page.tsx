@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import { useAuth } from "@/contexts/auth-context"
 import { useCreateChatSession, useCreateChatMessage } from "@/network/hooks/chat/useChat"
 import { useGenerateRecipeWithAI } from "@/network/hooks/recipes/useRecipes"
+import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { toast } from "sonner"
 import { CreateChatSessionData, CreateChatMessageData } from "@/types/chat"
 import { AIRecipeRequest } from "@/types/recipe"
@@ -31,7 +32,7 @@ interface ChatMessage {
 
 export default function HomePage() {
   const { t } = useTranslation()
-  // const { user } = useAuth() // Comentado temporariamente
+
   const [mode, setMode] = useState<"amateur" | "professional">("amateur")
   const [showChat, setShowChat] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -39,14 +40,7 @@ export default function HomePage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [firstMessage, setFirstMessage] = useState<string>("") // Para controlar se é primeira mensagem ou modificação
 
-  // Usuário mock temporário para desenvolvimento
-  const user = {
-    id: "1",
-    name: "Usuário Teste",
-    email: "teste@ichef24.com",
-    plan: "free" as const,
-    avatar: undefined
-  }
+  const { data: currentUser } = useCurrentUser()
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ChatFormData>()
 
@@ -178,12 +172,12 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
   }
 
   const openChat = () => {
-    // if (!user) { // Comentado temporariamente
-    //   toast.error("Faça login para usar o chat de IA")
-    //   return
-    // }
+    if (!currentUser) {
+      toast.error("Faça login para usar o chat de IA")
+      return
+    }
     setShowChat(true)
-    handleNewRecipe() // Usar a função que já existe
+    handleNewRecipe()
   }
 
   const closeChat = () => {

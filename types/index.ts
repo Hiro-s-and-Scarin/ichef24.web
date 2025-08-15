@@ -25,22 +25,29 @@ export interface User {
 }
 
 export interface Plan {
-  id: string
-  name: string
-  price: {
+  id: number
+  user_id?: number
+  stripe_customer_id?: string
+  stripe_subscription_id?: string
+  plan_type: 'free' | 'basic' | 'premium' | 'enterprise'
+  billing_cycle: 'monthly' | 'yearly' | 'one_time'
+  amount: number
+  currency: string
+  status: 'active' | 'inactive' | 'cancelled' | 'past_due' | 'unpaid'
+  trial_end?: string
+  current_period_start?: string
+  current_period_end?: string
+  cancel_at_period_end: boolean
+  metadata?: any
+  createdAt: string
+  updatedAt: string
+  name?: string // Calculado dinamicamente no frontend baseado no plan_type
+  features?: string[] // Calculado dinamicamente no frontend baseado no plan_type
+  price?: { // Calculado dinamicamente no frontend
     monthly: number
     yearly: number
   }
-  features: string[]
-  limitations?: string[]
-  isPopular: boolean
-  stripe_subscription_id: string
-  plan_type: string
-  billing_cycle: string
-  amount: number
-  currency: string
-  status: string
-  metadata?: any
+  isPopular?: boolean // Calculado dinamicamente no frontend
 }
 
 export interface Subscription {

@@ -40,7 +40,7 @@ export default function RecipePage() {
     updateRecipeState({ mounted: true })
   }, [])
 
-  // Mock recipe data - in a real app, this would be fetched based on the ID
+
   const recipe = {
     id: params.id,
     title: "Risotto de Frango com Limão e Ervas",

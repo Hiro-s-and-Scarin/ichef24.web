@@ -14,7 +14,8 @@ import { RecipeCard } from "@/components/recipe-card"
 
 import { Pagination } from "@/components/pagination"
 import { FilterModal } from "@/components/filter-modal"
-import { useGetFavoriteRecipes, useToggleFavoriteRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useFavoriteRecipes, useRemoveFromFavorites } from "@/network/hooks/recipes/useRecipes"
+import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { useTranslation } from "react-i18next"
 
 export function FavoritesPageContent() {
@@ -28,97 +29,21 @@ export function FavoritesPageContent() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
   // TanStack Query hooks
-  const { data: favorites, isLoading } = useGetFavoriteRecipes({
+  const { data: favorites, isLoading } = useFavoriteRecipes({
     page: currentPage,
     limit: 6,
     search: searchTerm,
     tags: selectedFilters
   })
-  const { removeFromFavorites } = useToggleFavoriteRecipe()
+  const removeFromFavoritesMutation = useRemoveFromFavorites()
 
-  const mockFavorites = [
-    {
-      id: "1",
-      title: "Risotto de Frango com Limão",
-      description: "Um risotto cremoso e aromático com frango suculento e ervas frescas",
-      image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop&crop=center",
-      time: "35 min",
-      servings: "4 pessoas",
-      difficulty: "medium" as const,
-      tags: ["Italiano", "Cremoso", "Proteína"],
-      rating: 5,
-      ingredients: [
-        "400g de arroz arbório",
-        "500g de peito de frango cortado em cubos",
-        "1 litro de caldo de galinha",
-        "1 cebola pequena picada",
-        "2 dentes de alho",
-        "100ml de vinho branco",
-        "80g de manteiga",
-        "80g de queijo parmesão ralado",
-        "Suco de 1 limão",
-        "Sal e pimenta a gosto",
-        "Salsa fresca picada"
-      ],
-      instructions: [
-        "Tempere o frango com sal, pimenta e suco de limão.",
-        "Em uma panela, refogue a cebola e o alho na manteiga.",
-        "Adicione o frango e cozinhe até dourar.",
-        "Acrescente o arroz e mexa por 2 minutos.",
-        "Adicione o vinho branco e deixe evaporar.",
-        "Vá adicionando o caldo quente aos poucos, mexendo sempre.",
-        "Cozinhe por cerca de 18-20 minutos até o arroz estar cremoso.",
-        "Finalize com queijo parmesão e salsa."
-      ],
-      userId: "user1",
-      isPublic: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "2",
-      title: "Brigadeiro Gourmet",
-      description: "Brigadeiro gourmet com chocolate belga e cobertura de chocolate",
-      image: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=300&fit=crop&crop=center",
-      time: "20 min",
-      servings: "12 pessoas",
-      difficulty: "easy" as const,
-      tags: ["Brasileiro", "Sobremesa", "Chocolate"],
-      rating: 5,
-      ingredients: [
-        "395g de leite condensado",
-        "30g de chocolate em pó",
-        "15g de manteiga",
-        "Chocolate granulado para decorar"
-      ],
-      instructions: [
-        "Misture o leite condensado com o chocolate em pó.",
-        "Adicione a manteiga e cozinhe em fogo baixo.",
-        "Mexa até desgrudar do fundo da panela.",
-        "Deixe esfriar e faça bolinhas.",
-        "Passe no chocolate granulado."
-      ],
-      userId: "user1",
-      isPublic: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-  ];
 
-  // const { user } = useAuth(); // Comentado temporariamente
 
-  // Usuário mock temporário para desenvolvimento
-  const user = {
-    id: "1",
-    name: "Usuário Teste",
-    email: "teste@ichef24.com",
-    plan: "free" as const,
-    avatar: undefined
-  }
+  const { data: currentUser } = useCurrentUser()
 
   const removeFavorite = async (id: string | number) => {
     try {
-      await removeFromFavorites.mutateAsync(String(id))
+      await removeFromFavoritesMutation.mutateAsync(id)
     } catch (error) {
       console.error("Erro ao remover dos favoritos:", error)
     }
@@ -129,9 +54,9 @@ export function FavoritesPageContent() {
     setIsRecipeModalOpen(true)
   }
 
-  // Use real data from API or fallback to mock for development
-  const currentFavorites = favorites || mockFavorites.slice(0, 6)
-  const totalPages = Math.ceil((currentFavorites.length || 0) / 6)
+
+  const currentFavorites = favorites?.data || []
+  const totalPages = favorites?.pagination?.totalPages || 1
 
   const handleApplyFilters = (filters: string[]) => {
     setSelectedFilters(filters)
@@ -163,7 +88,7 @@ export function FavoritesPageContent() {
             <CardContent className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-red-500">{currentFavorites.length}</div>
+                  <div className="text-2xl font-bold text-red-500">{favorites?.pagination?.total || 0}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Favoritos</div>
                 </div>
                 <div className="text-center">
@@ -241,18 +166,16 @@ export function FavoritesPageContent() {
               {/* Favorites Grid/List */}
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentFavorites.map((recipe) => (
+                  {currentFavorites.map((recipe: any) => (
                     <RecipeCard
                       key={recipe.id}
-                      recipe={recipe as any}
-                      onFavorite={() => removeFavorite(recipe.id)}
-                      isFavorite={true}
+                      recipe={recipe}
                     />
                   ))}
                 </div>
               ) : (
                 <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentFavorites.map((recipe) => (
+                  {currentFavorites.map((recipe: any) => (
                     <Card key={recipe.id} className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden">
                       <div className="flex">
                         <div className="w-32 h-24 relative flex-shrink-0">
@@ -317,7 +240,7 @@ export function FavoritesPageContent() {
             </div>
           )}
 
-          {!isLoading && currentFavorites.length === 0 && (
+          {!isLoading && (!currentFavorites || currentFavorites.length === 0) && (
             <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
               <CardContent className="p-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
@@ -351,8 +274,8 @@ export function FavoritesPageContent() {
       <FilterModal
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        selectedFilters={selectedFilters}
-        onApplyFilters={handleApplyFilters}
+        filters={{ tags: selectedFilters }}
+        onFiltersChange={(newFilters) => handleApplyFilters(newFilters.tags || [])}
       />
     </div>
   )

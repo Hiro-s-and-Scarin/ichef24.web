@@ -1,7 +1,7 @@
 export interface CommunityPost {
-  id: string
-  user_id: string
-  recipe_id?: string
+  id: number
+  user_id: number
+  recipe_id?: number
   title?: string
   content: string
   image_url?: string
@@ -15,14 +15,16 @@ export interface CommunityPost {
   createdAt: string
   updatedAt: string
   user?: {
-    id: string
+    id: number
     name: string
+    email?: string
     avatar_url?: string
   }
   recipe?: {
-    id: string
+    id: number
     title: string
     image_url?: string
+    description?: string
   }
 }
 

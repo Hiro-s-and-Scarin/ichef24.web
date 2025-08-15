@@ -1,10 +1,10 @@
 export interface Recipe {
-  id: string | number
-  user_id: string | number
+  id: number
+  user_id: number
   title: string
   description?: string
-  ingredients: Array<{ name: string; amount: string }>
-  steps: Array<{ step: number; description: string }>
+  ingredients: any // JSONB field from backend
+  steps: any // JSONB field from backend
   cooking_time?: number
   servings?: number
   difficulty_level?: number // 1-5
@@ -20,8 +20,9 @@ export interface Recipe {
   createdAt: string
   updatedAt: string
   user?: {
-    id: string | number
+    id: number
     name: string
+    email?: string
     avatar_url?: string
   }
 }
