@@ -42,7 +42,7 @@ export function RecipeModal({ recipe, isOpen, onClose, onFavorite, isFavorite }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-black dark:via-gray-900 dark:to-black border-2 border-orange-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-2xl">
+      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-black dark:via-gray-900 dark:to-black border-2 border-orange-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
         <DialogHeader className="relative pb-8">
           <DialogTitle className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">

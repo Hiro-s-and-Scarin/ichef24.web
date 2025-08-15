@@ -4,10 +4,11 @@ import type React from "react"
 
 import { useState, Suspense } from "react"
 import { useForm } from "react-hook-form"
+import { formatRecipe } from "@/lib/utils/format-recipe"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { ChefHat, Send, Sparkles, User, Crown, ArrowRight, Clock, Users, Star, Bot, X } from "lucide-react"
+import { ChefHat, Send, Sparkles, User, Crown, ArrowRight, Clock, Users, Star, Bot, X, Wand2 } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { useTranslation } from "react-i18next"
@@ -121,7 +122,7 @@ function HomePageContent() {
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: `Receita ${!firstMessage ? 'criada' : 'modificada'} com sucesso! "${generatedRecipe.title}" - ${generatedRecipe.description}`,
+        content: formatRecipe(generatedRecipe, { isFirstMessage: !firstMessage }),
         timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       }
 
@@ -196,6 +197,9 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
       return
     }
     setShowChat(true)
+    // Sempre criar nova sessão ao abrir
+    setCurrentSessionId(null)
+    setFirstMessage("")
     handleNewRecipe()
   }
 
@@ -203,7 +207,7 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
     setShowChat(false)
     setChatMessages([])
     setCurrentSessionId(null)
-    setFirstMessage("") // Reset para primeira mensagem
+    setFirstMessage("")
   }
 
   return (
@@ -392,22 +396,34 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
               </Button>
             </div>
 
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* Chat Messages - Scrollable Area with Custom Scrollbar */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
               {chatMessages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl p-3 ${
+                    className={`max-w-[85%] rounded-2xl p-4 transform transition-all duration-300 hover:scale-105 ${
                       message.type === 'user'
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white shadow-orange-500/30'
+                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-orange-200 dark:border-gray-500 shadow-lg'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      {message.type === 'ai' && (
+                        <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <span className="text-sm font-bold opacity-90">
+                          {message.type === 'ai' ? 'iChef24 AI' : 'Você'}
+                        </span>
+                        <span className="text-sm opacity-70 ml-2">{message.timestamp}</span>
+                      </div>
+                    </div>
+                                            <div className="text-sm leading-relaxed whitespace-pre-line">{message.content}</div>
                   </div>
                 </div>
               ))}
@@ -415,12 +431,24 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
               {/* Loading indicator enquanto gera resposta */}
               {isGenerating && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl p-3 max-w-[80%]">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {!firstMessage ? 'Criando sua receita...' : 'Modificando sua receita...'}
-                      </p>
+                  <div className="bg-white dark:bg-gray-700 border border-orange-200 dark:border-gray-500 rounded-2xl p-4 shadow-lg max-w-[85%]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                        <Sparkles className="w-4 h-4 text-white animate-spin" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">iChef24 AI</span>
+                          <div className="flex space-x-1">
+                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce"></div>
+                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-100"></div>
+                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-200"></div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {!firstMessage ? 'Criando sua receita...' : 'Modificando sua receita...'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -436,35 +464,47 @@ Exemplo: "Faça um bolo de chocolate" → "Torne-o mais doce" → "Adicione noze
                   variant={!firstMessage ? "default" : "outline"}
                   size="sm"
                   onClick={handleNewRecipe}
-                  className="flex-1"
+                  className="flex-1 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  ✨ Nova Receita
+                  <div className="flex items-center justify-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Nova Receita</span>
+                  </div>
                 </Button>
                 <Button
                   type="button"
                   variant={firstMessage ? "default" : "outline"}
                   size="sm"
-                  className="flex-1"
+                  className="flex-1 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                   disabled={!firstMessage}
                 >
-                  🔧 Modificar Receita
+                  <div className="flex items-center justify-center gap-2">
+                    <Wand2 className="w-4 h-4" />
+                    <span>Modificar Receita</span>
+                  </div>
                 </Button>
               </div>
               
-              <form onSubmit={handleSubmit(handleChatSubmit)} className="flex gap-2">
-                <Input
-                  {...register("prompt", { required: "Digite sua mensagem" })}
-                  placeholder={!firstMessage ? "Descreva sua receita dos sonhos..." : "Descreva o que você quer modificar..."}
-                  className="flex-1"
-                  disabled={isGenerating}
-                />
-                <Button
-                  type="submit"
-                  disabled={isGenerating}
-                  className="bg-orange-500 hover:bg-orange-600"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
+              <form onSubmit={handleSubmit(handleChatSubmit)} className="space-y-3">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                  <Input
+                    {...register("prompt", { required: "Digite sua mensagem" })}
+                    placeholder={!firstMessage ? "Descreva sua receita dos sonhos..." : "Descreva o que você quer modificar..."}
+                    className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
+                    disabled={isGenerating}
+                  />
+                  <div className="absolute right-2 top-2">
+                    <Button
+                      type="submit"
+                      size="icon"
+                      disabled={isGenerating}
+                      className="h-8 w-8 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </form>
             </div>
           </div>

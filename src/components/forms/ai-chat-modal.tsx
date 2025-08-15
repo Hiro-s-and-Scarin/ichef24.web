@@ -166,7 +166,7 @@ export function AIChatModal({
                       : "bg-black text-gray-100"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed">{message.content}</p>
+                                          <div className="text-sm leading-relaxed whitespace-pre-line">{message.content}</div>
                   <span className="text-xs opacity-70 mt-1 block">
                     {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>

@@ -56,7 +56,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
         type: 'ai', 
         message: `Olá! Como posso melhorar a receita "${recipe?.title || 'sua receita'}"?`,
         timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: ['Mais saudável', 'Menos calorias', 'Vegetariana', 'Mais rápida']
+        suggestions: []
       }
     ],
     chatInput: "",
@@ -78,62 +78,66 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
     if (!chatInput.trim() || isGenerating) return
 
     const userMessage = chatInput.trim()
-    setChatMessages(prev => [...prev, { 
-      type: 'user', 
-      message: userMessage,
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    }])
-    setChatInput("")
-    setIsGenerating(true)
+    updateModalState({
+      chatMessages: [...chatMessages, { 
+        type: 'user', 
+        message: userMessage,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }],
+      chatInput: "",
+      isGenerating: true
+    })
 
     // Simulate AI response
     setTimeout(() => {
       const aiResponse = `Ótima ideia! Vou ajudar você a melhorar a receita "${recipe?.title}". Aqui estão minhas sugestões!`
-      setChatMessages(prev => [...prev, { 
-        type: 'ai', 
-        message: aiResponse,
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: ['Aplicar mudanças', 'Ver mais opções', 'Ajustar ingredientes', 'Melhorar instruções']
-      }])
-      setIsGenerating(false)
+      updateModalState({
+        chatMessages: [...chatMessages, { 
+          type: 'ai', 
+          message: aiResponse,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          suggestions: []
+        }],
+        isGenerating: false
+      })
     }, 2000)
   }
 
   const handleQuickSuggestion = (suggestion: string) => {
-    setChatInput(suggestion)
+    updateModalState({ chatInput: suggestion })
   }
 
   const generateWithAI = async () => {
-    setIsGenerating(true)
+    updateModalState({ isGenerating: true })
 
     setTimeout(() => {
       const newGeneratedRecipe: GeneratedRecipe = {
-        title: recipe?.title || t('ai.improved.recipe'),
-        description: t('ai.improved.description'),
-        time: t('ai.improved.time'),
-        servings: t('ai.improved.servings'),
-        difficulty: t('common.medium'),
+        title: "Receita Melhorada por IA",
+        description: "Uma versão melhorada da sua receita com técnicas avançadas.",
+        time: "30 minutos",
+        servings: "4 pessoas",
+        difficulty: "Médio",
         ingredients: [
-          t('ai.improved.ingredients.main'),
-          t('ai.improved.ingredients.broth'),
-          t('ai.improved.ingredients.oil'),
-          t('ai.improved.ingredients.seasoning'),
-          t('ai.improved.ingredients.herbs')
+          "Ingredientes principais",
+          "Temperos especiais",
+          "Técnicas avançadas"
         ],
         instructions: [
-          t('ai.improved.instructions.prepare'),
-          t('ai.improved.instructions.heat'),
-          t('ai.improved.instructions.add'),
-          t('ai.improved.instructions.apply'),
-          t('ai.improved.instructions.finish')
+          "Prepare os ingredientes",
+          "Aplique as técnicas",
+          "Finalize com toque especial"
         ],
         image: "/placeholder.jpg"
       }
       
-      setGeneratedRecipe(newGeneratedRecipe)
-      setIsGenerating(false)
+      updateModalState({
+        generatedRecipe: newGeneratedRecipe,
+        isGenerating: false
+      })
     }, 3000)
   }
+
+
 
   const handleSave = () => {
     if (generatedRecipe) {
@@ -151,7 +155,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[85vh] overflow-hidden bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-black dark:via-gray-900 dark:to-black border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl">
+      <DialogContent className="max-w-4xl h-[85vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-black dark:via-gray-900 dark:to-black border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
         <DialogHeader className="pb-4">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-3">
@@ -214,7 +218,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
                         </div>
 
                       <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-800/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
-                        <p className="text-sm leading-relaxed">{message.message}</p>
+                        <div className="text-sm leading-relaxed whitespace-pre-line">{message.message}</div>
                           
                           {message.suggestions && (
                           <div className="flex flex-wrap gap-2 pt-3 border-t border-white/20 dark:border-gray-600/30">
@@ -265,27 +269,27 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
               {/* Input */}
               <div className="pt-4 border-t border-orange-200/30 dark:border-gray-600/30">
                 <form onSubmit={handleChatSubmit} className="space-y-3">
-              <div className="relative group">
+                  <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <Input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
+                    <Input
+                      value={chatInput}
+                      onChange={(e) => updateModalState({ chatInput: e.target.value })}
                       placeholder="Peça ajuda para melhorar a receita..."
                       className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
-                  disabled={isGenerating}
-                />
+                      disabled={isGenerating}
+                    />
                     <div className="absolute right-2 top-2 flex gap-2">
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={!chatInput.trim() || isGenerating}
+                      <Button
+                        type="submit"
+                        size="icon"
+                        disabled={!chatInput.trim() || isGenerating}
                         className="h-8 w-8 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
-                  >
+                      >
                         <Send className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </form>
+                      </Button>
+                    </div>
+                  </div>
+                </form>
               </div>
             </CardContent>
           </Card>
@@ -305,7 +309,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
                     </label>
                     <Input
                       value={improvementType}
-                      onChange={(e) => setImprovementType(e.target.value)}
+                      onChange={(e) => updateModalState({ improvementType: e.target.value })}
                       placeholder="Ex: Sabor, Textura..."
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
@@ -316,7 +320,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
                     </label>
                     <Input
                       value={cookingTime}
-                      onChange={(e) => setCookingTime(e.target.value)}
+                      onChange={(e) => updateModalState({ cookingTime: e.target.value })}
                       placeholder="Ex: 20 minutos"
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
@@ -326,26 +330,29 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
             </Card>
           )}
 
+
+
+
           {/* Generate Button */}
-            <Button
-              onClick={generateWithAI}
-              disabled={isGenerating}
+          <Button
+            onClick={generateWithAI}
+            disabled={isGenerating}
             className="w-full h-14 bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 hover:from-emerald-500 hover:via-green-500 hover:to-emerald-600 text-white border-0 font-bold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group mt-4"
-            >
-              {isGenerating ? (
+          >
+            {isGenerating ? (
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 bg-white rounded-full animate-spin">
-                  <div className="w-3 h-3 bg-green-500 rounded-full m-1"></div>
+                  <div className="w-3 h-1 bg-green-500 rounded-full m-1"></div>
                 </div>
                 <span className="font-semibold">Melhorando receita...</span>
-                </div>
-              ) : (
+              </div>
+            ) : (
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
                 <span className="font-semibold">Melhorar Receita com IA</span>
-                </div>
-              )}
-            </Button>
+              </div>
+            )}
+          </Button>
 
         {/* Save Button */}
           {generatedRecipe && (

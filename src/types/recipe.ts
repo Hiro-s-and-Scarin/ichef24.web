@@ -80,7 +80,7 @@ export interface CreateRecipeData {
 }
 
 export interface AIRecipeRequest {
-  first_message: string
+  first_message?: string
   new_recipe?: string
   old_recipe?: string
 }

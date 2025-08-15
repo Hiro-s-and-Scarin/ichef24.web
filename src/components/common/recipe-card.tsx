@@ -78,24 +78,17 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           </div>
         )}
         
-        {/* Favorite Button */}
+        {/* Favorite Button - Moved to left side */}
         <Button
           size="icon"
           variant="ghost"
           onClick={handleToggleFavorite}
-          className="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
+          className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
         >
           <Heart 
             className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`} 
           />
         </Button>
-
-        {/* AI Generated Badge */}
-        {recipe.is_ai_generated && (
-          <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-            IA
-          </Badge>
-        )}
       </div>
 
       <CardContent className="p-4 flex-1 flex flex-col">
@@ -150,20 +143,8 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           </Badge>
         )}
 
-        {/* Recipe Stats */}
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-            <div className="flex items-center space-x-1">
-              <Eye className="w-4 h-4" />
-              <span>{recipe.views_count || 0}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Heart className="w-4 h-4" />
-              <span>{recipe.likes_count || 0}</span>
-            </div>
-          </div>
-          
-          {/* View Recipe Button */}
+        {/* View Recipe Button */}
+        <div className="flex justify-end mt-auto">
           <Link href={`/recipe/${recipe.id}`}>
             <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
               Ver Receita

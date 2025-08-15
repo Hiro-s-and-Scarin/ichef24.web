@@ -268,8 +268,8 @@ export default function Chat() {
                       </div>
                     </CardHeader>
 
-                    {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {/* Messages - Scrollable Area with Custom Scrollbar */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
                       {messages.length === 0 ? (
                         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                           <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
@@ -282,42 +282,34 @@ export default function Chat() {
                         messages.map((message) => (
                           <div
                             key={message.id}
-                            className={`flex gap-3 ${
-                              message.message_type === "USER" ? "justify-end" : "justify-start"
-                            }`}
+                            className={`flex ${message.message_type === "USER" ? "justify-end" : "justify-start"}`}
                           >
-                            {message.message_type !== "USER" && (
-                              <Avatar className="w-8 h-8">
-                                <AvatarImage src="/placeholder-user.jpg" />
-                                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-purple-600 text-white text-xs">
-                                  IA
-                                </AvatarFallback>
-                              </Avatar>
-                            )}
-                            
                             <div
-                              className={`max-w-[70%] p-3 rounded-lg ${
+                              className={`max-w-[85%] rounded-2xl p-4 transform transition-all duration-300 hover:scale-105 ${
                                 message.message_type === "USER"
-                                  ? "bg-orange-500 text-white"
-                                  : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+                                  ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white shadow-orange-500/30'
+                                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-orange-200 dark:border-gray-500 shadow-lg'
                               }`}
                             >
-                              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                              {message.tokens_used > 0 && (
-                                <p className="text-xs opacity-70 mt-2">
-                                  {message.tokens_used} tokens
-                                </p>
-                              )}
+                              <div className="flex items-center gap-2 mb-3">
+                                {message.message_type !== "USER" && (
+                                  <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                                    <Sparkles className="w-3 h-3 text-white" />
+                                  </div>
+                                )}
+                                <div className="flex-1">
+                                  <span className="text-sm font-bold opacity-90">
+                                    {message.message_type === "USER" ? 'Você' : 'iChef24 AI'}
+                                  </span>
+                                  {message.tokens_used > 0 && (
+                                    <span className="text-sm opacity-70 ml-2">
+                                      {message.tokens_used} tokens
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                             </div>
-
-                            {message.message_type === "USER" && (
-                              <Avatar className="w-8 h-8">
-                                <AvatarImage src="/placeholder-user.jpg" />
-                                <AvatarFallback className="bg-gray-500 text-white text-xs">
-                                  {message.user?.name?.charAt(0) || "U"}
-                                </AvatarFallback>
-                              </Avatar>
-                            )}
                           </div>
                         ))
                       )}
@@ -326,24 +318,30 @@ export default function Chat() {
 
                     {/* Chat Input */}
                     <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                      <form onSubmit={handleChatSubmit(onChatSubmit)} className="flex gap-3">
-                        <Input
-                          {...registerChat("message")}
-                          placeholder="Digite sua mensagem..."
-                          className="flex-1 border-gray-300 dark:border-gray-600"
-                          disabled={isChatSubmitting}
-                        />
-                        <Button 
-                          type="submit" 
-                          disabled={isChatSubmitting || !selectedSession}
-                          className="bg-orange-500 hover:bg-orange-600"
-                        >
-                          <Send className="w-4 h-4" />
-                        </Button>
+                      <form onSubmit={handleChatSubmit(onChatSubmit)} className="space-y-3">
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                          <Input
+                            {...registerChat("message")}
+                            placeholder="Digite sua mensagem..."
+                            className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
+                            disabled={isChatSubmitting}
+                          />
+                          <div className="absolute right-2 top-2">
+                            <Button 
+                              type="submit" 
+                              size="icon"
+                              disabled={isChatSubmitting || !selectedSession}
+                              className="h-8 w-8 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
+                            >
+                              <Send className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        {chatErrors.message && (
+                          <p className="text-red-500 text-sm mt-2">{chatErrors.message.message}</p>
+                        )}
                       </form>
-                      {chatErrors.message && (
-                        <p className="text-red-500 text-sm mt-2">{chatErrors.message.message}</p>
-                      )}
                     </div>
                   </>
                 ) : (

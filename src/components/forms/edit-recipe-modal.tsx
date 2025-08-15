@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
+import { formatRecipe } from "@/lib/utils/format-recipe"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -13,28 +14,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, X, Save, ChefHat, Clock, ChevronDown, Send, Sparkles, Bot } from "lucide-react"
 import { allRecipeTags } from "@/lib/constants/recipe-tags"
 import { useTranslation } from "react-i18next"
-import { useUpdateRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useGenerateRecipeWithAI, useUpdateRecipe } from "@/network/hooks"
 import { CreateRecipeData } from "@/types/recipe"
 import { editRecipeSchema, EditRecipeFormData } from "@/schemas/edit-recipe.schema"
 import { toast } from "sonner"
 
 interface Recipe {
-  id: string
+  id: number
+  user_id: number
   title: string
-  description: string
-  image?: string
-  time: string
-  servings: string
-  difficulty: string
-  tags: string[]
+  description?: string
   ingredients: Array<{ name: string; amount: string }>
-  instructions: Array<{ step: number; description: string }>
-  nutrition?: {
-    calories: number
-    protein: string
-    carbs: string
-    fat: string
-  }
+  steps: Array<{ step: number; description: string }>
+  cooking_time?: number
+  servings?: number
+  difficulty_level?: number
+  cuisine_type?: string
+  tags?: string[]
+  image_url?: string
+  is_ai_generated: boolean
+  ai_prompt?: string
+  ai_model_version?: string
+  is_public: boolean
+  views_count: number
+  likes_count: number
+  createdAt: string
+  updatedAt: string
 }
 
 interface ChatMessage {
@@ -42,6 +47,7 @@ interface ChatMessage {
   message: string
   timestamp: string
   suggestions?: string[]
+  new_recipe?: any
 }
 
 interface EditRecipeModalProps {
@@ -62,6 +68,27 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
   const [isGenerating, setIsGenerating] = useState(false)
   const [showChat, setShowChat] = useState(false)
 
+  // Resetar chat ao abrir o modal
+  useEffect(() => {
+    if (isOpen && showChat) {
+      setChatMessages([])
+      setChatInput("")
+      setIsGenerating(false)
+    }
+  }, [isOpen, showChat])
+
+  interface ModalState {
+    chatMessages?: ChatMessage[]
+    chatInput?: string
+    isGenerating?: boolean
+  }
+
+  const updateModalState = (newState: ModalState) => {
+    if (newState.chatMessages !== undefined) setChatMessages(newState.chatMessages)
+    if (newState.chatInput !== undefined) setChatInput(newState.chatInput)
+    if (newState.isGenerating !== undefined) setIsGenerating(newState.isGenerating)
+  }
+
   const putRecipeMutation = useUpdateRecipe()
 
   const {
@@ -77,17 +104,17 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
       title: recipe?.title || "",
       description: recipe?.description || "",
       ingredients: recipe?.ingredients || [{ name: "", amount: "" }],
-      steps: recipe?.instructions || [{ step: 1, description: "" }],
-      cooking_time: recipe?.time ? parseInt(recipe.time.replace(/\D/g, '')) : undefined,
-      servings: recipe?.servings ? parseInt(recipe.servings.replace(/\D/g, '')) : undefined,
-      difficulty_level: recipe?.difficulty === "easy" ? 1 : recipe?.difficulty === "medium" ? 3 : recipe?.difficulty === "hard" ? 5 : 3,
-      cuisine_type: "",
+      steps: recipe?.steps || [{ step: 1, description: "" }],
+      cooking_time: recipe?.cooking_time || undefined,
+      servings: recipe?.servings || undefined,
+      difficulty_level: recipe?.difficulty_level || 3,
+      cuisine_type: recipe?.cuisine_type || "",
       tags: recipe?.tags || [],
-      image_url: recipe?.image || "",
-      is_ai_generated: false,
-      ai_prompt: "",
-      ai_model_version: "",
-      is_public: true
+      image_url: recipe?.image_url || "",
+      is_ai_generated: recipe?.is_ai_generated || false,
+      ai_prompt: recipe?.ai_prompt || "",
+      ai_model_version: recipe?.ai_model_version || "",
+      is_public: recipe?.is_public ?? true
     }
   })
 
@@ -124,34 +151,96 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
     }
   }
 
+  const generateRecipeMutation = useGenerateRecipeWithAI()
+
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!chatInput.trim() || isGenerating) return
 
     const userMessage = chatInput.trim()
-    setChatMessages(prev => [...prev, { 
-      type: 'user', 
-      message: userMessage,
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    }])
-    setChatInput("")
-    setIsGenerating(true)
+    updateModalState({
+      chatMessages: [...chatMessages, { 
+        type: 'user', 
+        message: userMessage,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }],
+      chatInput: "",
+      isGenerating: true
+    })
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = `Entendi! Vou ajudar você a melhorar a receita "${recipe?.title}". Aqui estão minhas sugestões!`
-      setChatMessages(prev => [...prev, { 
-        type: 'ai', 
-        message: aiResponse,
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: ['Aplicar mudanças', 'Ver mais opções', 'Ajustar ingredientes', 'Melhorar instruções']
-      }])
-      setIsGenerating(false)
-    }, 2000)
+    try {
+      // Preparar old_recipe com a receita atual do usuário
+      const oldRecipe = {
+        id: recipe?.id,
+        title: recipe?.title,
+        description: recipe?.description,
+        ingredients: recipe?.ingredients || [],
+        steps: recipe?.steps || [],
+        cooking_time: recipe?.cooking_time,
+        servings: recipe?.servings,
+        difficulty_level: recipe?.difficulty_level,
+        cuisine_type: recipe?.cuisine_type || "",
+        tags: recipe?.tags || [],
+        image_url: recipe?.image_url || "",
+        is_ai_generated: recipe?.is_ai_generated,
+        ai_prompt: recipe?.ai_prompt || "",
+        ai_model_version: recipe?.ai_model_version || "",
+        is_public: recipe?.is_public
+      }
+
+      const improvedRecipe = await generateRecipeMutation.mutateAsync({
+        old_recipe: JSON.stringify(oldRecipe),
+        new_recipe: userMessage
+      })
+
+      const aiResponse = formatRecipe(improvedRecipe, { isFirstMessage: false })
+      
+      updateModalState({
+        chatMessages: [...chatMessages, { 
+          type: 'ai', 
+          message: aiResponse,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          suggestions: [],
+          new_recipe: improvedRecipe
+        }],
+        isGenerating: false
+      })
+    } catch (error) {
+      console.error("Erro no chat de IA:", error)
+      updateModalState({
+        isGenerating: false,
+        chatMessages: [...chatMessages, {
+          type: 'ai',
+          message: "Desculpe, ocorreu um erro ao melhorar a receita. Por favor, tente novamente.",
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        }]
+      })
+    }
   }
 
   const handleQuickSuggestion = (suggestion: string) => {
-    setChatInput(suggestion)
+    if (suggestion === 'Aplicar mudanças') {
+      // Encontrar a última mensagem da IA com new_recipe
+      const lastAIMessage = chatMessages
+        .filter(msg => msg.type === 'ai' && msg.new_recipe)
+        .pop()
+      
+      if (lastAIMessage?.new_recipe) {
+        const newRecipe = lastAIMessage.new_recipe
+        
+        // Aplicar as mudanças da IA ao formulário
+        setValue("title", newRecipe.title)
+        setValue("description", newRecipe.description)
+        setValue("cooking_time", newRecipe.cooking_time)
+        setValue("difficulty_level", newRecipe.difficulty_level)
+        setValue("ai_prompt", newRecipe.ai_prompt)
+        setValue("ai_model_version", newRecipe.ai_model_version)
+        
+        toast.success("Mudanças da IA aplicadas ao formulário!")
+      }
+    } else {
+      setChatInput(suggestion)
+    }
   }
 
   const onSubmit = async (data: EditRecipeFormData) => {
@@ -179,7 +268,7 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-white dark:bg-black border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-xl">
+      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-white dark:bg-black border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
         <DialogHeader className="pb-6">
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <ChefHat className="w-6 h-6 text-orange-500" />
@@ -525,82 +614,118 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
 
             {showChat && (
               <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-4">
-                {/* Messages */}
-                <div className="space-y-3 max-h-60 overflow-y-auto">
+                {/* Messages - Scrollable Area with Custom Scrollbar */}
+                <div className="flex-1 overflow-y-auto space-y-4 pr-2 my-4 max-h-80 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
                   {chatMessages.map((message, index) => (
                     <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[85%] relative ${
                         message.type === 'user' 
-                          ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white' 
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
-                      } rounded-2xl p-3`}>
-                        <div className="flex items-center gap-2 mb-2">
+                          ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white shadow-orange-500/30' 
+                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-orange-200 dark:border-gray-500 shadow-lg'
+                      } rounded-2xl p-4 transform transition-all duration-300 hover:scale-105`}>
+                        
+                        <div className="flex items-center gap-2 mb-3">
                           {message.type === 'ai' && (
-                            <Bot className="w-4 h-4 text-orange-500" />
+                            <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                              <Sparkles className="w-3 h-3 text-white" />
+                            </div>
                           )}
-                          <span className="text-sm font-bold">
-                            {message.type === 'ai' ? 'iChef24 AI' : 'Você'}
-                          </span>
-                          <span className="text-sm opacity-70">{message.timestamp}</span>
-                        </div>
-                        <p className="text-sm">{message.message}</p>
-                        {message.suggestions && (
-                          <div className="flex flex-wrap gap-2 pt-2 mt-2 border-t border-white/20 dark:border-gray-600/30">
-                            {message.suggestions.map((suggestion, i) => (
-                              <Button
-                                key={i}
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuickSuggestion(suggestion)}
-                                className="text-xs border border-white/30 text-white hover:bg-white/20 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/20 rounded-full px-2 py-1"
-                              >
-                                ✨ {suggestion}
-                              </Button>
-                            ))}
+                          <div className="flex-1">
+                            <span className="text-sm font-bold opacity-90">
+                              {message.type === 'ai' ? 'iChef24 AI' : 'Você'}
+                            </span>
+                            <span className="text-sm opacity-70 ml-2">{message.timestamp}</span>
                           </div>
-                        )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-sm leading-relaxed whitespace-pre-line">{message.message}</div>
+                          
+                          {message.suggestions && (
+                            <div className="flex flex-wrap gap-2 pt-3 border-t border-white/20 dark:border-gray-600/30">
+                              {message.suggestions.map((suggestion, i) => (
+                                <Button
+                                  key={i}
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleQuickSuggestion(suggestion)}
+                                  className="text-xs border border-white/30 text-white hover:bg-white/20 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/20 rounded-full px-3 py-1 font-medium transition-all duration-300 hover:scale-105"
+                                >
+                                  ✨ {suggestion}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {message.new_recipe && (
+                            <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
+                              <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">
+                                🚀 Nova Versão da Receita
+                              </h4>
+                              <div className="space-y-1 text-sm text-orange-700 dark:text-orange-300">
+                                <p><strong>Título:</strong> {message.new_recipe.title}</p>
+                                <p><strong>Tempo:</strong> {message.new_recipe.cooking_time} min</p>
+                                <p><strong>Dificuldade:</strong> {message.new_recipe.difficulty_level}/5</p>
+                                <p><strong>IA:</strong> {message.new_recipe.ai_model_version}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
                   
                   {isGenerating && (
                     <div className="flex justify-start">
-                      <div className="bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl p-3 max-w-[85%]">
-                        <div className="flex items-center gap-2">
-                          <Bot className="w-4 h-4 text-orange-500 animate-pulse" />
-                          <span className="text-sm font-bold">iChef24 AI</span>
-                          <div className="flex space-x-1">
-                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce"></div>
-                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-100"></div>
-                            <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-200"></div>
+                      <div className="bg-white dark:bg-gray-700 border border-orange-200 dark:border-gray-500 rounded-2xl p-4 shadow-lg max-w-[85%]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                            <Sparkles className="w-4 h-4 text-white animate-spin" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-bold text-gray-900 dark:text-white">iChef24 AI</span>
+                              <div className="flex space-x-1">
+                                <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce"></div>
+                                <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-100"></div>
+                                <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-200"></div>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              Pensando...
+                            </p>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Pensando...
-                        </p>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Input */}
-                <form onSubmit={handleChatSubmit} className="flex gap-2">
-                  <Input
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Peça ajuda para melhorar a receita..."
-                    className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
-                    disabled={isGenerating}
-                  />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={!chatInput.trim() || isGenerating}
-                    className="bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </form>
+                <div className="pt-4 border-t border-orange-200/30 dark:border-gray-600/30">
+                  <form onSubmit={handleChatSubmit} className="space-y-3">
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                      <Input
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder="Peça ajuda para melhorar a receita..."
+                        className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
+                        disabled={isGenerating}
+                      />
+                      <div className="absolute right-2 top-2">
+                        <Button
+                          type="submit"
+                          size="icon"
+                          disabled={!chatInput.trim() || isGenerating}
+                          className="h-8 w-8 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
               </div>
             )}
           </div>

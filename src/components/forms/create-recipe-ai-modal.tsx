@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
+import { formatRecipe } from "@/lib/utils/format-recipe"
+import { Recipe } from "@/types/recipe"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { X, Save, ChefHat, Mic, Send, Sparkles, Bot, Crown, Wand2, Leaf, Timer, Users } from "lucide-react"
+import { useGenerateRecipeWithAI } from "@/network/hooks"
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean
@@ -19,17 +22,28 @@ interface ChatMessage {
   message: string
   timestamp: string
   suggestions?: string[]
+  new_recipe?: Recipe
 }
 
 interface GeneratedRecipe {
   title: string
   description: string
-  time: string
-  servings: string
-  difficulty: string
+  time: string | undefined
+  servings: string | undefined
+  difficulty: string | undefined
   ingredients: string[]
   instructions: string[]
   image: string
+}
+
+interface RecipeIngredient {
+  name: string
+  amount: string
+}
+
+interface RecipeStep {
+  step: number
+  description: string
 }
 
 // Estado consolidado para o modal AI de criar receita
@@ -41,6 +55,7 @@ interface CreateRecipeAIModalState {
   showPreferences: boolean
   recipeType: string
   cookingTime: string
+  lastGeneratedRecipe: any | null // Armazena a última receita gerada para usar como old_recipe
 }
 
 export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIModalProps) {
@@ -50,19 +65,34 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
   const [modalState, setModalState] = useState<CreateRecipeAIModalState>({
     isGenerating: false,
     generatedRecipe: null,
-    chatMessages: [
-      { 
-        type: 'ai', 
-        message: 'Que receita você quer criar hoje?',
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: ['Italiana', 'Vegetariana', 'Sobremesa', 'Brasileira']
-      }
-    ],
+    chatMessages: [],
     chatInput: "",
     showPreferences: false,
     recipeType: "",
-    cookingTime: ""
+    cookingTime: "",
+    lastGeneratedRecipe: null
   })
+
+  // Resetar chat ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      setModalState(prev => ({
+        ...prev,
+        chatMessages: [
+          { 
+            type: 'ai', 
+            message: 'Que receita você quer criar hoje?',
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            suggestions: []
+          }
+        ],
+        chatInput: "",
+        isGenerating: false,
+        generatedRecipe: null,
+        lastGeneratedRecipe: null
+      }))
+    }
+  }, [isOpen])
 
   // Desestruturação para facilitar o uso
   const { isGenerating, generatedRecipe, chatMessages, chatInput, showPreferences, recipeType, cookingTime } = modalState
@@ -71,6 +101,8 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
   const updateModalState = (updates: Partial<CreateRecipeAIModalState>) => {
     setModalState(prev => ({ ...prev, ...updates }))
   }
+
+  const generateRecipeMutation = useGenerateRecipeWithAI()
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,19 +119,57 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
       isGenerating: true
     })
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = `Que ideia incrível! Vou criar uma receita baseada em: "${userMessage}". Aqui estão minhas sugestões!`
+    try {
+      let recipe
+      if (!modalState.lastGeneratedRecipe) {
+        // Primeira mensagem: usar first_message
+        recipe = await generateRecipeMutation.mutateAsync({
+          first_message: userMessage
+        })
+      } else {
+        // Mensagens subsequentes: usar old_recipe e new_recipe
+        // old_recipe = última receita gerada (armazenada no estado)
+        recipe = await generateRecipeMutation.mutateAsync({
+          first_message: undefined,
+          old_recipe: JSON.stringify(modalState.lastGeneratedRecipe),
+          new_recipe: userMessage
+        })
+      }
+
+      const aiResponse = formatRecipe(recipe, { isFirstMessage: !modalState.lastGeneratedRecipe })
+
       updateModalState({
         chatMessages: [...chatMessages, { 
           type: 'ai', 
           message: aiResponse,
           timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          suggestions: ['Ver receita', 'Mais opções', 'Vegano', 'Variação']
+          suggestions: [],
+          new_recipe: recipe
         }],
-        isGenerating: false
+        isGenerating: false,
+        lastGeneratedRecipe: recipe, // Atualiza a última receita gerada
+        generatedRecipe: {
+          title: recipe.title || "",
+          description: recipe.description || "",
+          time: recipe.cooking_time?.toString(),
+          servings: recipe.servings?.toString(),
+          difficulty: recipe.difficulty_level?.toString(),
+          ingredients: recipe.ingredients.map((i: RecipeIngredient) => `${i.amount} de ${i.name}`),
+          instructions: recipe.steps.map((s: RecipeStep) => s.description),
+          image: recipe.image_url || "/placeholder.jpg"
+        }
       })
-    }, 2000)
+    } catch (error) {
+      console.error("Erro ao gerar receita:", error)
+      updateModalState({
+        isGenerating: false,
+        chatMessages: [...chatMessages, {
+          type: 'ai',
+          message: "Desculpe, ocorreu um erro ao gerar a receita. Por favor, tente novamente.",
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        }]
+      })
+    }
   }
 
   const handleQuickSuggestion = (suggestion: string) => {
@@ -140,23 +210,13 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
     }, 3000)
   }
 
-  const handleSave = () => {
-    if (generatedRecipe) {
-      const recipe = {
-        id: Date.now(),
-        ...generatedRecipe,
-        tags: ["IA", "Gourmet", "Criado"],
-        rating: 5,
-        date: "Agora",
-      }
-      onSave(recipe)
-      onClose()
-    }
-  }
+
+
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[85vh] overflow-hidden bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl">
+      <DialogContent className="max-w-4xl h-[85vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
         <DialogHeader className="pb-4">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-3">
@@ -219,7 +279,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                       </div>
 
                       <div className="space-y-3">
-                        <p className="text-sm leading-relaxed">{message.message}</p>
+                        <div className="text-sm leading-relaxed whitespace-pre-line">{message.message}</div>
                         
                         {message.suggestions && (
                           <div className="flex flex-wrap gap-2 pt-3 border-t border-white/20 dark:border-gray-600/30">
@@ -331,6 +391,8 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
             </Card>
           )}
 
+
+
           {/* Generate Button */}
           <Button
             onClick={generateWithAI}
@@ -352,18 +414,8 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
             )}
           </Button>
 
-          {/* Save Button */}
-          {generatedRecipe && (
-            <Button
-              onClick={handleSave}
-              className="w-full h-14 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white border-0 font-bold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group mt-4"
-            >
-              <Save className="w-5 h-5 mr-3 group-hover:animate-pulse" />
-              <span className="font-semibold">{t('ai.save.recipe')}</span>
-            </Button>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
