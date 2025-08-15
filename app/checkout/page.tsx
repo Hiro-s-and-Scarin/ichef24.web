@@ -2,8 +2,8 @@
 
 import { Suspense } from "react"
 import { Elements } from '@stripe/react-stripe-js'
-import { stripePromise, getStripeConfigForLanguage } from '@/lib/stripe'
-import { StripeCheckout } from '@/components/stripe-checkout'
+import { stripePromise, getStripeConfigForLanguage } from '@/lib/api/stripe'
+import { StripeCheckout } from '@/components/forms/stripe-checkout'
 import { useSearchParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"

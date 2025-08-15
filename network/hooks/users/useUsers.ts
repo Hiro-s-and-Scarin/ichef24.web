@@ -12,7 +12,7 @@ import {
   deleteUser 
 } from "@/network/actions/users/actionUsers"
 import { UpdateUserData } from "@/types/user"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useCurrentUser() {
   return useQuery({

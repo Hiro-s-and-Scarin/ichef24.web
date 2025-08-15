@@ -1,4 +1,4 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 import { ChatSession, ChatMessage, CreateChatSessionData, CreateChatMessageData } from "@/types/chat"
 
 export async function getChatSessions(): Promise<{ data: ChatSession[] }> {

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Mail, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useForgotPassword } from "@/network/hooks"
-import { forgotPasswordSchema, ForgotPasswordFormData } from "@/lib/schemas/auth.schema"
+import { forgotPasswordSchema, ForgotPasswordFormData } from "@/schemas/auth.schema"
 
 export default function ForgotPassword() {
   const [isEmailSent, setIsEmailSent] = useState(false)

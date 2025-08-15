@@ -10,7 +10,7 @@ import {
   deleteCommunityPost 
 } from "@/network/actions/community/actionCommunity"
 import { CreateCommunityPostData, UpdateCommunityPostData } from "@/types/community"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useCommunityPosts(params: { page?: number; limit?: number } = {}) {
   return useQuery({

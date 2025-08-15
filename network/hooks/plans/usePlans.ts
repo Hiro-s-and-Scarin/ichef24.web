@@ -12,7 +12,7 @@ import {
   postReactivateSubscription,
   getBillingHistory
 } from "@/network/actions/plans/actionPlans"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useGetPlans() {
   const { data, isLoading } = useQuery({

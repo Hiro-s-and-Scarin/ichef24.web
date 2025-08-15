@@ -9,7 +9,7 @@ import type {
   ResetPasswordFormData, 
   ConfirmResetPasswordFormData,
   ForgotPasswordFormData
-} from "@/lib/schemas/auth.schema"
+} from "@/schemas/auth.schema"
 import { 
   getMe, 
   postLogin, 
@@ -22,7 +22,7 @@ import {
   putUpdatePassword
 } from "@/network/actions/auth/auth"
 import { setCookie, destroyCookie, parseCookies } from 'nookies'
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useLogin() {
   const router = useRouter()

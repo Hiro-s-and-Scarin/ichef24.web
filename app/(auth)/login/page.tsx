@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,8 +12,10 @@ import { ChefHat, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { useLogin } from "@/network/hooks/auth/useAuth"
+import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
+import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -28,12 +30,17 @@ const loginSchema = yup.object({
 
 type LoginFormData = yup.InferType<typeof loginSchema>
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [error, setError] = useState("")
 
   const { isLoading } = useAuth()
   const loginMutation = useLogin()
+  const { handleGoogleAuth } = useGoogleAuth()
+  const { handleFacebookAuth } = useFacebookAuth()
   const router = useRouter()
+
+  // Captura token da URL (Google/Facebook OAuth)
+  useTokenCapture()
 
   // React Hook Form com validação Yup
   const { 
@@ -193,7 +200,9 @@ export default function LoginPage() {
             {/* Social Login */}
             <div className="space-y-3">
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleGoogleAuth}
                 className="w-full border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -218,11 +227,13 @@ export default function LoginPage() {
               </Button>
 
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleFacebookAuth}
                 className="w-full border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.073 24 18.062 24 12.073z" />
                 </svg>
                 Continuar com Facebook
               </Button>
@@ -248,5 +259,22 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ChefHat className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-300">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   )
 }

@@ -17,7 +17,7 @@ import {
   postGenerateRecipeWithAI
 } from "@/network/actions/recipes/actionRecipes"
 import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useRecipes(params: RecipeParams = {}) {
   return useQuery({

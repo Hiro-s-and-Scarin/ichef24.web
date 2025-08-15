@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { RecipeCard } from "@/components/recipe-card"
-import { Pagination } from "@/components/pagination"
+import { RecipeCard } from "@/components/common/recipe-card"
+import { Pagination } from "@/components/common/pagination"
 import { useFavoriteRecipes } from "@/network/hooks"
 import { RecipeParams } from "@/types/recipe"
 

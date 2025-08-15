@@ -14,7 +14,7 @@ import {
   deleteChatMessage
 } from "@/network/actions/chat/actionChat"
 import { CreateChatSessionData, CreateChatMessageData } from "@/types/chat"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useChatSessions() {
   return useQuery({

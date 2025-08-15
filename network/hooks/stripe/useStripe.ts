@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { createPayment, CreatePaymentRequest } from "@/network/actions/stripe"
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useCreatePayment() {
   return useMutation({

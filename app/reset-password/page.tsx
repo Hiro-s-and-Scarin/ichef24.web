@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Lock, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useConfirmCodeResetPassword, useResetPasswordData } from "@/network/hooks"
-import { confirmResetPasswordSchema, ConfirmResetPasswordFormData } from "@/lib/schemas/auth.schema"
+import { confirmResetPasswordSchema, ConfirmResetPasswordFormData } from "@/schemas/auth.schema"
 import { toast } from "sonner"
 
 export default function ResetPassword() {

@@ -8,7 +8,7 @@ import { ChefHat, Heart, Share2, Clock, Users, Utensils, BookOpen, ArrowLeft, St
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 
 // Estado consolidado para a página de receita
 interface RecipePageState {

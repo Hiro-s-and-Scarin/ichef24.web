@@ -1,4 +1,4 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 
 export interface CreatePaymentRequest {
   productId: string // Este é o stripe_subscription_id do backend

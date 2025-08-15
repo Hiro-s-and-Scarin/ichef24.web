@@ -14,9 +14,13 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
+import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 
 function RegisterPageContent() {
+  // Captura token da URL (Google/Facebook OAuth)
+  useTokenCapture()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,6 +35,8 @@ function RegisterPageContent() {
   const [mounted, setMounted] = useState(false)
 
   const { register, isLoading } = useAuth()
+  const { handleGoogleAuth } = useGoogleAuth()
+  const { handleFacebookAuth } = useFacebookAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -276,7 +282,9 @@ function RegisterPageContent() {
             {/* Social Registration */}
             <div className="space-y-3">
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleGoogleAuth}
                 className="w-full border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -301,7 +309,9 @@ function RegisterPageContent() {
               </Button>
 
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleFacebookAuth}
                 className="w-full border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent"
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">

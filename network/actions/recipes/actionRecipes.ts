@@ -1,4 +1,4 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 import { Recipe, RecipeParams, RecipeResponse, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
 
 export async function getRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {

@@ -1,11 +1,11 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 import type { 
   LoginFormData, 
   RegisterFormData, 
   ForgotPasswordFormData,
   ResetPasswordFormData,
   ConfirmResetPasswordFormData 
-} from "@/lib/schemas/auth.schema"
+} from "@/schemas/auth.schema"
 
 export const postLogin = async (body: LoginFormData) => {
   const response = await api.post("/auth", body)
