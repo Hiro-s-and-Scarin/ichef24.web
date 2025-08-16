@@ -8,10 +8,52 @@ import { Header } from "@/components/layout/header"
 import { AuthProvider } from "@/contexts/auth-context"
 import { I18nProvider } from "@/components/layout/i18n-provider"
 import { Toaster } from "sonner"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
+import { parseCookies } from 'nookies'
+import { useEffect } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
+
+// Componente para proteger rotas
+function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, isAuthPage: boolean }) {
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isAuthPage) {
+      // Verifica se existe JWT nos cookies
+      const cookies = parseCookies()
+      const token = cookies.jwt
+
+      if (!token) {
+        // Se não há token, redireciona para login
+        router.replace('/')
+      }
+    }
+  }, [isAuthPage, router])
+
+  // Se é página de auth, não mostra header
+  if (isAuthPage) {
+    return <>{children}</>
+  }
+
+  // Se não é página de auth, verifica token antes de renderizar
+  const cookies = parseCookies()
+  const token = cookies.jwt
+
+  if (!token) {
+    // Se não há token, não renderiza nada (será redirecionado)
+    return null
+  }
+
+  // Se há token, mostra header e conteúdo
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  )
+}
 
 export default function RootLayout({
   children,
@@ -42,8 +84,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <AuthProvider>
-                {!isAuthPage && <Header />}
-                {children}
+                <RouteProtector isAuthPage={isAuthPage}>
+                  {children}
+                </RouteProtector>
                 <Toaster position="top-right" />
               </AuthProvider>
             </ThemeProvider>
