@@ -17,7 +17,7 @@ export function Header() {
   const { t } = useTranslation()
 
   const navItems = [
-    { href: "/", label: t('header.home'), icon: ChefHat },
+    { href: "/dashboard", label: t('header.home'), icon: ChefHat },
     { href: "/history", label: t('header.history'), icon: Clock },
     { href: "/favorites", label: t('header.favorites'), icon: Heart },
     { href: "/community", label: t('header.community'), icon: Users },

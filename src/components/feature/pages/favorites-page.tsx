@@ -11,7 +11,6 @@ import Image from "next/image"
 import { RecipeModal } from "@/components/common/recipe-modal"
 import { useAuth } from "@/contexts/auth-context"
 import { RecipeCard } from "@/components/common/recipe-card"
-
 import { Pagination } from "@/components/common/pagination"
 import { FilterModal } from "@/components/forms/filter-modal"
 import { useFavoriteRecipes, useRemoveFromFavorites } from "@/network/hooks/recipes/useRecipes"
@@ -38,13 +37,6 @@ export function FavoritesPageContent() {
     tags: selectedFilters
   })
   const removeFromFavoritesMutation = useRemoveFromFavorites()
-
-  // Debug adicional
-  console.log('Hook favorites:', favorites)
-  console.log('Hook isLoading:', isLoading)
-  console.log('Hook error:', error)
-
-
 
   const { data: currentUser } = useCurrentUser()
 
@@ -93,7 +85,7 @@ export function FavoritesPageContent() {
             </div>
             <div className="flex items-center gap-4">
               <Button variant="outline" asChild>
-                <Link href="/">Voltar ao Início</Link>
+                <Link href="/dashboard">Voltar ao Início</Link>
               </Button>
             </div>
           </div>

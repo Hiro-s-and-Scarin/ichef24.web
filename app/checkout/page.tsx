@@ -116,7 +116,7 @@ function CheckoutContent() {
                   Ver Meus Planos
                 </Button>
               </Link>
-              <Link href="/">
+              <Link href="/dashboard">
                 <Button variant="outline">
                   Voltar ao Início
                 </Button>

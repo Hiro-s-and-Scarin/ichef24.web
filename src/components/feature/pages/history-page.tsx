@@ -167,7 +167,7 @@ export function HistoryPageContent() {
                 Criar com IA
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/">Voltar ao Início</Link>
+                <Link href="/dashboard">Voltar ao Início</Link>
               </Button>
             </div>
           </div>

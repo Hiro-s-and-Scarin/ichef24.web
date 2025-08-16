@@ -104,7 +104,7 @@ export function CommunityPage({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button variant="outline" asChild>
-                <Link href="/">Voltar ao Início</Link>
+                <Link href="/dashboard">Voltar ao Início</Link>
               </Button>
             </div>
             <Button 
