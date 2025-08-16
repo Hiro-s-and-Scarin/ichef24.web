@@ -18,23 +18,19 @@ export function useTokenCapture() {
         setCookie(null, 'jwt', token, {
           maxAge: 30 * 24 * 60 * 60, // 30 dias
           path: '/',
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax'
         })
 
         toast.success("Login realizado com sucesso!")
         
-        // Remove o token da URL
+        // Remove o token da URL e redireciona para dashboard
         const url = new URL(window.location.href)
         url.searchParams.delete('token')
         window.history.replaceState({}, document.title, url.pathname)
         
-        // Se já estamos na página dashboard, não precisa redirecionar
-        if (window.location.pathname !== '/dashboard') {
-          setTimeout(() => {
-            router.push("/dashboard")
-          }, 100)
-        }
+        // Redireciona para dashboard
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 100)
       } catch (error) {
         toast.error("Erro ao processar autenticação")
       }

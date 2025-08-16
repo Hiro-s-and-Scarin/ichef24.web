@@ -1,6 +1,5 @@
 "use client"
 
-import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
@@ -10,6 +9,7 @@ import { AuthProvider } from "@/contexts/auth-context"
 import { I18nProvider } from "@/components/layout/i18n-provider"
 import { Toaster } from "sonner"
 import { usePathname } from "next/navigation"
+import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,6 +20,9 @@ export default function RootLayout({
 }) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password'
+
+  // Captura o token da URL em qualquer página
+  useTokenCapture()
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
