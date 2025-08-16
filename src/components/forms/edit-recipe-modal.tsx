@@ -130,6 +130,38 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
 
   const watchedTags = watch("tags")
 
+  // Resetar formulário quando a receita mudar ou quando o modal abrir
+  useEffect(() => {
+    if (isOpen && recipe) {
+      reset({
+        title: recipe.title || "",
+        description: recipe.description || "",
+        ingredients: recipe.ingredients && recipe.ingredients.length > 0 
+          ? recipe.ingredients.map(ing => ({
+              name: ing.name || "",
+              amount: ing.amount || ""
+            }))
+          : [{ name: "", amount: "" }],
+        steps: recipe.steps && recipe.steps.length > 0
+          ? recipe.steps.map(step => ({
+              step: step.step || 1,
+              description: step.description || ""
+            }))
+          : [{ step: 1, description: "" }],
+        cooking_time: recipe.cooking_time || undefined,
+        servings: recipe.servings || undefined,
+        difficulty_level: recipe.difficulty_level || 3,
+        cuisine_type: recipe.cuisine_type || "",
+        tags: recipe.tags || [],
+        image_url: recipe.image_url || "",
+        is_ai_generated: recipe.is_ai_generated || false,
+        ai_prompt: recipe.ai_prompt || "",
+        ai_model_version: recipe.ai_model_version || "",
+        is_public: recipe.is_public ?? true
+      })
+    }
+  }, [isOpen, recipe, reset])
+
   const addIngredient = () => {
     appendIngredient({ name: "", amount: "" })
   }
@@ -248,14 +280,32 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
 
     try {
       const recipeData = {
-        ...data,
-        tags: data.tags?.filter((tag): tag is string => tag !== undefined) || []
+        title: data.title,
+        description: data.description,
+        ingredients: data.ingredients?.filter(ing => ing.name && ing.amount).map(ing => ({
+          name: ing.name || "",
+          amount: ing.amount || ""
+        })) || [],
+        steps: data.steps?.filter(step => step.description).map((step, index) => ({
+          step: index + 1,
+          description: step.description || ""
+        })) || [],
+        cooking_time: data.cooking_time,
+        servings: data.servings,
+        difficulty_level: data.difficulty_level,
+        cuisine_type: data.cuisine_type,
+        tags: data.tags?.filter((tag): tag is string => tag !== undefined) || [],
+        image_url: data.image_url,
+        is_ai_generated: data.is_ai_generated,
+        ai_prompt: data.ai_prompt,
+        ai_model_version: data.ai_model_version,
+        is_public: data.is_public
       }
 
       await putRecipeMutation.mutateAsync({
         id: recipe.id,
-        body: recipeData as CreateRecipeData
-      } as any)
+        ...recipeData
+      })
       onClose()
       toast.success("Receita atualizada com sucesso!")
     } catch (error) {

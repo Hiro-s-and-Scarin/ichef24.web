@@ -21,7 +21,7 @@ export const createRecipeSchema = yup.object({
   difficulty_level: yup.number().min(1).max(5).optional(),
   cuisine_type: yup.string().optional(),
   tags: yup.array().of(yup.string()).optional(),
-  image_url: yup.string().url("URL inválida").optional(),
+  image_url: yup.string().optional(),
   is_ai_generated: yup.boolean().optional(),
   ai_prompt: yup.string().optional(),
   ai_model_version: yup.string().optional(),

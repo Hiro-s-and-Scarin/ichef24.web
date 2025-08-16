@@ -1,21 +1,21 @@
 import * as yup from "yup"
 
-// Schema de validação compatível com o DTO do backend
+// Schema de validação para edição - todos os campos são opcionais
 export const editRecipeSchema = yup.object({
-  title: yup.string().required("Título é obrigatório"),
+  title: yup.string().optional(),
   description: yup.string().optional(),
   ingredients: yup.array().of(
     yup.object({
-      name: yup.string().required("Nome do ingrediente é obrigatório"),
-      amount: yup.string().required("Quantidade é obrigatória")
+      name: yup.string().optional(),
+      amount: yup.string().optional()
     })
-  ).min(1, "Pelo menos um ingrediente é obrigatório"),
+  ).optional(),
   steps: yup.array().of(
     yup.object({
-      step: yup.number().required(),
-      description: yup.string().required("Descrição do passo é obrigatória")
+      step: yup.number().optional(),
+      description: yup.string().optional()
     })
-  ).min(1, "Pelo menos um passo é obrigatório"),
+  ).optional(),
   cooking_time: yup.number().positive("Tempo deve ser positivo").optional(),
   servings: yup.number().positive("Porções deve ser positivo").optional(),
   difficulty_level: yup.number().min(1).max(5).optional(),

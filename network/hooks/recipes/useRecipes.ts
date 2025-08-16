@@ -29,7 +29,7 @@ export function useRecipes(params: RecipeParams = {}) {
 
 export function useRecipe(id: string | number) {
   return useQuery({
-    queryKey: [...queryKeys.recipes.one, id],
+    queryKey: queryKeys.recipes.one(id),
     queryFn: async () => await getRecipeById(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
@@ -62,7 +62,7 @@ export function useUpdateRecipe() {
       return await putRecipe(id, data)
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.recipes.one, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
       toast.success("Receita atualizada com sucesso!")
     },

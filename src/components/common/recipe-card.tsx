@@ -12,10 +12,23 @@ import { useAddToFavorites, useRemoveFromFavorites } from "@/network/hooks"
 
 interface RecipeCardProps {
   recipe: Recipe
+  onClick?: () => void
+  isFavorite?: boolean
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false)
+export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = false }: RecipeCardProps) {
+  // Debug temporário para verificar os dados
+  console.log('=== RECIPE CARD DEBUG ===')
+  console.log('Recipe recebido:', recipe)
+  console.log('Recipe title:', recipe?.title)
+  console.log('Recipe description:', recipe?.description)
+  console.log('Recipe cooking_time:', recipe?.cooking_time)
+  console.log('Recipe servings:', recipe?.servings)
+  console.log('Recipe difficulty_level:', recipe?.difficulty_level)
+  console.log('isFavorite prop:', initialIsFavorite)
+  console.log('========================')
+  
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
 
@@ -62,7 +75,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   }
 
   return (
-    <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col">
+    <Card 
+      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer"
+      onClick={onClick}
+    >
       {/* Recipe Image */}
       <div className="relative h-48 w-full">
         {recipe.image_url ? (
@@ -82,7 +98,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <Button
           size="icon"
           variant="ghost"
-          onClick={handleToggleFavorite}
+          onClick={(e) => {
+            e.stopPropagation() // Evitar que o clique do botão propague para o card
+            handleToggleFavorite()
+          }}
           className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
         >
           <Heart 

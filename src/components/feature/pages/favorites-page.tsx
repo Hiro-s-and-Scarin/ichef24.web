@@ -8,12 +8,12 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Heart, Share2, Clock, Users, Star, Trash2, Filter } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { RecipeModal } from "@/components/recipe-modal"
+import { RecipeModal } from "@/components/common/recipe-modal"
 import { useAuth } from "@/contexts/auth-context"
-import { RecipeCard } from "@/components/recipe-card"
+import { RecipeCard } from "@/components/common/recipe-card"
 
-import { Pagination } from "@/components/pagination"
-import { FilterModal } from "@/components/filter-modal"
+import { Pagination } from "@/components/common/pagination"
+import { FilterModal } from "@/components/forms/filter-modal"
 import { useFavoriteRecipes, useRemoveFromFavorites } from "@/network/hooks/recipes/useRecipes"
 import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { useTranslation } from "react-i18next"
@@ -29,13 +29,18 @@ export function FavoritesPageContent() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
   // TanStack Query hooks
-  const { data: favorites, isLoading } = useFavoriteRecipes({
+  const { data: favorites, isLoading, error } = useFavoriteRecipes({
     page: currentPage,
     limit: 6,
     search: searchTerm,
     tags: selectedFilters
   })
   const removeFromFavoritesMutation = useRemoveFromFavorites()
+
+  // Debug adicional
+  console.log('Hook favorites:', favorites)
+  console.log('Hook isLoading:', isLoading)
+  console.log('Hook error:', error)
 
 
 
@@ -57,6 +62,14 @@ export function FavoritesPageContent() {
 
   const currentFavorites = favorites?.data || []
   const totalPages = favorites?.pagination?.totalPages || 1
+
+  // Debug temporário
+  console.log('Favorites data:', favorites)
+  console.log('Current favorites:', currentFavorites)
+  if (currentFavorites.length > 0) {
+    console.log('First favorite:', currentFavorites[0])
+    console.log('First favorite.recipe:', (currentFavorites[0] as any)?.recipe)
+  }
 
   const handleApplyFilters = (filters: string[]) => {
     setSelectedFilters(filters)
@@ -166,22 +179,69 @@ export function FavoritesPageContent() {
               {/* Favorites Grid/List */}
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentFavorites.map((recipe: any) => (
-                    <RecipeCard
-                      key={recipe.id}
-                      recipe={recipe}
-                    />
-                  ))}
+                  {currentFavorites.map((favorite: any) => {
+                    // Debug detalhado
+                    console.log('=== DEBUG FAVORITE ===')
+                    console.log('Favorite completo:', favorite)
+                    console.log('Favorite.recipe:', favorite.recipe)
+                    console.log('Favorite.recipe.title:', favorite.recipe?.title)
+                    console.log('Favorite.recipe.description:', favorite.recipe?.description)
+                    console.log('Favorite.recipe.cooking_time:', favorite.recipe?.cooking_time)
+                    console.log('Favorite.recipe.servings:', favorite.recipe?.servings)
+                    console.log('Favorite.recipe.difficulty_level:', favorite.recipe?.difficulty_level)
+                    console.log('=====================')
+                    
+                    // Verificar se a receita existe antes de renderizar
+                    if (!favorite.recipe) {
+                      console.warn('Favorite sem recipe:', favorite)
+                      return null
+                    }
+                    
+                    // Criar uma cópia limpa da receita para evitar problemas de referência
+                    const cleanRecipe = {
+                      id: favorite.recipe.id,
+                      user_id: favorite.recipe.user_id,
+                      title: favorite.recipe.title,
+                      description: favorite.recipe.description,
+                      cooking_time: favorite.recipe.cooking_time,
+                      servings: favorite.recipe.servings,
+                      difficulty_level: favorite.recipe.difficulty_level,
+                      cuisine_type: favorite.recipe.cuisine_type,
+                      tags: favorite.recipe.tags,
+                      image_url: favorite.recipe.image_url,
+                      ingredients: favorite.recipe.ingredients,
+                      steps: favorite.recipe.steps,
+                      is_ai_generated: favorite.recipe.is_ai_generated,
+                      ai_prompt: favorite.recipe.ai_prompt,
+                      ai_model_version: favorite.recipe.ai_model_version,
+                      is_public: favorite.recipe.is_public,
+                      views_count: favorite.recipe.views_count,
+                      likes_count: favorite.recipe.likes_count,
+                      createdAt: favorite.recipe.createdAt,
+                      updatedAt: favorite.recipe.updatedAt
+                    }
+                    
+                    console.log('Clean recipe para RecipeCard:', cleanRecipe)
+                    
+                    return (
+                      <RecipeCard
+                        key={favorite.id}
+                        recipe={cleanRecipe}
+                        onClick={() => openRecipeModal(cleanRecipe)}
+                        isFavorite={true}
+                      />
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentFavorites.map((recipe: any) => (
-                    <Card key={recipe.id} className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden">
+                  {currentFavorites.map((favorite: any) => (
+                    <Card key={favorite.id} className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden">
                       <div className="flex">
                         <div className="w-32 h-24 relative flex-shrink-0">
                           <Image
-                            src={recipe.image || "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"}
-                            alt={recipe.title}
+                            src={favorite.recipe?.image_url || "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"}
+                            alt={favorite.recipe?.title || "Receita"}
                             fill
                             className="object-cover"
                           />
@@ -189,20 +249,20 @@ export function FavoritesPageContent() {
                         <div className="flex-1 p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-gray-800 dark:text-white text-lg mb-1">{recipe.title}</h3>
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">{recipe.description}</p>
+                              <h3 className="font-semibold text-gray-800 dark:text-white text-lg mb-1">{favorite.recipe?.title}</h3>
+                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">{favorite.recipe?.description}</p>
                               <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                 <div className="flex items-center space-x-1">
                                   <Clock className="w-4 h-4" />
-                                  <span>{recipe.time}</span>
+                                  <span>{favorite.recipe?.cooking_time} min</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Users className="w-4 h-4" />
-                                  <span>{recipe.servings}</span>
+                                  <span>{favorite.recipe?.servings} pessoas</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Star className="w-4 h-4 text-yellow-400" />
-                                  <span>{recipe.rating}</span>
+                                  <span>{favorite.recipe?.difficulty_level}/5</span>
                                 </div>
                               </div>
                             </div>
@@ -210,7 +270,7 @@ export function FavoritesPageContent() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeFavorite(recipe.id)}
+                                onClick={() => removeFavorite(favorite.recipe?.id)}
                                 className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
                               >
                                 <Heart className="w-4 h-4 fill-current" />
@@ -275,7 +335,7 @@ export function FavoritesPageContent() {
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         filters={{ tags: selectedFilters }}
-        onFiltersChange={(newFilters) => handleApplyFilters(newFilters.tags || [])}
+        onFiltersChange={(newFilters: any) => handleApplyFilters(newFilters.tags || [])}
       />
     </div>
   )
