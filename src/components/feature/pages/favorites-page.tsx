@@ -17,6 +17,7 @@ import { FilterModal } from "@/components/forms/filter-modal"
 import { useFavoriteRecipes, useRemoveFromFavorites } from "@/network/hooks/recipes/useRecipes"
 import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { useTranslation } from "react-i18next"
+import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
 
 export function FavoritesPageContent() {
   const { t } = useTranslation()
@@ -27,6 +28,7 @@ export function FavoritesPageContent() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+  const [isCreateAIModalOpen, setIsCreateAIModalOpen] = useState(false)
 
   // TanStack Query hooks
   const { data: favorites, isLoading, error } = useFavoriteRecipes({
@@ -310,8 +312,8 @@ export function FavoritesPageContent() {
                 <p className="text-gray-600 dark:text-gray-300">
                   Você ainda não tem receitas favoritas. Comece explorando e salvando suas receitas preferidas!
                 </p>
-                <Button asChild>
-                  <Link href="/">Explorar Receitas</Link>
+                <Button onClick={() => setIsCreateAIModalOpen(true)}>
+                  Criar Receita com IA
                 </Button>
               </CardContent>
             </Card>
@@ -336,6 +338,17 @@ export function FavoritesPageContent() {
         onClose={() => setIsFilterModalOpen(false)}
         filters={{ tags: selectedFilters }}
         onFiltersChange={(newFilters: any) => handleApplyFilters(newFilters.tags || [])}
+      />
+
+      {/* Create Recipe AI Modal */}
+      <CreateRecipeAIModal
+        isOpen={isCreateAIModalOpen}
+        onClose={() => setIsCreateAIModalOpen(false)}
+        onSave={(recipe) => {
+          console.log('Receita criada:', recipe)
+          setIsCreateAIModalOpen(false)
+          // Aqui você pode adicionar lógica adicional se necessário
+        }}
       />
     </div>
   )

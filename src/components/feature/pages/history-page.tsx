@@ -365,8 +365,8 @@ export function HistoryPageContent() {
                 <p className="text-gray-600 dark:text-gray-300">
                   Você ainda não criou nenhuma receita. Comece criando sua primeira obra-prima culinária!
                 </p>
-                <Button asChild>
-                  <Link href="/create-recipe">Criar Receita</Link>
+                <Button onClick={() => setIsCreateAIModalOpen(true)}>
+                  Criar Receita com IA
                 </Button>
               </CardContent>
             </Card>
