@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { translateDynamicData } from "@/lib/config/i18n"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,16 +20,24 @@ interface FilterModalProps {
 }
 
 const difficultyOptions = [
-  { value: "1", label: "Muito Fácil" },
-  { value: "2", label: "Fácil" },
-  { value: "3", label: "Intermediário" },
-  { value: "4", label: "Difícil" },
-  { value: "5", label: "Muito Difícil" }
+  { value: "1", label: translateDynamicData.difficulty(1, 'pt') },
+  { value: "2", label: translateDynamicData.difficulty(2, 'pt') },
+  { value: "3", label: translateDynamicData.difficulty(3, 'pt') },
+  { value: "4", label: translateDynamicData.difficulty(4, 'pt') },
+  { value: "5", label: translateDynamicData.difficulty(5, 'pt') }
 ]
 
 const cuisineTypes = [
-  "Italiana", "Brasileira", "Japonesa", "Mexicana", "Indiana", 
-  "Francesa", "Chinesa", "Tailandesa", "Mediterrânea", "Árabe"
+  translateDynamicData.cuisine('italian', 'pt'),
+  translateDynamicData.cuisine('brazilian', 'pt'),
+  translateDynamicData.cuisine('japanese', 'pt'),
+  translateDynamicData.cuisine('mexican', 'pt'),
+  translateDynamicData.cuisine('indian', 'pt'),
+  translateDynamicData.cuisine('french', 'pt'),
+  translateDynamicData.cuisine('chinese', 'pt'),
+  translateDynamicData.cuisine('thai', 'pt'),
+  translateDynamicData.cuisine('mediterranean', 'pt'),
+  translateDynamicData.cuisine('arabic', 'pt')
 ]
 
 const timeRanges = [
@@ -39,6 +49,7 @@ const timeRanges = [
 ]
 
 export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: FilterModalProps) {
+  const { t, i18n } = useTranslation()
   const [localFilters, setLocalFilters] = useState<RecipeParams>(filters)
   const [selectedTags, setSelectedTags] = useState<string[]>(filters.tags || [])
 
@@ -75,7 +86,7 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Filtros</span>
+            <span>{t('filter.title')}</span>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
@@ -85,10 +96,10 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
         <div className="space-y-6">
           {/* Search */}
           <div className="space-y-2">
-            <Label htmlFor="search">Buscar receitas</Label>
+            <Label htmlFor="search">{t('filter.search.label')}</Label>
             <Input
               id="search"
-              placeholder="Digite o nome da receita..."
+              placeholder={t('filter.search.placeholder')}
               value={localFilters.search || ""}
               onChange={(e) => setLocalFilters(prev => ({ ...prev, search: e.target.value }))}
             />
@@ -96,7 +107,7 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
 
           {/* Difficulty Level */}
           <div className="space-y-2">
-            <Label>Nível de Dificuldade</Label>
+            <Label>{t('filter.difficulty.label')}</Label>
             <Select
               value={localFilters.difficulty?.[0] || ""}
               onValueChange={(value) => setLocalFilters(prev => ({ ...prev, difficulty: value ? [value] : undefined }))}
@@ -117,7 +128,7 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
 
           {/* Cooking Time */}
           <div className="space-y-2">
-            <Label>Tempo de Cozimento</Label>
+            <Label>{t('filter.time.label')}</Label>
             <Select
               value={localFilters.time || ""}
               onValueChange={(value) => setLocalFilters(prev => ({ ...prev, time: value || undefined }))}
@@ -138,7 +149,7 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
 
           {/* Cuisine Types */}
           <div className="space-y-2">
-            <Label>Tipos de Culinária</Label>
+            <Label>{t('filter.cuisine.label')}</Label>
             <div className="flex flex-wrap gap-2">
               {cuisineTypes.map(cuisine => (
                 <Badge
@@ -175,10 +186,10 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button variant="outline" onClick={handleResetFilters} className="flex-1">
-              Limpar Filtros
+              {t('filter.reset')}
             </Button>
             <Button onClick={handleApplyFilters} className="flex-1 bg-orange-500 hover:bg-orange-600">
-              Aplicar Filtros
+              {t('filter.apply')}
             </Button>
           </div>
         </div>

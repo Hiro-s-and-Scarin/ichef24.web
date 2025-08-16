@@ -79,13 +79,13 @@ export function FavoritesPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <Heart className="text-red-500 fill-red-500" />
-                Receitas Favoritas
+                {t('favorites.title')}
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">Suas receitas mais queridas em um só lugar</p>
+              <p className="text-gray-600 dark:text-gray-300">{t('favorites.subtitle')}</p>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="outline" asChild>
-                <Link href="/dashboard">Voltar ao Início</Link>
+                <Link href="/dashboard">{t('common.back')}</Link>
               </Button>
             </div>
           </div>
@@ -96,19 +96,19 @@ export function FavoritesPageContent() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-500">{favorites?.pagination?.total || 0}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Favoritos</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('favorites.title')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-500">4.8</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Nota Média</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.rating')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-500">25min</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Tempo Médio</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.time')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-500">3</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Dificuldade Média</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('recipe.difficulty')}</div>
                 </div>
               </div>
             </CardContent>
@@ -121,7 +121,7 @@ export function FavoritesPageContent() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder="Buscar nas suas receitas favoritas..."
+                    placeholder={t('favorites.search.placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 border-gray-200 dark:border-gray-600"
@@ -135,7 +135,7 @@ export function FavoritesPageContent() {
                     className="border-gray-200 dark:border-gray-600"
                   >
                     <Filter className="w-4 h-4 mr-2" />
-                    Filtros
+                    {t('favorites.filters')}
                   </Button>
                   <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
                     <Button
@@ -144,7 +144,7 @@ export function FavoritesPageContent() {
                       onClick={() => setViewMode("grid")}
                       className="px-3"
                     >
-                      Grid
+                      {t('history.view.mode.grid')}
                     </Button>
                     <Button
                       variant={viewMode === "list" ? "default" : "ghost"}
@@ -152,7 +152,7 @@ export function FavoritesPageContent() {
                       onClick={() => setViewMode("list")}
                       className="px-3"
                     >
-                      Lista
+                      {t('history.view.mode.list')}
                     </Button>
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export function FavoritesPageContent() {
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-                <p className="mt-2 text-gray-500">Carregando favoritos...</p>
+                <p className="mt-2 text-gray-500">{t('common.loading')}</p>
               </div>
             </div>
           ) : (
@@ -248,11 +248,11 @@ export function FavoritesPageContent() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                 <div className="flex items-center space-x-1">
                                   <Clock className="w-4 h-4" />
-                                  <span>{favorite.recipe?.cooking_time} min</span>
+                                  <span>{favorite.recipe?.cooking_time} {t('recipe.time')}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Users className="w-4 h-4" />
-                                  <span>{favorite.recipe?.servings} pessoas</span>
+                                  <span>{favorite.recipe?.servings} {t('recipe.servings')}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Star className="w-4 h-4 text-yellow-400" />
@@ -300,12 +300,12 @@ export function FavoritesPageContent() {
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
                   <Heart className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Nenhum favorito encontrado</h3>
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{t('favorites.no.favorites')}</h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   Você ainda não tem receitas favoritas. Comece explorando e salvando suas receitas preferidas!
                 </p>
                 <Button onClick={() => setIsCreateAIModalOpen(true)}>
-                  Criar Receita com IA
+                  {t('dashboard.ai.button')}
                 </Button>
               </CardContent>
             </Card>

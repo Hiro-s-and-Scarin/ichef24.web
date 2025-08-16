@@ -51,14 +51,14 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
   const [modalState, setModalState] = useState<EditRecipeAIModalState>({
     isGenerating: false,
     generatedRecipe: null,
-    chatMessages: [
-      { 
-        type: 'ai', 
-        message: `Olá! Como posso melhorar a receita "${recipe?.title || 'sua receita'}"?`,
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        suggestions: []
-      }
-    ],
+            chatMessages: [
+          { 
+            type: 'ai', 
+            message: t('ai.improve.message', { title: recipe?.title || t('common.your.recipe') }),
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            suggestions: []
+          }
+        ],
     chatInput: "",
     showPreferences: false,
     improvementType: "",
@@ -90,7 +90,7 @@ export function EditRecipeAIModal({ isOpen, onClose, onSave, recipe }: EditRecip
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse = `Ótima ideia! Vou ajudar você a melhorar a receita "${recipe?.title}". Aqui estão minhas sugestões!`
+      const aiResponse = t('ai.improve.suggestion', { title: recipe?.title })
       updateModalState({
         chatMessages: [...chatMessages, { 
           type: 'ai', 

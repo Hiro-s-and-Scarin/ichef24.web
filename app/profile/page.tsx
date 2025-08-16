@@ -24,6 +24,7 @@ import {
 import { useAuth } from "@/contexts/auth-context"
 import { useUpdateProfile, useUpdatePassword } from "@/network/hooks"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 
 interface ProfileFormData {
   name: string
@@ -37,6 +38,7 @@ interface PasswordFormData {
 }
 
 export default function Profile() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
@@ -47,7 +49,7 @@ export default function Profile() {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando perfil...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">{t('common.loading')} perfil...</p>
         </div>
       </div>
     )
@@ -206,7 +208,7 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Nome
+                            {t('auth.name')}
                           </label>
                           <Input
                             {...registerProfile("name")}
@@ -234,7 +236,7 @@ export default function Profile() {
                           {isProfileSubmitting ? "Salvando..." : "Salvar Alterações"}
                         </Button>
                         <Button type="button" variant="outline" onClick={cancelProfileEdit}>
-                          Cancelar
+                          {t('common.cancel')}
                         </Button>
                       </div>
                     </form>
@@ -243,13 +245,13 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nome
+                            {t('auth.name')}
                           </label>
                           <p className="text-gray-900 dark:text-white">{user.name}</p>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Email
+                            {t('auth.email')}
                           </label>
                           <p className="text-gray-900 dark:text-white">{user.email}</p>
                         </div>
@@ -328,7 +330,7 @@ export default function Profile() {
                           {isPasswordSubmitting ? "Alterando..." : "Alterar Senha"}
                         </Button>
                         <Button type="button" variant="outline" onClick={cancelPasswordEdit}>
-                          Cancelar
+                          {t('common.cancel')}
                         </Button>
                       </div>
                     </form>

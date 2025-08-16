@@ -92,13 +92,13 @@ export function RecipeModal({ recipe, isOpen, onClose, onFavorite, isFavorite }:
 
           {/* Recipe Stats */}
           <div className="grid grid-cols-3 gap-6">
-            <Card className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-gray-600 shadow-xl">
-              <CardContent className="p-6 text-center">
-                <Clock className="w-8 h-8 text-orange-500 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Tempo</h3>
-                <p className="text-gray-600 dark:text-gray-300">{recipe.time}</p>
-              </CardContent>
-            </Card>
+                          <Card className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-gray-600 shadow-xl">
+                <CardContent className="p-6 text-center">
+                  <Clock className="w-8 h-8 text-orange-500 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{t('recipe.modal.time')}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{recipe.time}</p>
+                </CardContent>
+              </Card>
             <Card className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-gray-600 shadow-xl">
               <CardContent className="p-6 text-center">
                 <Users className="w-8 h-8 text-orange-500 mx-auto mb-3" />
@@ -225,10 +225,10 @@ export function RecipeModal({ recipe, isOpen, onClose, onFavorite, isFavorite }:
                 </div>
                 <div className="text-center">
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    {recipe.rating === 5 ? "Excelente!" : 
-                     recipe.rating === 4 ? "Muito bom!" : 
-                     recipe.rating === 3 ? "Bom!" : 
-                     recipe.rating === 2 ? "Regular" : "Pode melhorar"}
+                    {recipe.rating === 5 ? t('recipe.rating.excellent') : 
+                     recipe.rating === 4 ? t('recipe.rating.very.good') : 
+                     recipe.rating === 3 ? t('recipe.rating.good') : 
+                     recipe.rating === 2 ? t('recipe.rating.regular') : t('recipe.rating.can.improve')}
                   </p>
                 </div>
               </CardContent>

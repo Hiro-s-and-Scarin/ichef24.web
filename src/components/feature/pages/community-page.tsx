@@ -20,6 +20,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { CommunityPost, CreateCommunityPostData } from "@/types/community"
 import { createCommunityPostSchema, CreateCommunityPostFormData } from "@/schemas/community.schema"
+import { useTranslation } from "react-i18next"
 
 interface CommunityPageProps {
   posts: CommunityPost[]
@@ -36,6 +37,8 @@ export function CommunityPage({
   isCreatingPost,
   onToggleCreatePost
 }: CommunityPageProps) {
+  const { t } = useTranslation()
+  
   const {
     register,
     handleSubmit,
@@ -46,7 +49,7 @@ export function CommunityPage({
     defaultValues: {
       title: "",
       content: "",
-      difficulty_level: "Fácil"
+      difficulty_level: t('common.easy')
     }
   })
 
@@ -74,7 +77,7 @@ export function CommunityPage({
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando comunidade...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">{t('common.loading')}</p>
           </div>
         </div>
       </div>
@@ -92,11 +95,11 @@ export function CommunityPage({
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
-                Comunidade iChef24
+                {t('community.title')}
               </h1>
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Conecte-se com outros apaixonados por culinária, compartilhe receitas e aprenda juntos
+              {t('community.subtitle')}
             </p>
           </div>
 
@@ -104,7 +107,7 @@ export function CommunityPage({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button variant="outline" asChild>
-                <Link href="/dashboard">Voltar ao Início</Link>
+                <Link href="/dashboard">{t('common.back')}</Link>
               </Button>
             </div>
             <Button 
@@ -112,7 +115,7 @@ export function CommunityPage({
               className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Criar Post
+              {t('common.add')} Post
             </Button>
           </div>
 
@@ -121,7 +124,7 @@ export function CommunityPage({
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
             <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Criar Novo Post</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{t('common.add')} Novo Post</h3>
                       <Button
                     variant="ghost"
                     size="sm"
@@ -134,7 +137,7 @@ export function CommunityPage({
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Título (opcional)
+                      {t('form.title')} ({t('common.optional')})
                     </label>
                     <Input
                       {...register("title")}
@@ -147,7 +150,7 @@ export function CommunityPage({
             </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Conteúdo *
+                      {t('form.content')} *
                     </label>
                     <Textarea
                       {...register("content")}
@@ -160,15 +163,15 @@ export function CommunityPage({
                   </div>
                     <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Nível de Dificuldade
+                      {t('form.difficulty')}
                     </label>
                     <select
                       {...register("difficulty_level")}
                       className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                     >
-                      <option value="Fácil">Fácil</option>
-                      <option value="Intermediário">Intermediário</option>
-                      <option value="Avançado">Avançado</option>
+                      <option value="Fácil">{t('common.easy')}</option>
+                      <option value="Intermediário">{t('common.intermediate')}</option>
+                      <option value="Avançado">{t('common.advanced')}</option>
                     </select>
                     {errors.difficulty_level && (
                       <p className="text-red-500 text-sm mt-1">{errors.difficulty_level.message}</p>

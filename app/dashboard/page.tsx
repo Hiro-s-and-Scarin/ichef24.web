@@ -12,12 +12,14 @@ import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
 
 export default function HomePage() {
+  const { t } = useTranslation()
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">{t('dashboard.loading')}</p>
         </div>
       </div>
     }>
@@ -33,10 +35,6 @@ function HomePageContent() {
 
   // Captura o token da URL se existir
   useTokenCapture()
-
-
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -60,7 +58,7 @@ function HomePageContent() {
 
           {/* Botão para abrir Modal AI */}
           <div className="max-w-xl mx-auto">
-            <Button
+                <Button
               onClick={() => setIsCreateAIModalOpen(true)}
               className="w-full h-16 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-orange-600 text-white border-0 font-bold text-xl rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 group"
             >
@@ -68,16 +66,16 @@ function HomePageContent() {
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                   <Sparkles className="w-5 h-5 text-white animate-pulse" />
                 </div>
-                <span className="font-bold">Criar Receita com IA</span>
+                <span className="font-bold">{t('dashboard.ai.button')}</span>
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                   <ChefHat className="w-5 h-5 text-white" />
                 </div>
               </div>
-            </Button>
+                </Button>
             
             {/* Info Text */}
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-              💡 Clique no botão acima para abrir o assistente de IA e criar receitas incríveis
+              {t('dashboard.ai.tip')}
             </p>
           </div>
 
@@ -90,9 +88,9 @@ function HomePageContent() {
               <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mx-auto">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">IA Avançada</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{t('dashboard.features.ai.title')}</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                Algoritmos inteligentes que criam receitas personalizadas para você
+                {t('dashboard.features.ai.desc')}
               </p>
             </CardContent>
           </Card>
@@ -102,9 +100,9 @@ function HomePageContent() {
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto">
                 <ChefHat className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Receitas Únicas</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{t('dashboard.features.recipes.title')}</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                Milhares de combinações baseadas em seus ingredientes disponíveis
+                {t('dashboard.features.recipes.desc')}
               </p>
             </CardContent>
           </Card>
@@ -114,9 +112,9 @@ function HomePageContent() {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto">
                 <User className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Fácil de Usar</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{t('dashboard.features.easy.title')}</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                Interface intuitiva que qualquer pessoa pode usar
+                {t('dashboard.features.easy.desc')}
               </p>
             </CardContent>
           </Card>
@@ -128,7 +126,7 @@ function HomePageContent() {
             size="lg"
             className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 font-medium"
           >
-            Começar Agora
+            {t('home.cta')}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

@@ -22,6 +22,7 @@ import {
 import { useChatSessions, useCreateChatSession, useChatMessagesBySession, useCreateChatMessage } from "@/network/hooks"
 import { ChatSession, ChatMessage } from "@/types/chat"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 
 interface ChatFormData {
   message: string
@@ -32,6 +33,7 @@ interface NewSessionFormData {
 }
 
 export default function Chat() {
+  const { t } = useTranslation()
   const [selectedSession, setSelectedSession] = useState<ChatSession | null>(null)
   const [isCreatingSession, setIsCreatingSession] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -181,7 +183,7 @@ export default function Chat() {
                               variant="outline"
                               onClick={() => setIsCreatingSession(false)}
                             >
-                              Cancelar
+                              {t('common.cancel')}
                             </Button>
                           </div>
                         </form>

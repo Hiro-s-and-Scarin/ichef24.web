@@ -19,8 +19,11 @@ import { useMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipe
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
 import { RecipeParams } from "@/types/recipe";
+import { useTranslation } from "react-i18next";
 
 export function HistoryPageContent() {
+  const { t } = useTranslation();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeType | null>(null);
@@ -132,26 +135,26 @@ export function HistoryPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <History className="text-orange-500" />
-                Histórico de Receitas
+                {t('history.title')}
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">Suas criações culinárias organizadas por data</p>
+              <p className="text-gray-600 dark:text-gray-300">{t('history.subtitle')}</p>
             </div>
             <div className="flex items-center gap-4">
               <Button
                 className="bg-orange-500 hover:bg-orange-600 text-white"
                 onClick={() => setIsCreateModalOpen(true)}
               >
-                Nova Receita
+                {t('history.create.new')}
               </Button>
               <Button
                 variant="outline"
                 className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
                 onClick={() => setIsCreateAIModalOpen(true)}
               >
-                Criar com IA
+                {t('history.create.ai')}
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/dashboard">Voltar ao Início</Link>
+                <Link href="/dashboard">{t('history.back.home')}</Link>
               </Button>
             </div>
           </div>
@@ -162,19 +165,19 @@ export function HistoryPageContent() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-500">{currentRecipes.length}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Receitas Criadas</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.created')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-500">4.9</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Nota Média</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.rating')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-500">35min</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Tempo Médio</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.time')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-500">267</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total de Visualizações</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('history.stats.views')}</div>
                 </div>
               </div>
             </CardContent>
@@ -187,7 +190,7 @@ export function HistoryPageContent() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder="Buscar nas suas receitas..."
+                    placeholder={t('history.search.placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 border-gray-200 dark:border-gray-600"
@@ -201,7 +204,7 @@ export function HistoryPageContent() {
                     className="border-gray-200 dark:border-gray-600"
                   >
                     <Filter className="w-4 h-4 mr-2" />
-                    Filtros
+                    {t('history.filters')}
                   </Button>
                   <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
                     <Button
@@ -210,7 +213,7 @@ export function HistoryPageContent() {
                       onClick={() => setViewMode("grid")}
                       className="px-3"
                     >
-                      Grid
+                      {t('history.view.mode.grid')}
                     </Button>
                     <Button
                       variant={viewMode === "list" ? "default" : "ghost"}
@@ -218,7 +221,7 @@ export function HistoryPageContent() {
                       onClick={() => setViewMode("list")}
                       className="px-3"
                     >
-                      Lista
+                      {t('history.view.mode.list')}
                     </Button>
                   </div>
                 </div>
@@ -231,7 +234,7 @@ export function HistoryPageContent() {
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-                <p className="mt-2 text-gray-500">Carregando receitas...</p>
+                <p className="mt-2 text-gray-500">{t('history.loading')}</p>
               </div>
             </div>
           ) : (
@@ -300,8 +303,8 @@ export function HistoryPageContent() {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                                  <span>👁️ {recipe.views_count}</span>
-                                  <span>❤️ {recipe.likes_count}</span>
+                                  <span>{t('history.views')} {recipe.views_count}</span>
+                                  <span>{t('history.likes')} {recipe.likes_count}</span>
                                 </div>
                               </div>
                             </div>
@@ -345,12 +348,12 @@ export function HistoryPageContent() {
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
                   <History className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Nenhuma receita encontrada</h3>
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{t('history.no.recipes')}</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Você ainda não criou nenhuma receita. Comece criando sua primeira obra-prima culinária!
+                  {t('history.no.recipes.desc')}
                 </p>
                 <Button onClick={() => setIsCreateAIModalOpen(true)}>
-                  Criar Receita com IA
+                  {t('dashboard.ai.button')}
                 </Button>
               </CardContent>
             </Card>

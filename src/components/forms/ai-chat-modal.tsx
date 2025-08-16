@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,10 +30,11 @@ export function AIChatModal({
   isOpen,
   onClose,
   title,
-  placeholder = "Digite sua mensagem...",
+        placeholder = t('ai.chat.placeholder'),
   initialMessage,
   onRecipeGenerated,
 }: AIChatModalProps) {
+  const { t } = useTranslation()
   // Estado consolidado
   const [chatState, setChatState] = useState<AIChatModalState>({
     messages: [],
@@ -86,10 +88,10 @@ export function AIChatModal({
     // Simulate AI response
     setTimeout(() => {
       const responses = [
-        "Que interessante! Vou criar uma receita especial para você. Com base no que você disse, sugiro um prato que combina sabores únicos e técnicas culinárias modernas.",
-        "Perfeito! Estou pensando em uma receita que vai surpreender seu paladar. Deixe-me elaborar algo delicioso com os ingredientes que você mencionou.",
-        "Excelente escolha! Vou criar uma receita personalizada que leva em conta suas preferências. Que tal experimentarmos algo novo e saboroso?",
-        "Adorei sua ideia! Vou desenvolver uma receita especial que combina tradição e inovação. Prepare-se para uma experiência culinária incrível!",
+        t('ai.chat.response.1'),
+        t('ai.chat.response.2'),
+        t('ai.chat.response.3'),
+        t('ai.chat.response.4'),
       ]
 
       const assistantMessage: Message = {

@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import * as yup from "yup"
+import { useTranslation } from "react-i18next"
 
 // Schema de validação para posts da comunidade
 const postSchema = yup.object({
@@ -61,6 +62,7 @@ interface CommunityPost {
 }
 
 export default function AdminCommunity() {
+  const { t } = useTranslation()
   const [posts, setPosts] = useState<CommunityPost[]>([
     {
       id: "1",
@@ -284,6 +286,7 @@ export default function AdminCommunity() {
                   removeTag={removeTag}
                   watch={watch}
                   setValue={setValue}
+                  handleSubmit={handleSubmit}
                 />
               </DialogContent>
             </Dialog>
@@ -480,7 +483,7 @@ export default function AdminCommunity() {
                           onClick={() => handleEdit(post)}
                         >
                           <Edit className="w-4 h-4 mr-2" />
-                          Editar
+                          {t('common.edit')}
                         </Button>
                         <Button
                           variant="outline"
@@ -490,7 +493,7 @@ export default function AdminCommunity() {
                           className="text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-600 dark:hover:bg-red-900/20"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
-                          {isDeleting ? "Excluindo..." : "Excluir"}
+                          {isDeleting ? "Excluindo..." : t('common.delete')}
                         </Button>
                       </div>
                     </div>
@@ -506,7 +509,7 @@ export default function AdminCommunity() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Editar Post: {editingPost?.title}</DialogTitle>
+            <DialogTitle>{t('common.edit')} Post: {editingPost?.title}</DialogTitle>
           </DialogHeader>
           <PostForm 
             onSubmit={onSubmit}
@@ -517,6 +520,7 @@ export default function AdminCommunity() {
             removeTag={removeTag}
             watch={watch}
             setValue={setValue}
+            handleSubmit={handleSubmit}
           />
         </DialogContent>
       </Dialog>
@@ -533,13 +537,16 @@ function PostForm({
   addTag, 
   removeTag,
   watch,
-  setValue
+  setValue,
+  handleSubmit
 }: any) {
+  const { t } = useTranslation()
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Título do Post
+          {t('form.title')} do Post
         </label>
         <Input
           {...register("title")}
@@ -553,7 +560,7 @@ function PostForm({
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Conteúdo
+          {t('form.content')}
         </label>
         <Textarea
           {...register("content")}
@@ -583,16 +590,16 @@ function PostForm({
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Nível de Dificuldade
+            {t('form.difficulty')}
           </label>
           <Select onValueChange={(value) => setValue("difficulty_level", value)} defaultValue="Fácil">
             <SelectTrigger className="border-gray-300 dark:border-gray-600">
               <SelectValue placeholder="Selecione o nível" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Fácil">Fácil</SelectItem>
-              <SelectItem value="Intermediário">Intermediário</SelectItem>
-              <SelectItem value="Avançado">Avançado</SelectItem>
+              <SelectItem value="Fácil">{t('common.easy')}</SelectItem>
+              <SelectItem value="Intermediário">{t('common.intermediate')}</SelectItem>
+              <SelectItem value="Avançado">{t('common.advanced')}</SelectItem>
             </SelectContent>
           </Select>
           {errors.difficulty_level && (
@@ -604,7 +611,7 @@ function PostForm({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Tags de Receita
+            {t('form.tags')} de Receita
           </label>
           <Button
             type="button"
@@ -613,7 +620,7 @@ function PostForm({
             onClick={addTag}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Adicionar Tag
+            {t('common.add')} Tag
           </Button>
         </div>
         
@@ -664,10 +671,10 @@ function PostForm({
 
       <div className="flex gap-3 pt-4">
         <Button type="submit" disabled={isSubmitting} className="bg-orange-500 hover:bg-orange-600">
-          {isSubmitting ? "Salvando..." : "Salvar Post"}
+          {isSubmitting ? "Salvando..." : t('common.save')} Post
         </Button>
         <Button type="button" variant="outline">
-          Cancelar
+          {t('common.cancel')}
         </Button>
       </div>
     </form>

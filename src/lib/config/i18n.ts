@@ -28,16 +28,36 @@ const resources = {
       'home.features.favorites': 'Favoritos',
       'home.features.favorites.desc': 'Salve suas receitas preferidas',
 
+      // Dashboard Page
+      'dashboard.ai.button': 'Criar Receita com IA',
+      'dashboard.ai.tip': '💡 Clique no botão acima para abrir o assistente de IA e criar receitas incríveis',
+      'dashboard.features.ai.title': 'IA Avançada',
+      'dashboard.features.ai.desc': 'Algoritmos inteligentes que criam receitas personalizadas para você',
+      'dashboard.features.recipes.title': 'Receitas Únicas',
+      'dashboard.features.recipes.desc': 'Milhares de combinações baseadas em seus ingredientes disponíveis',
+      'dashboard.features.easy.title': 'Fácil de Usar',
+      'dashboard.features.easy.desc': 'Interface intuitiva que qualquer pessoa pode usar',
+      'dashboard.loading': 'Carregando...',
+
       // History Page
       'history.title': 'Histórico de Receitas',
-      'history.subtitle': 'Todas as suas receitas geradas pela IA',
-      'history.search.placeholder': 'Buscar receitas...',
+      'history.subtitle': 'Suas criações culinárias organizadas por data',
+      'history.search.placeholder': 'Buscar nas suas receitas...',
       'history.filters': 'Filtros',
       'history.no.recipes': 'Nenhuma receita encontrada',
-      'history.create.new': 'Criar Nova Receita',
+      'history.no.recipes.desc': 'Você ainda não criou nenhuma receita. Comece criando sua primeira obra-prima culinária!',
+      'history.create.new': 'Nova Receita',
       'history.create.ai': 'Criar com IA',
-      'history.adjust.search': 'Tente ajustar sua busca ou',
-      'history.back.home': 'volte ao início',
+      'history.back.home': 'Voltar ao Início',
+      'history.stats.created': 'Receitas Criadas',
+      'history.stats.rating': 'Nota Média',
+      'history.stats.time': 'Tempo Médio',
+      'history.stats.views': 'Total de Visualizações',
+      'history.view.mode.grid': 'Grid',
+      'history.view.mode.list': 'Lista',
+      'history.loading': 'Carregando receitas...',
+      'history.views': '👁️',
+      'history.likes': '❤️',
 
       // Favorites Page
       'favorites.title': 'Receitas Favoritas',
@@ -391,14 +411,36 @@ const resources = {
       'home.features.favorites': 'Favorites',
       'home.features.favorites.desc': 'Save your favorite recipes',
 
+      // Dashboard Page
+      'dashboard.ai.button': 'Create Recipe with AI',
+      'dashboard.ai.tip': '💡 Click the button above to open the AI assistant and create amazing recipes',
+      'dashboard.features.ai.title': 'Advanced AI',
+      'dashboard.features.ai.desc': 'Intelligent algorithms that create personalized recipes',
+      'dashboard.features.recipes.title': 'Unique Recipes',
+      'dashboard.features.recipes.desc': 'Thousands of combinations based on your available ingredients',
+      'dashboard.features.easy.title': 'Easy to Use',
+      'dashboard.features.easy.desc': 'Intuitive interface that anyone can use',
+      'dashboard.loading': 'Loading...',
+
       // History Page
       'history.title': 'Recipe History',
-      'history.subtitle': 'All your AI-generated recipes',
-      'history.search.placeholder': 'Search recipes...',
+      'history.subtitle': 'Your culinary creations organized by date',
+      'history.search.placeholder': 'Search your recipes...',
       'history.filters': 'Filters',
       'history.no.recipes': 'No recipes found',
-      'history.create.new': 'Create New Recipe',
+      'history.no.recipes.desc': 'You haven\'t created any recipes yet. Start by creating your first culinary masterpiece!',
+      'history.create.new': 'New Recipe',
       'history.create.ai': 'Create with AI',
+      'history.back.home': 'Back to Home',
+      'history.stats.created': 'Recipes Created',
+      'history.stats.rating': 'Average Rating',
+      'history.stats.time': 'Average Time',
+      'history.stats.views': 'Total Views',
+      'history.view.mode.grid': 'Grid',
+      'history.view.mode.list': 'List',
+      'history.loading': 'Loading recipes...',
+      'history.views': '👁️',
+      'history.likes': '❤️',
 
       // Favorites Page
       'favorites.title': 'Favorite Recipes',
@@ -555,6 +597,132 @@ const resources = {
       'filter.categories.prepTime': 'Prep Time',
       'filter.categories.occasion': 'Occasion',
 
+      // AI Components
+      'ai.preferences': 'Preferences',
+      'ai.recipe.type': 'Recipe Type',
+      'ai.recipe.type.placeholder': 'Ex: italian, vegetarian, quick...',
+      'ai.prep.time': 'Prep Time',
+      'ai.prep.time.placeholder': 'Ex: 30 minutes',
+      'ai.creating.recipe': 'Creating recipe...',
+      'ai.create.gourmet': 'Create Gourmet Recipe',
+      'ai.welcome.message': 'What recipe do you want to create today?',
+      'ai.error.message': 'Sorry, an error occurred while generating the recipe. Please try again.',
+      'ai.creating.message': 'Creating your gourmet recipe...',
+      'ai.input.placeholder': 'Describe your dream recipe...',
+      'ai.improve.message': 'Hello! How can I improve the recipe "{title}"?',
+      'ai.improve.suggestion': 'Great idea! I\'ll help you improve the recipe "{title}". Here are my suggestions!',
+      'ai.chat.placeholder': 'Type your message...',
+      'ai.chat.response.1': 'How interesting! I\'ll create a special recipe for you. Based on what you said, I suggest a dish that combines unique flavors and modern culinary techniques.',
+      'ai.chat.response.2': 'Perfect! I\'m thinking of a recipe that will surprise your palate. Let me elaborate something delicious with the ingredients you mentioned.',
+      'ai.chat.response.3': 'Excellent choice! I\'ll create a personalized recipe that takes into account your preferences. How about we try something new and tasty?',
+      'ai.chat.response.4': 'I loved your idea! I\'ll develop a special recipe that combines tradition and innovation. Get ready for an incredible culinary experience!',
+
+      // Filter Modal
+      'filter.title': 'Filters',
+      'filter.search.placeholder': 'Type the recipe name...',
+      'filter.difficulty.label': 'Difficulty Level',
+      'filter.difficulty.very.easy': 'Very Easy',
+      'filter.difficulty.easy': 'Easy',
+      'filter.difficulty.intermediate': 'Intermediate',
+      'filter.difficulty.hard': 'Hard',
+      'filter.difficulty.very.hard': 'Very Hard',
+      'filter.cuisine.label': 'Cuisine Type',
+      'filter.time.label': 'Prep Time',
+      'filter.time.15': 'Up to 15 min',
+      'filter.time.30': 'Up to 30 min',
+      'filter.time.45': 'Up to 45 min',
+      'filter.time.60': 'Up to 1 hour',
+      'filter.time.120': 'Up to 2 hours',
+      'filter.tags.label': 'Tags',
+      'filter.apply': 'Apply Filters',
+      'filter.reset': 'Clear Filters',
+      'filter.search.label': 'Search recipes',
+
+      // Recipe Card
+      'recipe.card.difficulty.not.specified': 'Not specified',
+      'recipe.card.difficulty.very.easy': 'Very Easy',
+      'recipe.card.difficulty.easy': 'Easy',
+      'recipe.card.difficulty.intermediate': 'Intermediate',
+      'recipe.card.difficulty.hard': 'Hard',
+      'recipe.card.difficulty.very.hard': 'Very Hard',
+
+      // Recipe Modal
+      'recipe.modal.time': 'Time',
+      'recipe.modal.servings': 'Servings',
+      'recipe.modal.difficulty': 'Difficulty',
+      'recipe.modal.rating': 'Rating',
+      'recipe.modal.ingredients': 'Ingredients',
+      'recipe.modal.instructions': 'Instructions',
+      'recipe.modal.nutrition': 'Nutritional Information',
+      'recipe.modal.calories': 'Calories',
+      'recipe.modal.protein': 'Protein',
+      'recipe.modal.carbs': 'Carbohydrates',
+      'recipe.modal.fat': 'Fat',
+      'recipe.modal.rate': 'Rate this recipe',
+
+      // Pagination
+      'pagination.previous': 'Previous',
+      'pagination.next': 'Next',
+
+      // Form Labels
+      'form.title': 'Title',
+      'form.content': 'Content',
+      'form.description': 'Description',
+      'form.difficulty': 'Difficulty Level',
+      'form.time': 'Time',
+      'form.servings': 'Servings',
+      'form.ingredients': 'Ingredients',
+      'form.instructions': 'Instructions',
+      'form.tags': 'Tags',
+      'form.optional': 'optional',
+      'form.required': 'required',
+
+      // Recipe
+      'recipe.rating': 'Rating',
+      'recipe.nutrition': 'Nutritional Information',
+      'recipe.calories': 'Calories',
+      'recipe.protein': 'Protein',
+      'recipe.carbs': 'Carbohydrates',
+      'recipe.fat': 'Fat',
+      'recipe.rate': 'Rate this recipe',
+      'recipe.rating.excellent': 'Excellent!',
+      'recipe.rating.very.good': 'Very good!',
+      'recipe.rating.good': 'Good!',
+      'recipe.rating.regular': 'Regular',
+      'recipe.rating.can.improve': 'Can improve',
+      'recipe.rating.thank.you': 'Thank you for your {rating} {stars} rating!',
+      'recipe.rating.star': 'star',
+      'recipe.rating.stars': 'stars',
+      'recipe.reviews': 'Reviews',
+      'recipe.instructions': 'Instructions',
+      'recipe.fiber': 'Fiber',
+      'recipe.chef.tips': 'Chef Tips',
+      'common.you': 'You',
+      'common.your.recipe': 'your recipe',
+
+      // Examples
+      'example.dynamic.translation': 'Dynamic Translation Example',
+      'example.current.language': 'Current Language',
+      'example.difficulty': 'Difficulty Level',
+      'example.cuisine.type': 'Cuisine Type',
+      'example.tags': 'Tags',
+      'example.status': 'Status',
+      'example.ingredients': 'Ingredients',
+      'example.language.examples': 'Examples in Different Languages',
+
+      // Checkout
+      'checkout.client.name': 'iChef24 Client',
+      'checkout.plan.summary': 'Plan Summary',
+      'checkout.plan.name': 'Plan',
+      'checkout.plan.cycle': 'Cycle',
+      'checkout.plan.value': 'Value',
+      'checkout.plan.features': 'Included Features',
+      'checkout.payment.card': 'Card Payment',
+      'checkout.payment.card.data': 'Card Data',
+      'checkout.payment.security.ssl': 'Your data is protected with SSL encryption',
+      'checkout.payment.processing': 'Processing...',
+      'checkout.payment.finish': 'Finish Payment',
+
       // Auth
       'auth.login': 'Login',
       'auth.register': 'Register',
@@ -623,52 +791,132 @@ const resources = {
       'currency.usd': '$',
       'currency.eur': '€',
       'currency.gbp': '£',
-    },
-    en: {
-      translation: {
-        // Navigation
-        'header.home': 'Home',
-        'header.history': 'History',
-        'header.favorites': 'Favorites',
-        'header.community': 'Community',
-        'header.plans': 'Plans',
-        'header.login': 'Login',
-        'header.start': 'Start',
-        
-        // History Page
-        'history.title': 'Recipe History',
-        'history.subtitle': 'All your AI-generated recipes',
-        'history.search.placeholder': 'Search recipes...',
-        'history.filters': 'Filters',
-        
-        // Common
-        'common.view': 'View',
-        'common.edit': 'Edit',
-        'common.share': 'Share',
-        'common.easy': 'Easy',
-        'common.medium': 'Medium',
-        'common.hard': 'Hard',
-        
-        // Recipe
-        'recipe.view': 'View',
-        'recipe.nutrition': 'Nutritional Information',
-        'recipe.calories': 'Calories',
-        'recipe.protein': 'Protein',
-        'recipe.carbs': 'Carbohydrates',
-        'recipe.fat': 'Fat',
-        
-        // Forms
-        'form.ingredients': 'Ingredients',
-        'form.instructions': 'Instructions',
-        'form.time': 'Prep Time',
-        'form.servings': 'Servings',
-        'form.difficulty': 'Difficulty',
-        'form.tags': 'Tags',
-        'form.custom.tag': 'Add custom tag',
-        'form.difficulty.easy': 'Easy',
-        'form.difficulty.medium': 'Medium', 
-        'form.difficulty.hard': 'Hard',
-      }
+
+      // AI Components
+      'ai.preferences': 'Preferências',
+      'ai.recipe.type': 'Tipo de Receita',
+      'ai.recipe.type.placeholder': 'Ex: italiana, vegetariana, rápida...',
+      'ai.prep.time': 'Tempo de Preparo',
+      'ai.prep.time.placeholder': 'Ex: 30 minutos',
+      'ai.creating.recipe': 'Criando receita...',
+      'ai.create.gourmet': 'Criar Receita Gourmet',
+      'ai.welcome.message': 'Que receita você quer criar hoje?',
+      'ai.error.message': 'Desculpe, ocorreu um erro ao gerar a receita. Por favor, tente novamente.',
+      'ai.creating.message': 'Criando sua receita gourmet...',
+      'ai.input.placeholder': 'Descreva sua receita dos sonhos...',
+      'ai.improve.message': 'Olá! Como posso melhorar a receita "{title}"?',
+      'ai.improve.suggestion': 'Ótima ideia! Vou ajudar você a melhorar a receita "{title}". Aqui estão minhas sugestões!',
+      'ai.chat.placeholder': 'Digite sua mensagem...',
+      'ai.chat.response.1': 'Que interessante! Vou criar uma receita especial para você. Com base no que você disse, sugiro um prato que combina sabores únicos e técnicas culinárias modernas.',
+      'ai.chat.response.2': 'Perfeito! Estou pensando em uma receita que vai surpreender seu paladar. Deixe-me elaborar algo delicioso com os ingredientes que você mencionou.',
+      'ai.chat.response.3': 'Excelente escolha! Vou criar uma receita personalizada que leva em conta suas preferências. Que tal experimentarmos algo novo e saboroso?',
+      'ai.chat.response.4': 'Adorei sua ideia! Vou desenvolver uma receita especial que combina tradição e inovação. Prepare-se para uma experiência culinária incrível!',
+
+      // Filter Modal
+      'filter.title': 'Filtros',
+      'filter.search.placeholder': 'Digite o nome da receita...',
+      'filter.difficulty.label': 'Nível de Dificuldade',
+      'filter.difficulty.very.easy': 'Muito Fácil',
+      'filter.difficulty.easy': 'Fácil',
+      'filter.difficulty.intermediate': 'Intermediário',
+      'filter.difficulty.hard': 'Difícil',
+      'filter.difficulty.very.hard': 'Muito Difícil',
+      'filter.cuisine.label': 'Tipo de Cozinha',
+      'filter.time.label': 'Tempo de Preparo',
+      'filter.time.15': 'Até 15 min',
+      'filter.time.30': 'Até 30 min',
+      'filter.time.45': 'Até 45 min',
+      'filter.time.60': 'Até 1 hora',
+      'filter.time.120': 'Até 2 horas',
+      'filter.tags.label': 'Tags',
+      'filter.apply': 'Aplicar Filtros',
+      'filter.reset': 'Limpar Filtros',
+      'filter.search.label': 'Buscar receitas',
+
+      // Recipe Card
+      'recipe.card.difficulty.not.specified': 'Não especificado',
+      'recipe.card.difficulty.very.easy': 'Muito Fácil',
+      'recipe.card.difficulty.easy': 'Fácil',
+      'recipe.card.difficulty.intermediate': 'Intermediário',
+      'recipe.card.difficulty.hard': 'Difícil',
+      'recipe.card.difficulty.very.hard': 'Muito Difícil',
+
+      // Recipe Modal
+      'recipe.modal.time': 'Tempo',
+      'recipe.modal.servings': 'Porções',
+      'recipe.modal.difficulty': 'Dificuldade',
+      'recipe.modal.rating': 'Avaliação',
+      'recipe.modal.ingredients': 'Ingredientes',
+      'recipe.modal.instructions': 'Instruções',
+      'recipe.modal.nutrition': 'Informações Nutricionais',
+      'recipe.modal.calories': 'Calorias',
+      'recipe.modal.protein': 'Proteína',
+      'recipe.modal.carbs': 'Carboidratos',
+      'recipe.modal.fat': 'Gordura',
+      'recipe.modal.rate': 'Avalie esta receita',
+
+      // Pagination
+      'pagination.previous': 'Anterior',
+      'pagination.next': 'Próximo',
+
+      // Form Labels
+      'form.title': 'Título',
+      'form.content': 'Conteúdo',
+      'form.description': 'Descrição',
+      'form.difficulty': 'Nível de Dificuldade',
+      'form.time': 'Tempo',
+      'form.servings': 'Porções',
+      'form.ingredients': 'Ingredientes',
+      'form.instructions': 'Instruções',
+      'form.tags': 'Tags',
+      'form.optional': 'opcional',
+      'form.required': 'obrigatório',
+
+      // Recipe
+      'recipe.rating': 'Avaliação',
+      'recipe.nutrition': 'Informações Nutricionais',
+      'recipe.calories': 'Calorias',
+      'recipe.protein': 'Proteína',
+      'recipe.carbs': 'Carboidratos',
+      'recipe.fat': 'Gordura',
+      'recipe.rate': 'Avalie esta receita',
+      'recipe.rating.excellent': 'Excelente!',
+      'recipe.rating.very.good': 'Muito bom!',
+      'recipe.rating.good': 'Bom!',
+      'recipe.rating.regular': 'Regular',
+      'recipe.rating.can.improve': 'Pode melhorar',
+      'recipe.rating.thank.you': 'Obrigado pela sua avaliação de {rating} {stars}!',
+      'recipe.rating.star': 'estrela',
+      'recipe.rating.stars': 'estrelas',
+      'recipe.reviews': 'Avaliações',
+      'recipe.instructions': 'Modo de Preparo',
+      'recipe.fiber': 'Fibra',
+      'recipe.chef.tips': 'Dicas do Chef',
+      'common.you': 'Você',
+      'common.your.recipe': 'sua receita',
+
+      // Examples
+      'example.dynamic.translation': 'Exemplo de Tradução Dinâmica',
+      'example.current.language': 'Idioma Atual',
+      'example.difficulty': 'Nível de Dificuldade',
+      'example.cuisine.type': 'Tipo de Cozinha',
+      'example.tags': 'Tags',
+      'example.status': 'Status',
+      'example.ingredients': 'Ingredientes',
+      'example.language.examples': 'Exemplos em Diferentes Idiomas',
+
+      // Checkout
+      'checkout.client.name': 'Cliente iChef24',
+      'checkout.plan.summary': 'Resumo do Plano',
+      'checkout.plan.name': 'Plano',
+      'checkout.plan.cycle': 'Ciclo',
+      'checkout.plan.value': 'Valor',
+      'checkout.plan.features': 'Recursos Inclusos',
+      'checkout.payment.card': 'Pagamento com Cartão',
+      'checkout.payment.card.data': 'Dados do Cartão',
+      'checkout.payment.security.ssl': 'Seus dados estão protegidos com criptografia SSL',
+      'checkout.payment.processing': 'Processando...',
+      'checkout.payment.finish': 'Finalizar Pagamento',
     }
   }
 }
@@ -691,5 +939,197 @@ i18n
       useSuspense: false
     },
   })
+
+// Funções para tradução dinâmica de dados do backend
+export const translateDynamicData = {
+  // Traduzir níveis de dificuldade
+  difficulty: (level: number | string, lang: string = 'pt') => {
+    const difficulties = {
+      pt: {
+        1: 'Muito Fácil',
+        2: 'Fácil', 
+        3: 'Intermediário',
+        4: 'Difícil',
+        5: 'Muito Difícil',
+        'very_easy': 'Muito Fácil',
+        'easy': 'Fácil',
+        'medium': 'Intermediário',
+        'hard': 'Difícil',
+        'very_hard': 'Muito Difícil'
+      },
+      en: {
+        1: 'Very Easy',
+        2: 'Easy',
+        3: 'Intermediate', 
+        4: 'Hard',
+        5: 'Very Hard',
+        'very_easy': 'Very Easy',
+        'easy': 'Easy',
+        'medium': 'Intermediate',
+        'hard': 'Hard',
+        'very_hard': 'Very Hard'
+      }
+    }
+    return difficulties[lang as keyof typeof difficulties]?.[level] || level
+  },
+
+  // Traduzir tipos de cozinha
+  cuisine: (type: string, lang: string = 'pt') => {
+    const cuisines = {
+      pt: {
+        'italian': 'Italiana',
+        'brazilian': 'Brasileira',
+        'japanese': 'Japonesa',
+        'mexican': 'Mexicana',
+        'indian': 'Indiana',
+        'french': 'Francesa',
+        'chinese': 'Chinesa',
+        'thai': 'Tailandesa',
+        'mediterranean': 'Mediterrânea',
+        'arabic': 'Árabe',
+        'american': 'Americana',
+        'greek': 'Grega',
+        'spanish': 'Espanhola',
+        'portuguese': 'Portuguesa'
+      },
+      en: {
+        'italian': 'Italian',
+        'brazilian': 'Brazilian',
+        'japanese': 'Japanese',
+        'mexican': 'Mexican',
+        'indian': 'Indian',
+        'french': 'French',
+        'chinese': 'Chinese',
+        'thai': 'Thai',
+        'mediterranean': 'Mediterranean',
+        'arabic': 'Arabic',
+        'american': 'American',
+        'greek': 'Greek',
+        'spanish': 'Spanish',
+        'portuguese': 'Portuguese'
+      }
+    }
+    return cuisines[lang as keyof typeof cuisines]?.[type.toLowerCase()] || type
+  },
+
+  // Traduzir tags de receita
+  recipeTag: (tag: string, lang: string = 'pt') => {
+    const tags = {
+      pt: {
+        'vegetarian': 'Vegetariano',
+        'vegan': 'Vegano',
+        'gluten_free': 'Sem Glúten',
+        'dairy_free': 'Sem Laticínios',
+        'quick': 'Rápido',
+        'healthy': 'Saudável',
+        'spicy': 'Picante',
+        'sweet': 'Doce',
+        'savory': 'Salgado',
+        'creamy': 'Cremoso',
+        'crunchy': 'Crocante',
+        'protein': 'Proteína',
+        'low_carb': 'Baixo Carboidrato',
+        'low_fat': 'Baixo Teor de Gordura',
+        'high_protein': 'Alto Teor de Proteína'
+      },
+      en: {
+        'vegetarian': 'Vegetarian',
+        'vegan': 'Vegan',
+        'gluten_free': 'Gluten Free',
+        'dairy_free': 'Dairy Free',
+        'quick': 'Quick',
+        'healthy': 'Healthy',
+        'spicy': 'Spicy',
+        'sweet': 'Sweet',
+        'savory': 'Savory',
+        'creamy': 'Creamy',
+        'crunchy': 'Crunchy',
+        'protein': 'Protein',
+        'low_carb': 'Low Carb',
+        'low_fat': 'Low Fat',
+        'high_protein': 'High Protein'
+      }
+    }
+    return tags[lang as keyof typeof tags]?.[tag.toLowerCase()] || tag
+  },
+
+  // Traduzir status de receita
+  recipeStatus: (status: string, lang: string = 'pt') => {
+    const statuses = {
+      pt: {
+        'draft': 'Rascunho',
+        'published': 'Publicado',
+        'private': 'Privado',
+        'archived': 'Arquivado',
+        'pending': 'Pendente',
+        'approved': 'Aprovado',
+        'rejected': 'Rejeitado'
+      },
+      en: {
+        'draft': 'Draft',
+        'published': 'Published',
+        'private': 'Private',
+        'archived': 'Archived',
+        'pending': 'Pending',
+        'approved': 'Approved',
+        'rejected': 'Rejected'
+      }
+    }
+    return statuses[lang as keyof typeof statuses]?.[status.toLowerCase()] || status
+  },
+
+  // Traduzir unidades de medida
+  unit: (unit: string, lang: string = 'pt') => {
+    const units = {
+      pt: {
+        'g': 'g',
+        'kg': 'kg',
+        'ml': 'ml',
+        'l': 'l',
+        'tbsp': 'colher de sopa',
+        'tsp': 'colher de chá',
+        'cup': 'xícara',
+        'piece': 'unidade',
+        'slice': 'fatia',
+        'clove': 'dente',
+        'bunch': 'maço',
+        'pinch': 'pitada'
+      },
+      en: {
+        'g': 'g',
+        'kg': 'kg',
+        'ml': 'ml',
+        'l': 'l',
+        'tbsp': 'tablespoon',
+        'tsp': 'teaspoon',
+        'cup': 'cup',
+        'piece': 'piece',
+        'slice': 'slice',
+        'clove': 'clove',
+        'bunch': 'bunch',
+        'pinch': 'pinch'
+      }
+    }
+    return units[lang as keyof typeof units]?.[unit.toLowerCase()] || unit
+  }
+}
+
+// Hook personalizado para tradução dinâmica
+export const useDynamicTranslation = () => {
+  const { t, i18n } = useTranslation()
+  const currentLang = i18n.language
+
+  return {
+    t,
+    currentLang,
+    translate: {
+      difficulty: (level: number | string) => translateDynamicData.difficulty(level, currentLang),
+      cuisine: (type: string) => translateDynamicData.cuisine(type, currentLang),
+      recipeTag: (tag: string) => translateDynamicData.recipeTag(tag, currentLang),
+      recipeStatus: (status: string) => translateDynamicData.recipeStatus(status, currentLang),
+      unit: (unit: string) => translateDynamicData.unit(unit, currentLang)
+    }
+  }
+}
 
 export default i18n 

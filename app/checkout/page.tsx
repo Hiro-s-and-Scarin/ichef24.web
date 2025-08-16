@@ -13,6 +13,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import * as yup from "yup"
+import { useTranslation } from "react-i18next"
 
 const cardSchema = yup.object({
   cardNumber: yup.string().required("Número do cartão é obrigatório").matches(/^\d{16}$/, "Número do cartão deve ter 16 dígitos"),
@@ -33,6 +34,7 @@ interface PlanDetails {
 }
 
 function CheckoutContent() {
+  const { t } = useTranslation()
   const searchParams = useSearchParams()
   const [paymentMethod, setPaymentMethod] = useState<"card" | "pix">("card")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -118,7 +120,7 @@ function CheckoutContent() {
               </Link>
               <Link href="/dashboard">
                 <Button variant="outline">
-                  Voltar ao Início
+                  {t('common.back')} ao Início
                 </Button>
               </Link>
             </div>
@@ -136,7 +138,7 @@ function CheckoutContent() {
           <div className="text-center">
             <Link href="/plans" className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-4">
               <ArrowLeft className="w-4 h-4" />
-              Voltar aos Planos
+              {t('common.back')} aos Planos
             </Link>
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
               Finalizar Assinatura
@@ -162,7 +164,7 @@ function CheckoutContent() {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Ciclo:</span>
                   <Badge variant="outline">
-                    {planDetails.billing_cycle === "monthly" ? "Mensal" : "Anual"}
+                    {planDetails.billing_cycle === "monthly" ? t('plans.monthly') : t('plans.yearly')}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
@@ -346,13 +348,15 @@ function CheckoutContent() {
 }
 
 export default function Checkout() {
+  const { t } = useTranslation()
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando checkout...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">{t('common.loading')} checkout...</p>
           </div>
         </div>
       </div>

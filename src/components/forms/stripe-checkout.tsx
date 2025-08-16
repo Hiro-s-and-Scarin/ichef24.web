@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -51,6 +52,7 @@ const cardElementOptions = {
 }
 
 export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckoutProps) {
+  const { t } = useTranslation()
   const stripe = useStripe()
   const elements = useElements()
   const [isSuccess, setIsSuccess] = useState(false)
@@ -83,7 +85,7 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
         type: 'card',
         card: elements.getElement(CardElement)!,
         billing_details: {
-          name: currentUser.name || 'Cliente iChef24',
+          name: currentUser.name || t('checkout.client.name'),
           email: currentUser.email,
         },
       })
@@ -185,29 +187,29 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
       <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-xl text-gray-800 dark:text-white">
-            Resumo do Plano
+            {t('checkout.plan.summary')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Plano:</span>
+            <span className="text-gray-600 dark:text-gray-300">{t('checkout.plan.name')}:</span>
             <span className="font-semibold text-gray-800 dark:text-white">{planDetails.name}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Ciclo:</span>
+            <span className="text-gray-600 dark:text-gray-300">{t('checkout.plan.cycle')}:</span>
             <Badge variant="outline">
-              {planDetails.billing_cycle === "monthly" ? "Mensal" : "Anual"}
+              {planDetails.billing_cycle === "monthly" ? t('plans.monthly') : t('plans.yearly')}
             </Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Valor:</span>
+            <span className="text-gray-600 dark:text-gray-300">{t('checkout.plan.value')}:</span>
             <span className="text-2xl font-bold text-orange-600">
               {formatCurrency(planDetails.price)}
             </span>
           </div>
           
           <div className="border-t pt-4">
-            <h4 className="font-semibold text-gray-800 dark:text-white mb-3">Recursos Inclusos:</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-white mb-3">{t('checkout.plan.features')}:</h4>
             <ul className="space-y-2">
               {planDetails.features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
@@ -225,20 +227,20 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
         <CardHeader>
           <CardTitle className="text-xl text-gray-800 dark:text-white flex items-center gap-2">
             <CreditCard className="w-5 h-5" />
-            Pagamento com Cartão
+            {t('checkout.payment.card')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Dados do Cartão
+                {t('checkout.payment.card.data')}
               </label>
               <div className="border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700">
                 <CardElement options={cardElementOptions} />
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Seus dados estão protegidos com criptografia SSL
+                {t('checkout.payment.security.ssl')}
               </p>
             </div>
 
@@ -250,12 +252,12 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
               {createPaymentMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Processando...
+                  {t('checkout.payment.processing')}
                 </>
               ) : (
                 <>
                   <Lock className="w-5 h-5 mr-2" />
-                  Finalizar Pagamento
+                  {t('checkout.payment.finish')}
                 </>
               )}
             </Button>
@@ -263,10 +265,10 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
 
           {/* Segurança */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <Shield className="w-4 h-4" />
-              <span>Pagamento seguro com criptografia SSL</span>
-            </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <Shield className="w-4 h-4" />
+            <span>{t('checkout.payment.security.ssl')}</span>
+          </div>
           </div>
         </CardContent>
       </Card>
@@ -274,7 +276,7 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
       {/* Botão Voltar */}
       <div className="text-center">
         <Button variant="outline" onClick={onBack}>
-          Voltar aos Planos
+          {t('common.back')} aos {t('header.plans')}
         </Button>
       </div>
     </div>

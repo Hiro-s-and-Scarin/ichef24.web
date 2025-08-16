@@ -81,7 +81,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
         chatMessages: [
           { 
             type: 'ai', 
-            message: 'Que receita você quer criar hoje?',
+            message: t('ai.welcome.message'),
             timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
             suggestions: []
           }
@@ -165,7 +165,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
         isGenerating: false,
         chatMessages: [...chatMessages, {
           type: 'ai',
-          message: "Desculpe, ocorreu um erro ao gerar a receita. Por favor, tente novamente.",
+          message: t('ai.error.message'),
           timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         }]
       })
@@ -227,7 +227,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                 <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-700 bg-clip-text text-transparent">
                   iChef24 AI
                 </DialogTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Criador de Receitas com IA</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{t('ai.create.gourmet')}</p>
               </div>
             </div>
           </div>
@@ -245,7 +245,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                   </div>
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white">iChef24 AI</h4>
-                    <p className="text-sm text-orange-600 dark:text-orange-400">IA Culinária</p>
+                    <p className="text-sm text-orange-600 dark:text-orange-400">{t('ai.create.gourmet')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -271,9 +271,9 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                           </div>
                         )}
                         <div className="flex-1">
-                          <span className="text-sm font-bold opacity-90">
-                            {message.type === 'ai' ? 'iChef24 AI' : 'Você'}
-                          </span>
+                                                  <span className="text-sm font-bold opacity-90">
+                          {message.type === 'ai' ? 'iChef24 AI' : t('common.you')}
+                        </span>
                           <span className="text-sm opacity-70 ml-2">{message.timestamp}</span>
                         </div>
                       </div>
@@ -318,7 +318,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                             </div>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-300">
-                            Criando sua receita gourmet...
+                            {t('ai.creating.message')}
                           </p>
                         </div>
                       </div>
@@ -335,7 +335,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                     <Input
                       value={chatInput}
                       onChange={(e) => updateModalState({ chatInput: e.target.value })}
-                      placeholder="Descreva sua receita dos sonhos..."
+                      placeholder={t('ai.input.placeholder')}
                       className="relative h-12 pr-24 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                       disabled={isGenerating}
                     />

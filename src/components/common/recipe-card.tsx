@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Card, CardContent } from "@/components/ui/card"
+import { translateDynamicData } from "@/lib/config/i18n"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Heart, Clock, Users, Star, Eye } from "lucide-react"
@@ -17,6 +19,7 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = false }: RecipeCardProps) {
+  const { t, i18n } = useTranslation()
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
@@ -35,16 +38,9 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
     }
   }
 
-  const getDifficultyText = (level?: number) => {
-    if (!level) return "Não especificado"
-    switch (level) {
-      case 1: return "Muito Fácil"
-      case 2: return "Fácil"
-      case 3: return "Intermediário"
-      case 4: return "Difícil"
-      case 5: return "Muito Difícil"
-      default: return "Não especificado"
-    }
+  const getDifficultyText = (level?: number | string) => {
+    if (!level) return t('recipe.card.difficulty.not.specified')
+    return translateDynamicData.difficulty(level, i18n.language)
   }
 
   const getDifficultyColor = (level?: number) => {

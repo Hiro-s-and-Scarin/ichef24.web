@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import * as yup from "yup"
+import { useTranslation } from "react-i18next"
 
 // Schema de validação para planos
 const planSchema = yup.object({
@@ -51,6 +52,7 @@ interface Plan {
 }
 
 export default function AdminPlans() {
+  const { t } = useTranslation()
   const [plans, setPlans] = useState<Plan[]>([
     {
       id: "1",
@@ -254,6 +256,7 @@ export default function AdminPlans() {
                   removeLimitation={removeLimitation}
                   watch={watch}
                   setValue={setValue}
+                  handleSubmit={handleSubmit}
                 />
               </DialogContent>
             </Dialog>
@@ -341,7 +344,7 @@ export default function AdminPlans() {
                         </h3>
                         {plan.is_popular && (
                           <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
-                            Popular
+                            {t('plans.most.popular')}
                           </Badge>
                         )}
                         <Badge variant={plan.is_active ? "default" : "secondary"}>
@@ -357,13 +360,13 @@ export default function AdminPlans() {
                         <div className="flex items-center gap-2">
                           <DollarSign className="w-4 h-4 text-gray-500" />
                           <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Mensal: R$ {plan.price_monthly.toFixed(2)}
+                            {t('plans.monthly')}: R$ {plan.price_monthly.toFixed(2)}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-gray-500" />
                           <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Anual: R$ {plan.price_yearly.toFixed(2)}
+                            {t('plans.yearly')}: R$ {plan.price_yearly.toFixed(2)}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -395,7 +398,7 @@ export default function AdminPlans() {
                         onClick={() => handleEdit(plan)}
                       >
                         <Edit className="w-4 h-4 mr-2" />
-                        Editar
+                        {t('common.edit')}
                       </Button>
                       <Button
                         variant="outline"
@@ -405,7 +408,7 @@ export default function AdminPlans() {
                         className="text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-600 dark:hover:bg-red-900/20"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        {isDeleting ? "Excluindo..." : "Excluir"}
+                        {isDeleting ? "Excluindo..." : t('common.delete')}
                       </Button>
                     </div>
                   </div>
@@ -420,7 +423,7 @@ export default function AdminPlans() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Editar Plano: {editingPlan?.name}</DialogTitle>
+            <DialogTitle>{t('common.edit')} Plano: {editingPlan?.name}</DialogTitle>
           </DialogHeader>
           <PlanForm 
             onSubmit={onSubmit}
@@ -433,6 +436,7 @@ export default function AdminPlans() {
             removeLimitation={removeLimitation}
             watch={watch}
             setValue={setValue}
+            handleSubmit={handleSubmit}
           />
         </DialogContent>
       </Dialog>
@@ -451,8 +455,11 @@ function PlanForm({
   addLimitation, 
   removeLimitation,
   watch,
-  setValue
+  setValue,
+  handleSubmit
 }: any) {
+  const { t } = useTranslation()
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -472,7 +479,7 @@ function PlanForm({
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Descrição
+            {t('form.description')}
           </label>
           <Input
             {...register("description")}
@@ -488,7 +495,7 @@ function PlanForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Preço Mensal (R$)
+            Preço {t('plans.monthly')} (R$)
           </label>
           <Input
             {...register("price_monthly", { valueAsNumber: true })}
@@ -505,7 +512,7 @@ function PlanForm({
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Preço Anual (R$)
+            Preço {t('plans.yearly')} (R$)
           </label>
           <Input
             {...register("price_yearly", { valueAsNumber: true })}
@@ -533,7 +540,7 @@ function PlanForm({
             onClick={addFeature}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Adicionar
+            {t('common.add')}
           </Button>
         </div>
         
@@ -574,7 +581,7 @@ function PlanForm({
             onClick={addLimitation}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Adicionar
+            {t('common.add')}
           </Button>
         </div>
         
@@ -607,7 +614,7 @@ function PlanForm({
             {...register("is_popular")}
             className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
           />
-          <span className="text-sm text-gray-700 dark:text-gray-300">Plano Popular</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">Plano {t('plans.most.popular')}</span>
         </label>
 
         <label className="flex items-center gap-2">
@@ -622,10 +629,10 @@ function PlanForm({
 
       <div className="flex gap-3 pt-4">
         <Button type="submit" disabled={isSubmitting} className="bg-orange-500 hover:bg-orange-600">
-          {isSubmitting ? "Salvando..." : "Salvar Plano"}
+          {isSubmitting ? "Salvando..." : t('common.save')} Plano
         </Button>
         <Button type="button" variant="outline">
-          Cancelar
+          {t('common.cancel')}
         </Button>
       </div>
     </form>

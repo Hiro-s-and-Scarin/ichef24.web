@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "react-i18next"
 
 import { useGetPlans } from "@/network/hooks/plans/usePlans"
-import { Plan } from "@/types"
 import { useCurrencyFormatter } from "@/lib/utils/currency"
+import { Plan } from "@/src/types"
 
 export function PlansPageContent() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
@@ -58,36 +60,36 @@ export function PlansPageContent() {
     switch (planType.toLowerCase()) {
       case 'free':
         return [
-          "Até 5 receitas por dia",
-          "Geração básica de receitas",
-          "Acesso à comunidade",
-          "Suporte por email",
+          t('plans.free.features.recipes'),
+          t('plans.free.features.generation'),
+          t('plans.free.features.access'),
+          t('plans.free.features.support'),
         ]
       case 'basic':
         return [
-          "Receitas ilimitadas",
-          "Geração avançada de receitas",
-          "Receitas personalizadas",
-          "Histórico completo",
-          "Filtros avançados",
-          "Suporte prioritário",
+          t('plans.pro.features.recipes'),
+          t('plans.pro.features.generation'),
+          t('plans.pro.features.personalized'),
+          t('plans.pro.features.history'),
+          t('plans.pro.features.filters'),
+          t('plans.pro.features.support'),
         ]
       case 'premium':
         return [
-          "Todas as funcionalidades do Básico",
-          "IA avançada com análise nutricional",
-          "Planejamento semanal de refeições",
-          "Lista de compras automática",
-          "Acesso a receitas exclusivas",
-          "Suporte 24/7",
+          t('plans.premium.features.recipes'),
+          t('plans.premium.features.ai'),
+          t('plans.premium.features.planning'),
+          t('plans.premium.features.shopping'),
+          t('plans.premium.features.exclusive'),
+          t('plans.premium.features.support'),
         ]
       case 'enterprise':
         return [
-          "Todas as funcionalidades do Premium",
-          "API de integração",
-          "Suporte dedicado",
-          "Relatórios avançados",
-          "Múltiplos usuários",
+          t('plans.premium.features.recipes'),
+          t('plans.premium.features.ai'),
+          t('plans.premium.features.planning'),
+          t('plans.premium.features.shopping'),
+          t('plans.premium.features.exclusive'),
         ]
       default:
         return []
@@ -112,16 +114,16 @@ export function PlansPageContent() {
           {/* Header Section */}
           <div className="text-center space-y-6 mb-16">
             <h1 className="text-5xl font-bold text-gray-800 dark:text-white">
-              Escolha seu{" "}
-              <span className="bg-gradient-to-r from-[#f54703] to-[#ff7518] bg-clip-text text-transparent">Plano</span>
+              {t('plans.title')}{" "}
+              <span className="bg-gradient-to-r from-[#f54703] to-[#ff7518] bg-clip-text text-transparent">{t('plans.title').split(' ')[1]}</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Encontre o plano perfeito para sua jornada culinária. Comece grátis e evolua conforme suas necessidades.
+              {t('plans.subtitle')}
             </p>
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4 mt-8">
-              <span className={`text-lg ${billingCycle === "monthly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>Mensal</span>
+              <span className={`text-lg ${billingCycle === "monthly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>{t('plans.monthly')}</span>
               <button
                 onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
                 className={`relative w-16 h-8 rounded-full transition-colors ${
@@ -134,9 +136,9 @@ export function PlansPageContent() {
                   }`}
                 />
               </button>
-              <span className={`text-lg ${billingCycle === "yearly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>Anual</span>
+              <span className={`text-lg ${billingCycle === "yearly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>{t('plans.yearly')}</span>
               {billingCycle === "yearly" && (
-                <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">Economize 20%</Badge>
+                <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">{t('plans.save')}</Badge>
               )}
             </div>
           </div>
@@ -146,7 +148,7 @@ export function PlansPageContent() {
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-                <p className="mt-2 text-gray-500">Carregando planos...</p>
+                <p className="mt-2 text-gray-500">{t('common.loading')}</p>
               </div>
             </div>
           ) : (
@@ -162,7 +164,7 @@ export function PlansPageContent() {
                   >
                     {plan.plan_type === 'basic' && (
                       <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#f54703] to-[#ff7518] text-white text-center py-2 text-sm font-medium">
-                        ⭐ Mais Popular
+                        ⭐ {t('plans.most.popular')}
                       </div>
                     )}
 
@@ -174,9 +176,9 @@ export function PlansPageContent() {
                       </div>
                       <CardTitle className="text-2xl text-gray-800 dark:text-white">{plan.name}</CardTitle>
                       <p className="text-gray-600 dark:text-gray-300">
-                        {plan.plan_type === 'free' ? 'Para começar' : 
-                         plan.plan_type === 'basic' ? 'Para cozinheiros que querem mais' :
-                         plan.plan_type === 'premium' ? 'Para especialistas' : 'Para empresas'}
+                        {plan.plan_type === 'free' ? t('plans.free.description') : 
+                         plan.plan_type === 'basic' ? t('plans.pro.description') :
+                         plan.plan_type === 'premium' ? t('plans.premium.description') : t('plans.premium.description')}
                       </p>
 
                       <div className="py-6">
@@ -213,7 +215,7 @@ export function PlansPageContent() {
                         variant={plan.plan_type === 'basic' ? "default" : "outline"}
                         onClick={() => handleSubscribe(plan)}
                       >
-                        {plan.amount === 0 ? "Começar Grátis" : "Assinar Plano"}
+                        {plan.amount === 0 ? t('plans.start.free') : t('plans.upgrade')}
                       </Button>
                     </CardContent>
                   </Card>
