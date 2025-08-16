@@ -213,7 +213,7 @@ export default function Chat() {
                           variant="ghost"
                           onClick={(e) => {
                             e.stopPropagation()
-                            deleteSession(session.id)
+                            deleteSession(String(session.id))
                           }}
                           className="text-gray-400 hover:text-red-500"
                         >

@@ -103,7 +103,8 @@ export default function AdminPlans() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue
+    setValue,
+    watch
   } = useForm<PlanFormData>({
     resolver: yupResolver(planSchema),
     defaultValues: {
@@ -120,7 +121,15 @@ export default function AdminPlans() {
         // Editar plano existente
         const updatedPlans = plans.map(plan => 
           plan.id === editingPlan.id 
-            ? { ...plan, ...data, id: plan.id, subscribers_count: plan.subscribers_count, created_at: plan.created_at }
+            ? { 
+                ...plan, 
+                ...data, 
+                id: plan.id, 
+                subscribers_count: plan.subscribers_count, 
+                created_at: plan.created_at,
+                features: (data.features?.filter(f => f) || []) as string[],
+                limitations: (data.limitations?.filter(l => l) || []) as string[]
+              }
             : plan
         )
         setPlans(updatedPlans)
@@ -130,6 +139,9 @@ export default function AdminPlans() {
         const newPlan: Plan = {
           id: Date.now().toString(),
           ...data,
+          description: data.description || "",
+          features: (data.features?.filter(f => f) || []) as string[],
+          limitations: (data.limitations?.filter(l => l) || []) as string[],
           subscribers_count: 0,
           created_at: new Date().toISOString().split('T')[0]
         }
@@ -203,7 +215,7 @@ export default function AdminPlans() {
     }
   }
 
-  const { watch } = useForm<PlanFormData>()
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">

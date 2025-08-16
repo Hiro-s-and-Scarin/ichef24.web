@@ -93,7 +93,7 @@ export default function RecipePage() {
   }
 
   const handleRating = (newRating: number) => {
-    setUserRating(newRating)
+    updateRecipeState({ userRating: newRating })
     // In a real app, this would save to backend
   }
 
@@ -177,7 +177,7 @@ export default function RecipePage() {
                   <div className="flex gap-2 ml-6">
                     <Button
                       variant="secondary"
-                      onClick={() => setIsFavorite(!isFavorite)}
+                      onClick={() => updateRecipeState({ isFavorite: !isFavorite })}
                       className={`w-12 h-12 p-0 ${
                         isFavorite
                           ? "bg-[#ff7518] text-white hover:bg-[#f54703]"

@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Search, Heart, Share2, Clock, Users, Star, History, Filter, Trash2, Edit, ChefHat } from "lucide-react";
+import { Search, Share2, Clock, Users, Star, History, Filter, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { RecipeModal } from "@/components/common/recipe-modal";
@@ -13,19 +12,15 @@ import { CreateRecipeModal } from "@/components/forms/create-recipe-modal";
 import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
 import { EditRecipeAIModal } from "@/components/forms/edit-recipe-ai-modal";
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
-import { useAuth } from "@/contexts/auth-context";
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
 import { FilterModal } from "@/components/forms/filter-modal";
 import { useMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
-import { useCurrentUser } from "@/network/hooks/users/useUsers";
-import { useTranslation } from "react-i18next";
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
 import { RecipeParams } from "@/types/recipe";
 
 export function HistoryPageContent() {
-  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeType | null>(null);
@@ -38,7 +33,6 @@ export function HistoryPageContent() {
   const [isCreateAIModalOpen, setIsCreateAIModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   // Filtros para a API
   const [filters, setFilters] = useState<RecipeParams>({
@@ -58,13 +52,8 @@ export function HistoryPageContent() {
   })
 
   const recipes = recipesData?.data || []
-  const pagination = recipesData?.pagination
 
   const deleteRecipeMutation = useDeleteRecipe();
-
-
-
-  const { data: currentUser } = useCurrentUser()
 
   const handleDeleteRecipe = async (recipeId: string) => {
     try {
@@ -92,8 +81,8 @@ export function HistoryPageContent() {
     difficulty: `Nível ${recipe.difficulty_level || 1}`,
     tags: recipe.tags || [],
     rating: 0, // Não temos rating no tipo Recipe
-    ingredients: recipe.ingredients?.map((ing: any) => `${ing.name} ${ing.amount}`) || [],
-    instructions: recipe.steps?.map((step: any) => step.description) || [],
+    ingredients: recipe.ingredients?.map((ing: { name: string; amount: string }) => `${ing.name} ${ing.amount}`) || [],
+    instructions: recipe.steps?.map((step: { step: number; description: string }) => step.description) || [],
     nutrition: {
       calories: 0,
       protein: "0g",
@@ -106,11 +95,6 @@ export function HistoryPageContent() {
   const currentRecipes = recipes || [];
   const totalPages = Math.ceil((currentRecipes.length || 0) / 6);
 
-  const handleApplyFilters = (filters: string[]) => {
-    setSelectedFilters(filters);
-    setCurrentPage(1); // Reset to first page when filters change
-  };
-
   const openEditModal = (recipe: RecipeType) => {
     setRecipeToEdit(recipe);
     setIsEditModalOpen(true);
@@ -121,21 +105,21 @@ export function HistoryPageContent() {
     setIsEditAIModalOpen(true);
   };
 
-  const handleCreateRecipe = (newRecipe: any) => {
+  const handleCreateRecipe = (newRecipe: unknown) => {
     // Add logic to add new recipe to list or refetch
     console.log('Recipe created:', newRecipe);
   };
 
-  const handleEditRecipe = (updatedRecipe: any) => {
+  const handleEditRecipe = (updatedRecipe: unknown) => {
     // Add logic to update recipe in list or refetch
     console.log('Recipe updated:', updatedRecipe);
   };
 
-  const handleAIRecipeCreate = (newRecipe: any) => {
+  const handleAIRecipeCreate = (newRecipe: unknown) => {
     console.log('AI Recipe created:', newRecipe);
   };
 
-  const handleAIRecipeEdit = (updatedRecipe: any) => {
+  const handleAIRecipeEdit = (updatedRecipe: unknown) => {
     console.log('AI Recipe updated:', updatedRecipe);
   };
 
@@ -386,16 +370,26 @@ export function HistoryPageContent() {
       {/* Edit Recipe Modal */}
       <EditRecipeModal
         recipe={recipeToEdit ? {
-          id: String(recipeToEdit.id),
+          id: Number(recipeToEdit.id),
+          user_id: recipeToEdit.user_id || 0,
           title: recipeToEdit.title,
           description: recipeToEdit.description || "",
-          image: recipeToEdit.image_url,
-          time: `${recipeToEdit.cooking_time || 0} min`,
-          servings: `${recipeToEdit.servings || 1} pessoas`,
-          difficulty: `Nível ${recipeToEdit.difficulty_level || 1}`,
-          tags: recipeToEdit.tags || [],
           ingredients: recipeToEdit.ingredients || [],
-          instructions: recipeToEdit.steps || []
+          steps: recipeToEdit.steps || [],
+          cooking_time: recipeToEdit.cooking_time,
+          servings: recipeToEdit.servings,
+          difficulty_level: recipeToEdit.difficulty_level,
+          cuisine_type: recipeToEdit.cuisine_type || "",
+          tags: recipeToEdit.tags || [],
+          image_url: recipeToEdit.image_url,
+          is_ai_generated: recipeToEdit.is_ai_generated || false,
+          ai_prompt: recipeToEdit.ai_prompt || "",
+          ai_model_version: recipeToEdit.ai_model_version || "",
+          is_public: recipeToEdit.is_public ?? true,
+          views_count: recipeToEdit.views_count || 0,
+          likes_count: recipeToEdit.likes_count || 0,
+          createdAt: recipeToEdit.createdAt || "",
+          updatedAt: recipeToEdit.updatedAt || ""
         } : null}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
