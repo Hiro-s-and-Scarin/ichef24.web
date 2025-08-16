@@ -17,17 +17,6 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = false }: RecipeCardProps) {
-  // Debug temporário para verificar os dados
-  console.log('=== RECIPE CARD DEBUG ===')
-  console.log('Recipe recebido:', recipe)
-  console.log('Recipe title:', recipe?.title)
-  console.log('Recipe description:', recipe?.description)
-  console.log('Recipe cooking_time:', recipe?.cooking_time)
-  console.log('Recipe servings:', recipe?.servings)
-  console.log('Recipe difficulty_level:', recipe?.difficulty_level)
-  console.log('isFavorite prop:', initialIsFavorite)
-  console.log('========================')
-  
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
