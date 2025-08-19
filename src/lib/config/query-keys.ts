@@ -8,6 +8,7 @@ export const queryKeys = {
     one: (id: string | number) => ["recipes", id] as const,
     favorites: ["recipes", "favorites"] as const,
     my: ["recipes", "my"] as const,
+    user: ["recipes", "user"] as const,
     tags: ["recipes", "tags"] as const,
     categories: ["recipes", "categories"] as const,
   },
@@ -19,6 +20,7 @@ export const queryKeys = {
   community: {
     posts: ["community", "posts"] as const,
     post: (id: string | number) => ["community", "post", id] as const,
+    postComments: ["community", "postComments"] as const,
   },
   chat: {
     sessions: ["chat", "sessions"] as const,

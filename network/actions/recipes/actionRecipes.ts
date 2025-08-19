@@ -13,12 +13,12 @@ export async function getRecipeById(id: string | number): Promise<Recipe> {
 
 export async function postRecipe(body: CreateRecipeData): Promise<Recipe> {
   const { data } = await api.post("/recipes", body)
-  return data.data
+  return data
 }
 
 export async function putRecipe(id: string | number, body: Partial<CreateRecipeData>): Promise<Recipe> {
   const { data } = await api.put(`/recipes/${id}`, body)
-  return data.data
+  return data
 }
 
 export async function deleteRecipe(id: string | number): Promise<{ message: string }> {
@@ -42,7 +42,8 @@ export async function deleteFavoriteRecipe(recipeId: string | number): Promise<{
 }
 
 export async function getMyRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
-  const { data } = await api.get("/recipes", { params: { ...params, userId: 'me' } })
+  // Usar a rota /recipes com filtros para buscar receitas do usuário atual
+  const { data } = await api.get("/recipes", { params })
   return data
 }
 
@@ -63,7 +64,7 @@ export async function postRecipeReview(recipeId: string, body: { rating: number;
 
 export async function postGenerateRecipeWithAI(body: AIRecipeRequest): Promise<Recipe> {
   const { data } = await api.post("/openai", body)
-  return data.data
+  return data.data || data
 }
 
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {

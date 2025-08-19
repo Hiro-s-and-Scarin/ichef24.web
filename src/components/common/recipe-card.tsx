@@ -135,7 +135,7 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
           {recipe.servings && (
             <div className="flex items-center space-x-1">
               <Users className="w-4 h-4" />
-              <span>{recipe.servings} porções</span>
+              <span>{recipe.servings} {t('recipe.servings')}</span>
             </div>
           )}
         </div>
@@ -151,7 +151,7 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
         <div className="flex justify-end mt-auto">
           <Link href={`/recipe/${recipe.id}`}>
             <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-              Ver Receita
+              {t('recipe.view')}
             </Button>
           </Link>
         </div>

@@ -697,6 +697,8 @@ const resources = {
       'recipe.instructions': 'Instructions',
       'recipe.fiber': 'Fiber',
       'recipe.chef.tips': 'Chef Tips',
+      'recipe.servings': 'servings',
+      'recipe.view': 'View Recipe',
       'common.you': 'You',
       'common.your.recipe': 'your recipe',
 
@@ -892,6 +894,8 @@ const resources = {
       'recipe.instructions': 'Modo de Preparo',
       'recipe.fiber': 'Fibra',
       'recipe.chef.tips': 'Dicas do Chef',
+      'recipe.servings': 'porções',
+      'recipe.view': 'Ver Receita',
       'common.you': 'Você',
       'common.your.recipe': 'sua receita',
 

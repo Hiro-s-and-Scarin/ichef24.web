@@ -8,8 +8,8 @@ import { ChefHat, Heart, Share2, Clock, Users, Utensils, BookOpen, ArrowLeft, St
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-
 import { useTranslation } from "react-i18next"
+import { translateDynamicData } from "@/lib/config/i18n"
 
 // Estado consolidado para a página de receita
 interface RecipePageState {
@@ -20,7 +20,7 @@ interface RecipePageState {
 }
 
 export default function RecipePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const params = useParams()
   // Estado consolidado
   const [recipeState, setRecipeState] = useState<RecipePageState>({
@@ -146,7 +146,7 @@ export default function RecipePage() {
                     <div className="flex flex-wrap gap-2">
                       {recipe.tags.map((tag, index) => (
                         <Badge key={index} className="bg-white/20 text-white border-white/30">
-                          {tag}
+                          {translateDynamicData.recipeTag(tag, i18n.language)}
                         </Badge>
                       ))}
                     </div>
@@ -186,7 +186,7 @@ export default function RecipePage() {
                 </div>
                 <div className="text-center">
                   <Utensils className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.difficulty}</div>
+                  <div className="text-white font-medium">{translateDynamicData.difficulty(recipe.difficulty, i18n.language)}</div>
                   <div className="text-gray-400 text-sm">{t('form.difficulty')}</div>
                 </div>
                 <div className="text-center">

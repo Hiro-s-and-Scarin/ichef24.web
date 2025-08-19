@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useTranslation } from "react-i18next"
 
 import { useGetPlans } from "@/network/hooks/plans/usePlans"
@@ -140,6 +141,15 @@ export function PlansPageContent() {
               {billingCycle === "yearly" && (
                 <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">{t('plans.save')}</Badge>
               )}
+            </div>
+
+            {/* Botão de Teste Stripe */}
+            <div className="mt-6">
+              <Link href="/stripe-test">
+                <Button variant="outline" className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
+                  🧪 Testar Pagamento Stripe
+                </Button>
+              </Link>
             </div>
           </div>
 

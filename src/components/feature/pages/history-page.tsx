@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Share2, Clock, Users, Star, History, Filter, Trash2, Edit } from "lucide-react";
+import { Search, Share2, Clock, Users, Star, History, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { RecipeModal } from "@/components/common/recipe-modal";
@@ -13,16 +13,17 @@ import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
 import { EditRecipeAIModal } from "@/components/forms/edit-recipe-ai-modal";
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { RecipeCard } from "@/components/common/recipe-card";
-import { Pagination } from "@/components/common/pagination";
-import { FilterModal } from "@/components/forms/filter-modal";
-import { useMyRecipes, useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
+import { useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
+import { useUserRecipes } from "@/network/hooks/recipes/useUserRecipes";
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
-import { RecipeParams } from "@/types/recipe";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/config/query-keys";
 
 export function HistoryPageContent() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -34,25 +35,10 @@ export function HistoryPageContent() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditAIModalOpen, setIsEditAIModalOpen] = useState(false);
   const [isCreateAIModalOpen, setIsCreateAIModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-
-  // Filtros para a API
-  const [filters, setFilters] = useState<RecipeParams>({
-    page: currentPage,
-    limit: 6
-  });
-
-  const handleFiltersChange = (newFilters: Partial<RecipeParams>) => {
-    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
-    setCurrentPage(1);
-  };
+  // const [currentPage, setCurrentPage] = useState(1); // Removido
 
   // TanStack Query hooks
-  const { data: recipesData, isLoading } = useMyRecipes({
-    page: currentPage,
-    limit: 6,
-  })
+  const { data: recipesData, isLoading } = useUserRecipes()
 
   const recipes = recipesData?.data || []
 
@@ -62,6 +48,10 @@ export function HistoryPageContent() {
     try {
       await deleteRecipeMutation.mutateAsync(recipeId)
       toast.success("Receita excluída com sucesso!")
+      // Invalidar queries para atualizar o histórico
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
     } catch (error) {
       console.error("Error deleting recipe:", error)
       toast.error("Erro ao excluir receita")
@@ -96,7 +86,7 @@ export function HistoryPageContent() {
 
 
   const currentRecipes = recipes || [];
-  const totalPages = Math.ceil((currentRecipes.length || 0) / 6);
+  // const totalPages = Math.ceil((currentRecipes.length || 0) / 6); // Removido
 
   const openEditModal = (recipe: RecipeType) => {
     setRecipeToEdit(recipe);
@@ -111,19 +101,35 @@ export function HistoryPageContent() {
   const handleCreateRecipe = (newRecipe: unknown) => {
     // Add logic to add new recipe to list or refetch
     console.log('Recipe created:', newRecipe);
+    // Invalidar queries para atualizar o histórico
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
   };
 
   const handleEditRecipe = (updatedRecipe: unknown) => {
     // Add logic to update recipe in list or refetch
     console.log('Recipe updated:', updatedRecipe);
+    // Invalidar queries para atualizar o histórico
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
   };
 
   const handleAIRecipeCreate = (newRecipe: unknown) => {
     console.log('AI Recipe created:', newRecipe);
+    // Invalidar queries para atualizar o histórico
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
   };
 
   const handleAIRecipeEdit = (updatedRecipe: unknown) => {
     console.log('AI Recipe updated:', updatedRecipe);
+    // Invalidar queries para atualizar o histórico
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
   };
 
   return (
@@ -197,7 +203,8 @@ export function HistoryPageContent() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
+                  {/* Botão de filtros removido para evitar problemas de validação */}
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setIsFilterModalOpen(true)}
@@ -205,7 +212,7 @@ export function HistoryPageContent() {
                   >
                     <Filter className="w-4 h-4 mr-2" />
                     {t('history.filters')}
-                  </Button>
+                  </Button> */}
                   <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
                     <Button
                       variant={viewMode === "grid" ? "default" : "ghost"}
@@ -242,7 +249,7 @@ export function HistoryPageContent() {
               {/* Recipes Grid/List */}
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentRecipes.map((recipe) => (
+                  {currentRecipes.map((recipe: RecipeType) => (
                     <div key={recipe.id} className="relative">
                       <RecipeCard
                         recipe={recipe}
@@ -271,7 +278,7 @@ export function HistoryPageContent() {
                 </div>
               ) : (
                 <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentRecipes.map((recipe) => (
+                  {currentRecipes.map((recipe: RecipeType) => (
                     <Card key={recipe.id} className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden">
                       <div className="flex">
                         <div className="w-32 h-24 relative flex-shrink-0">
@@ -331,16 +338,7 @@ export function HistoryPageContent() {
             </>
           )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          )}
+          {/* Pagination - removido para evitar problemas de validação */}
 
           {!isLoading && currentRecipes.length === 0 && (
             <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
@@ -421,13 +419,13 @@ export function HistoryPageContent() {
         recipe={recipeToEditWithAI}
       />
 
-      {/* Filter Modal */}
-      <FilterModal
+      {/* Filter Modal - removido para evitar problemas de validação */}
+      {/* <FilterModal
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-      />
+        filters={{} as RecipeParams}
+        onFiltersChange={() => {}}
+      /> */}
     </div>
   );
 }

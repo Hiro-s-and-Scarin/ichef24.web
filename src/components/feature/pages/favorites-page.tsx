@@ -17,9 +17,12 @@ import { useFavoriteRecipes, useRemoveFromFavorites } from "@/network/hooks/reci
 import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { useTranslation } from "react-i18next"
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
+import { useQueryClient } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function FavoritesPageContent() {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null)
@@ -339,7 +342,10 @@ export function FavoritesPageContent() {
         onSave={(recipe) => {
           console.log('Receita criada:', recipe)
           setIsCreateAIModalOpen(false)
-          // Aqui você pode adicionar lógica adicional se necessário
+          // Invalidar queries para atualizar a lista de favoritos
+          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
         }}
       />
     </div>

@@ -11,8 +11,8 @@ export async function getCommunityPostById(id: string): Promise<CommunityPost> {
   return data.data
 }
 
-export async function createCommunityPost(body: CreateCommunityPostData): Promise<CommunityPost> {
-  const { data } = await api.post("/community-posts", body)
+export async function createCommunityPost({ recipe_id, ...body }: CreateCommunityPostData): Promise<CommunityPost> {
+  const { data } = await api.post("/community-posts", { ...body, recipe_id: recipe_id ? +recipe_id : undefined })
   return data.data
 }
 

@@ -44,7 +44,10 @@ export function useCreateRecipe() {
       return await postRecipe(body)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita criada com sucesso!")
     },
     onError: (error: any) => {
@@ -64,6 +67,8 @@ export function useUpdateRecipe() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita atualizada com sucesso!")
     },
     onError: (error: any) => {
@@ -81,7 +86,11 @@ export function useDeleteRecipe() {
       return await deleteRecipe(id)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       toast.success("Receita deletada com sucesso!")
     },
     onError: (error: any) => {
@@ -107,8 +116,11 @@ export function useAddToFavorites() {
       return await postFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita adicionada aos favoritos!")
     },
     onError: (error: any) => {
@@ -126,8 +138,11 @@ export function useRemoveFromFavorites() {
       return await deleteFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita removida dos favoritos!")
     },
     onError: (error: any) => {
@@ -169,7 +184,11 @@ export function useGenerateRecipeWithAI() {
       return await postGenerateRecipeWithAI(body)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       toast.success("Receita gerada com IA com sucesso!")
     },
     onError: (error: any) => {

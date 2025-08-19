@@ -19,27 +19,6 @@ interface FilterModalProps {
   onFiltersChange: (filters: Partial<RecipeParams>) => void
 }
 
-const difficultyOptions = [
-  { value: "1", label: translateDynamicData.difficulty(1, 'pt') },
-  { value: "2", label: translateDynamicData.difficulty(2, 'pt') },
-  { value: "3", label: translateDynamicData.difficulty(3, 'pt') },
-  { value: "4", label: translateDynamicData.difficulty(4, 'pt') },
-  { value: "5", label: translateDynamicData.difficulty(5, 'pt') }
-]
-
-const cuisineTypes = [
-  translateDynamicData.cuisine('italian', 'pt'),
-  translateDynamicData.cuisine('brazilian', 'pt'),
-  translateDynamicData.cuisine('japanese', 'pt'),
-  translateDynamicData.cuisine('mexican', 'pt'),
-  translateDynamicData.cuisine('indian', 'pt'),
-  translateDynamicData.cuisine('french', 'pt'),
-  translateDynamicData.cuisine('chinese', 'pt'),
-  translateDynamicData.cuisine('thai', 'pt'),
-  translateDynamicData.cuisine('mediterranean', 'pt'),
-  translateDynamicData.cuisine('arabic', 'pt')
-]
-
 const timeRanges = [
   { value: "15", label: "Até 15 min" },
   { value: "30", label: "Até 30 min" },
@@ -52,6 +31,29 @@ export function FilterModal({ isOpen, onClose, filters, onFiltersChange }: Filte
   const { t, i18n } = useTranslation()
   const [localFilters, setLocalFilters] = useState<RecipeParams>(filters)
   const [selectedTags, setSelectedTags] = useState<string[]>(filters.tags || [])
+
+  // Opções de dificuldade com tradução dinâmica
+  const difficultyOptions = [
+    { value: "1", label: translateDynamicData.difficulty(1, i18n.language) },
+    { value: "2", label: translateDynamicData.difficulty(2, i18n.language) },
+    { value: "3", label: translateDynamicData.difficulty(3, i18n.language) },
+    { value: "4", label: translateDynamicData.difficulty(4, i18n.language) },
+    { value: "5", label: translateDynamicData.difficulty(5, i18n.language) }
+  ]
+
+  // Tipos de cozinha com tradução dinâmica
+  const cuisineTypes = [
+    translateDynamicData.cuisine('italian', i18n.language),
+    translateDynamicData.cuisine('brazilian', i18n.language),
+    translateDynamicData.cuisine('japanese', i18n.language),
+    translateDynamicData.cuisine('mexican', i18n.language),
+    translateDynamicData.cuisine('indian', i18n.language),
+    translateDynamicData.cuisine('french', i18n.language),
+    translateDynamicData.cuisine('chinese', i18n.language),
+    translateDynamicData.cuisine('thai', i18n.language),
+    translateDynamicData.cuisine('mediterranean', i18n.language),
+    translateDynamicData.cuisine('arabic', i18n.language)
+  ]
 
   const handleApplyFilters = () => {
     onFiltersChange({

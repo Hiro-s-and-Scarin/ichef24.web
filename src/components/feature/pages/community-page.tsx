@@ -21,6 +21,7 @@ import Image from "next/image"
 import { CommunityPost, CreateCommunityPostData } from "@/types/community"
 import { createCommunityPostSchema, CreateCommunityPostFormData } from "@/schemas/community.schema"
 import { useTranslation } from "react-i18next"
+import { translateDynamicData } from "@/lib/config/i18n"
 
 interface CommunityPageProps {
   posts: CommunityPost[]
@@ -37,7 +38,7 @@ export function CommunityPage({
   isCreatingPost,
   onToggleCreatePost
 }: CommunityPageProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   
   const {
     register,
@@ -58,7 +59,7 @@ export function CommunityPage({
       const postData: CreateCommunityPostData = {
         title: data.title,
         content: data.content,
-        difficulty_level: data.difficulty_level as "Fácil" | "Intermediário" | "Avançado",
+        difficulty_level: data.difficulty_level as 'Fácil' | 'Intermediário' | 'Avançado',
         image_url: data.image_url,
         recipe_tags: data.recipe_tags?.filter((tag): tag is string => tag !== undefined),
         recipe_id: data.recipe_id
@@ -169,9 +170,9 @@ export function CommunityPage({
                       {...register("difficulty_level")}
                       className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                     >
-                      <option value="Fácil">{t('common.easy')}</option>
-                      <option value="Intermediário">{t('common.intermediate')}</option>
-                      <option value="Avançado">{t('common.advanced')}</option>
+                      <option value="Fácil">{translateDynamicData.difficulty('easy', i18n.language)}</option>
+                      <option value="Intermediário">{translateDynamicData.difficulty('medium', i18n.language)}</option>
+                      <option value="Avançado">{translateDynamicData.difficulty('hard', i18n.language)}</option>
                     </select>
                     {errors.difficulty_level && (
                       <p className="text-red-500 text-sm mt-1">{errors.difficulty_level.message}</p>
@@ -225,7 +226,7 @@ export function CommunityPage({
                   </p>
                   {post.difficulty_level && (
                     <Badge variant="secondary" className="mb-3 w-fit">
-                      {post.difficulty_level}
+                      {translateDynamicData.difficulty(post.difficulty_level, i18n.language)}
                     </Badge>
                   )}
                   <div className="flex items-center justify-between mt-auto">

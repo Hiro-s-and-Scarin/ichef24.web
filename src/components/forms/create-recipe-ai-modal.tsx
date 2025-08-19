@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useTranslation } from "react-i18next"
+// import { useTranslation } from "react-i18next"
 import { formatRecipe } from "@/lib/utils/format-recipe"
 import { Recipe } from "@/types/recipe"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { X, Save, ChefHat, Mic, Send, Sparkles, Bot, Crown, Wand2, Leaf, Timer, Users } from "lucide-react"
 import { useGenerateRecipeWithAI } from "@/network/hooks"
+import { useQueryClient } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/config/query-keys"
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean
@@ -59,7 +61,9 @@ interface CreateRecipeAIModalState {
 }
 
 export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIModalProps) {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
+  
+  const queryClient = useQueryClient()
   
   // Estado consolidado
   const [modalState, setModalState] = useState<CreateRecipeAIModalState>({
@@ -81,7 +85,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
         chatMessages: [
           { 
             type: 'ai', 
-            message: t('ai.welcome.message'),
+            message: 'Que receita você quer criar hoje?',
             timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
             suggestions: []
           }
@@ -128,10 +132,23 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
         })
       } else {
         // Mensagens subsequentes: usar old_recipe e new_recipe
-        // old_recipe = última receita gerada (armazenada no estado)
+        // IMPORTANTE: Enviar os dados EXATOS da receita anterior para a IA
+        // NÃO traduzir aqui - manter dados originais para a IA
+        const oldRecipeForAI = {
+          title: modalState.lastGeneratedRecipe.title,
+          description: modalState.lastGeneratedRecipe.description,
+          ingredients: modalState.lastGeneratedRecipe.ingredients || [],
+          steps: modalState.lastGeneratedRecipe.steps || [],
+          cooking_time: modalState.lastGeneratedRecipe.cooking_time,
+          servings: modalState.lastGeneratedRecipe.servings,
+          difficulty_level: modalState.lastGeneratedRecipe.difficulty_level,
+          cuisine_type: modalState.lastGeneratedRecipe.cuisine_type,
+          tags: modalState.lastGeneratedRecipe.tags || []
+        }
+        
         recipe = await generateRecipeMutation.mutateAsync({
           first_message: undefined,
-          old_recipe: JSON.stringify(modalState.lastGeneratedRecipe),
+          old_recipe: JSON.stringify(oldRecipeForAI),
           new_recipe: userMessage
         })
       }
@@ -147,7 +164,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
           new_recipe: recipe
         }],
         isGenerating: false,
-        lastGeneratedRecipe: recipe, // Atualiza a última receita gerada
+        lastGeneratedRecipe: recipe, // Atualiza a última receita gerada (DADOS ORIGINAIS)
         generatedRecipe: {
           title: recipe.title || "",
           description: recipe.description || "",
@@ -159,13 +176,20 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
           image: recipe.image_url || "/placeholder.jpg"
         }
       })
+
+      // Invalidar todas as queries relacionadas às receitas para atualizar o histórico e favoritos
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+
     } catch (error) {
       console.error("Erro ao gerar receita:", error)
       updateModalState({
         isGenerating: false,
         chatMessages: [...chatMessages, {
           type: 'ai',
-          message: t('ai.error.message'),
+          message: 'Erro ao gerar receita. Tente novamente.',
           timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         }]
       })
@@ -227,7 +251,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                 <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-700 bg-clip-text text-transparent">
                   iChef24 AI
                 </DialogTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{t('ai.create.gourmet')}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Crie receitas gourmet com IA</p>
               </div>
             </div>
           </div>
@@ -245,7 +269,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                   </div>
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white">iChef24 AI</h4>
-                    <p className="text-sm text-orange-600 dark:text-orange-400">{t('ai.create.gourmet')}</p>
+                    <p className="text-sm text-orange-600 dark:text-orange-400">Crie receitas gourmet com IA</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -272,7 +296,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                         )}
                         <div className="flex-1">
                                                   <span className="text-sm font-bold opacity-90">
-                          {message.type === 'ai' ? 'iChef24 AI' : t('common.you')}
+                          {message.type === 'ai' ? 'iChef24 AI' : 'Você'}
                         </span>
                           <span className="text-sm opacity-70 ml-2">{message.timestamp}</span>
                         </div>
@@ -318,7 +342,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                             </div>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-300">
-                            {t('ai.creating.message')}
+                            Criando sua receita especial...
                           </p>
                         </div>
                       </div>
@@ -335,7 +359,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                     <Input
                       value={chatInput}
                       onChange={(e) => updateModalState({ chatInput: e.target.value })}
-                      placeholder={t('ai.input.placeholder')}
+                      placeholder="Descreva sua receita dos sonhos..."
                       className="relative h-12 pr-24 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                       disabled={isGenerating}
                     />
@@ -361,28 +385,28 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <ChefHat className="w-4 h-4 text-blue-500" />
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">{t('ai.preferences')}</h4>
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Preferências</h4>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                      {t('ai.recipe.type')}
+                      Tipo de Receita
                     </label>
                     <Input
                       value={recipeType}
                       onChange={(e) => updateModalState({ recipeType: e.target.value })}
-                      placeholder={t('ai.recipe.type.placeholder')}
+                      placeholder="Ex: Italiana, Brasileira, Japonesa..."
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                      {t('ai.prep.time')}
+                      Tempo de Preparo
                     </label>
                     <Input
                       value={cookingTime}
                       onChange={(e) => updateModalState({ cookingTime: e.target.value })}
-                      placeholder={t('ai.prep.time.placeholder')}
+                      placeholder="Ex: 30 minutos"
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
                   </div>
@@ -404,12 +428,12 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
                 <div className="w-5 h-5 bg-white rounded-full animate-spin">
                   <div className="w-3 h-3 bg-green-500 rounded-full m-1"></div>
                 </div>
-                <span className="font-semibold">{t('ai.creating.recipe')}</span>
+                <span className="font-semibold">Criando receita...</span>
               </div>
             ) : (
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
-                <span className="font-semibold">{t('ai.create.gourmet')}</span>
+                <span className="font-semibold">Criar Receita Gourmet</span>
               </div>
             )}
           </Button>
