@@ -14,10 +14,13 @@ import {
   Eye,
   Send,
   Calendar,
-  ChefHat
+  ChefHat,
+  ThumbsUp
 } from "lucide-react"
 import { useCommunityPost, usePostComments, useCreatePostComment } from "@/network/hooks/community/useCommunity"
 import { useIncrementPostViews } from "@/network/hooks/community/useCommunity"
+import { useLikeRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 
 export default function PostDetailPage() {
@@ -28,15 +31,30 @@ export default function PostDetailPage() {
   const [commentContent, setCommentContent] = useState("")
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [viewsIncremented, setViewsIncremented] = useState(false)
+  const [recipeLikesCount, setRecipeLikesCount] = useState(0)
+  const [isRecipeLiked, setIsRecipeLiked] = useState(false)
   
   // Hooks para dados
   const { data: postData, isLoading: postLoading } = useCommunityPost(postId)
   const { data: commentsData, isLoading: commentsLoading } = usePostComments(postId)
   const createCommentMutation = useCreatePostComment()
   const incrementViewsMutation = useIncrementPostViews()
+  const likeRecipeMutation = useLikeRecipe()
+  const { user } = useAuth()
   
   const post = postData
   const comments = commentsData?.data || []
+
+  // Atualizar estado local da receita quando o post carregar
+  useEffect(() => {
+    if (post?.recipe) {
+      setRecipeLikesCount(post.recipe.likes_count || 0)
+      // Verificar se o usuário já curtiu a receita
+      if (user && post.recipe.user_is_liked) {
+        setIsRecipeLiked(post.recipe.user_is_liked.includes(Number(user.id)))
+      }
+    }
+  }, [post?.recipe, user])
 
   // Incrementar views apenas uma vez quando entrar na página
   useEffect(() => {
@@ -48,6 +66,37 @@ export default function PostDetailPage() {
 
   const handleGoBack = () => {
     router.push('/community')
+  }
+
+  const handleLikeRecipe = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para curtir receitas")
+      return
+    }
+
+    if (!post?.recipe?.id) {
+      toast.error("Receita não encontrada")
+      return
+    }
+
+    if (isRecipeLiked) {
+      toast.info("Você já curtiu esta receita")
+      return
+    }
+
+    try {
+      const result = await likeRecipeMutation.mutateAsync(post.recipe.id)
+      
+      if (result) {
+        // Atualizar estado local
+        setRecipeLikesCount(result.likes_count || recipeLikesCount + 1)
+        setIsRecipeLiked(true)
+        toast.success("Receita curtida com sucesso!")
+      }
+    } catch (error) {
+      console.error("Erro ao curtir receita:", error)
+      toast.error("Erro ao curtir receita")
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -183,11 +232,36 @@ export default function PostDetailPage() {
               {/* Receita Vinculada */}
               {post.recipe && (
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                  <div className="flex items-center gap-3 mb-3">
-                    <ChefHat className="w-6 h-6 text-green-600 dark:text-green-400" />
-                    <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
-                      Receita Vinculada
-                    </h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <ChefHat className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
+                        Receita Vinculada
+                      </h3>
+                    </div>
+                    
+                    {/* Botão de Like da Receita */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>{recipeLikesCount}</span>
+                      </div>
+                      
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleLikeRecipe}
+                        disabled={likeRecipeMutation.isPending || isRecipeLiked}
+                        className={`text-xs px-3 py-1.5 h-8 ${
+                          isRecipeLiked 
+                            ? 'bg-green-200 text-green-800 border-green-400 cursor-not-allowed' 
+                            : 'bg-green-100 hover:bg-green-200 text-green-700 border-green-300'
+                        }`}
+                      >
+                        <ThumbsUp className={`w-3.5 h-3.5 mr-1.5 ${isRecipeLiked ? 'fill-current' : ''}`} />
+                        {isRecipeLiked ? 'Curtido' : 'Curtir Receita'}
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="flex gap-4">

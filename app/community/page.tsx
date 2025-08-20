@@ -82,25 +82,6 @@ export default function Community() {
     )
   })
 
-  // Calcular top chefs baseado nas receitas mais curtidas
-  const topChefsCalculated = users
-    .map(user => {
-      const userRecipes = recipes.filter(recipe => recipe.user_id === parseInt(user.id))
-      const totalLikes = userRecipes.reduce((sum, recipe) => sum + (recipe.likes_count || 0), 0)
-      const totalViews = userRecipes.reduce((sum, recipe) => sum + (recipe.views_count || 0), 0)
-      
-      return {
-        ...user,
-        id: parseInt(user.id),
-        totalLikes,
-        totalViews,
-        recipeCount: userRecipes.length
-      }
-    })
-    .filter(user => user.recipeCount > 0)
-    .sort((a, b) => b.totalLikes - a.totalLikes)
-    .slice(0, 10)
-
   // Top receitas ordenadas por likes
   const topRecipesSorted = topRecipes
     .sort((a: Recipe, b: Recipe) => b.likes_count - a.likes_count)
@@ -131,14 +112,22 @@ export default function Community() {
 
   // Carregar top chefs quando a seção for ativada
   useEffect(() => {
-    if (activeSection === 'top-chefs' && topChefs.length === 0) {
+    if (activeSection === 'top-chefs') {
       setIsLoadingTopChefs(true)
+      console.log('Carregando top chefs...')
       getTopChefs()
-        .then(chefs => setTopChefs(chefs))
-        .catch(error => console.error('Erro ao carregar top chefs:', error))
+        .then(chefs => {
+          console.log('Top Chefs carregados:', chefs)
+          console.log('Estrutura do primeiro chef:', chefs[0])
+          setTopChefs(chefs)
+        })
+        .catch(error => {
+          console.error('Erro ao carregar top chefs:', error)
+          toast.error('Erro ao carregar top chefs')
+        })
         .finally(() => setIsLoadingTopChefs(false))
     }
-  }, [activeSection, topChefs.length])
+  }, [activeSection])
 
   const handleCreatePost = async (data: CreateCommunityPostData) => {
     try {
@@ -294,9 +283,8 @@ export default function Community() {
                       name: chef.name || 'Chef',
                       email: chef.email,
                       avatar_url: chef.avatar_url,
-                      totalLikes: chef.totalLikes || 0,
-                      totalViews: 0, // Não temos esse dado no backend ainda
-                      recipeCount: chef.recipeCount || 0
+                      totalLikes: parseInt(chef.totallikes) || 0,
+                      recipeCount: parseInt(chef.recipecount) || 0
                     }}
                     rank={index + 1}
                   />

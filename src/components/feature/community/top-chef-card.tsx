@@ -6,10 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
   Trophy, 
   ChefHat, 
-  Heart, 
-  Eye,
-  Star,
-  TrendingUp
+  ThumbsUp
 } from "lucide-react"
 
 interface TopChef {
@@ -18,7 +15,6 @@ interface TopChef {
   email?: string
   avatar_url?: string
   totalLikes: number
-  totalViews: number
   recipeCount: number
 }
 
@@ -50,7 +46,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
       case 3:
         return <Trophy className="w-5 h-5" />
       default:
-        return <Star className="w-5 h-5" />
+        return <Trophy className="w-5 h-5" />
     }
   }
 
@@ -88,7 +84,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
 
       <CardContent className="space-y-4">
         {/* Estatísticas */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
             <div className="flex items-center justify-center mb-2">
               <ChefHat className="w-5 h-5 text-orange-600 dark:text-orange-400" />
@@ -96,32 +92,14 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
             <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
               {chef.recipeCount}
             </p>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              Receitas
-            </p>
           </div>
           
           <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
             <div className="flex items-center justify-center mb-2">
-              <Heart className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <ThumbsUp className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <p className="text-2xl font-bold text-red-600 dark:text-red-400">
               {chef.totalLikes}
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              Likes
-            </p>
-          </div>
-          
-          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="flex items-center justify-center mb-2">
-              <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {chef.totalViews}
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              Visualizações
             </p>
           </div>
         </div>
@@ -153,15 +131,8 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
           
           {chef.totalLikes >= 100 && (
             <Badge variant="secondary" className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-              <Heart className="w-3 h-3 mr-1" />
-              Popular
-            </Badge>
-          )}
-          
-          {chef.totalViews >= 1000 && (
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              Viral
+              <ThumbsUp className="w-3 h-3 mr-1" />
+              Receitas Populares
             </Badge>
           )}
         </div>
@@ -170,17 +141,14 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">Performance:</span>
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.min(5, Math.floor(chef.totalLikes / 20))
-                      ? 'text-yellow-500 fill-current'
-                      : 'text-gray-300 dark:text-gray-600'
-                  }`}
-                />
-              ))}
+            <div className="flex items-center gap-2">
+              <span className="text-orange-500 font-medium">
+                {chef.totalLikes}
+              </span>
+              <span className="text-gray-400">•</span>
+              <span className="text-blue-500 font-medium">
+                {chef.recipeCount}
+              </span>
             </div>
           </div>
           

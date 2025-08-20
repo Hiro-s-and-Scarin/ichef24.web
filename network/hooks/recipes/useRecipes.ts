@@ -93,6 +93,20 @@ export function useDeleteRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top })
+      
+      // Invalidar queries de usuários (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.users.all,
+        exact: false 
+      })
+      
+      // Invalidar queries de community posts (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.community.posts,
+        exact: false 
+      })
+      
       toast.success("Receita deletada com sucesso!")
     },
     onError: (error: any) => {
@@ -216,6 +230,7 @@ export function useLikeRecipe() {
       return await likeRecipe(recipeId.toString())
     },
     onSuccess: (data, variables) => {
+      // Invalidar queries de receitas
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.recipes.all,
         exact: false 
@@ -228,6 +243,18 @@ export function useLikeRecipe() {
       
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.recipes.top,
+        exact: false 
+      })
+      
+      // Invalidar queries de usuários (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.users.all,
+        exact: false 
+      })
+      
+      // Invalidar queries de community posts (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.community.posts,
         exact: false 
       })
       

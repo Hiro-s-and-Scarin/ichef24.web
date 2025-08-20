@@ -26,6 +26,8 @@ export interface CommunityPost {
     title: string
     image_url?: string
     description?: string
+    likes_count?: number
+    user_is_liked?: number[]
   }
   is_liked?: boolean
   user_is_liked?: number[]
