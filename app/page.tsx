@@ -21,14 +21,8 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
 // Schema de validação para login
-const loginSchema = yup.object({
-  email: yup.string().email("Email inválido").required("Email é obrigatório"),
-  password: yup.string().min(6, "Senha deve ter pelo menos 6 caracteres").required("Senha é obrigatória"),
-  rememberMe: yup.boolean().default(false),
-  showPassword: yup.boolean().default(false),
-})
-
-type LoginFormData = yup.InferType<typeof loginSchema>
+import { LoginFormData } from "@/types/forms"
+import { loginSchema } from "@/schemas/forms"
 
 function LoginPageContent() {
   const [error, setError] = useState("")

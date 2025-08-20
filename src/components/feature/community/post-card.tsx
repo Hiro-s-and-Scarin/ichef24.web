@@ -26,11 +26,8 @@ import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 
 // Schema para comentários
-const commentSchema = yup.object({
-  content: yup.string().required("Comentário é obrigatório").min(1, "Comentário deve ter pelo menos 1 caractere"),
-})
-
-type CommentFormData = yup.InferType<typeof commentSchema>
+import { CommentFormData } from "@/types/forms"
+import { commentSchema } from "@/schemas/forms"
 
 interface PostCardProps {
   post: CommunityPost

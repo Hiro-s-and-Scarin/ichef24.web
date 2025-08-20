@@ -22,16 +22,8 @@ import { CreateCommunityPostData } from "@/types/community"
 import { useMyRecipes } from "@/network/hooks/recipes/useRecipes"
 
 // Schema de validação para posts da comunidade
-const postSchema = yup.object({
-  title: yup.string().required("Título é obrigatório").max(255, "Título deve ter no máximo 255 caracteres"),
-  content: yup.string().required("Conteúdo é obrigatório").min(10, "Conteúdo deve ter pelo menos 10 caracteres"),
-  image_url: yup.string().url("URL da imagem deve ser válida").optional(),
-  difficulty_level: yup.string().oneOf(["Fácil", "Intermediário", "Avançado"], "Nível de dificuldade inválido").optional(),
-  recipe_tags: yup.array().of(yup.string().required()).optional(),
-  recipe_id: yup.string().optional(),
-})
-
-type PostFormData = yup.InferType<typeof postSchema>
+import { PostFormData } from "@/types/forms"
+import { postSchema } from "@/schemas/forms"
 
 interface CreatePostModalProps {
   isOpen: boolean

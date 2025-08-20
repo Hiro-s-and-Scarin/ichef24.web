@@ -25,10 +25,7 @@ import { LanguageToggle } from "@/components/layout/language-toggle"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-interface ProfileFormData {
-  name: string
-  email: string
-}
+import { ProfileFormData } from "@/types/forms"
 
 export default function Profile() {
   const { user } = useAuth()

@@ -12,26 +12,9 @@ import { CreditCard, QrCode, Lock, Shield, CheckCircle, ArrowLeft, Loader2 } fro
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import * as yup from "yup"
 import { useTranslation } from "react-i18next"
-
-const cardSchema = yup.object({
-  cardNumber: yup.string().required("Número do cartão é obrigatório").matches(/^\d{16}$/, "Número do cartão deve ter 16 dígitos"),
-  cardHolder: yup.string().required("Nome do titular é obrigatório").min(3, "Nome deve ter pelo menos 3 caracteres"),
-  expiryMonth: yup.string().required("Mês de expiração é obrigatório").matches(/^(0[1-9]|1[0-2])$/, "Mês deve ser entre 01 e 12"),
-  expiryYear: yup.string().required("Ano de expiração é obrigatório").matches(/^\d{4}$/, "Ano deve ter 4 dígitos"),
-  cvv: yup.string().required("CVV é obrigatório").matches(/^\d{3,4}$/, "CVV deve ter 3 ou 4 dígitos")
-})
-
-type CardFormData = yup.InferType<typeof cardSchema>
-
-interface PlanDetails {
-  id: string
-  name: string
-  price: number
-  billing_cycle: "monthly" | "yearly"
-  features: string[]
-}
+import { CardFormData, PlanDetails } from "@/types/forms"
+import { cardSchema } from "@/schemas/forms"
 
 function CheckoutContent() {
   const { t } = useTranslation()

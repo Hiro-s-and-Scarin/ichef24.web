@@ -28,12 +28,8 @@ interface StripeCheckoutProps {
   onBack: () => void
 }
 
-// Schema de validação para o formulário
-const checkoutSchema = yup.object({
-  // Campos adicionais podem ser adicionados aqui se necessário
-}).required()
-
-type CheckoutFormData = yup.InferType<typeof checkoutSchema>
+import { CheckoutFormData } from "@/types/forms"
+import { checkoutSchema } from "@/schemas/forms"
 
 const cardElementOptions = {
   style: {

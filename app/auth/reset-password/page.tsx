@@ -12,19 +12,9 @@ import { useRouter } from "next/navigation"
 import { useSendResetPassword, useConfirmCodeResetPassword, useResetPasswordData } from "@/network/hooks/auth/useAuth"
 import { toast } from "sonner"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { resetPasswordSchema, confirmResetPasswordSchema } from "@/schemas/auth.schema"
+import { resetPasswordSchema, confirmResetPasswordSchema } from "@/schemas/forms"
 
-interface ResetPasswordFormData {
-  email: string
-  currentPassword: string
-  newPassword: string
-}
-
-interface ConfirmCodeFormData {
-  code: string
-  email: string
-  newPassword: string
-}
+import { ResetPasswordFormData, ConfirmCodeFormData } from "@/types/forms"
 
 export default function ResetPasswordPage() {
   const [step, setStep] = useState<"password" | "code">("password")
