@@ -44,10 +44,7 @@ function CheckoutContent() {
   const onCardSubmit = async (data: CardFormData) => {
     setIsProcessing(true)
     try {
-      // Simular processamento de pagamento
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Aqui você integraria com a API do Stripe
 
       
       setIsSuccess(true)
@@ -62,10 +59,7 @@ function CheckoutContent() {
   const onPixSubmit = async () => {
     setIsProcessing(true)
     try {
-      // Simular geração de PIX
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Aqui você geraria o QR Code do PIX
 
       
       setIsSuccess(true)

@@ -20,7 +20,6 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
-// Schema de validação para login
 import { LoginFormData } from "@/types/forms"
 import { loginSchema } from "@/schemas/forms"
 
@@ -37,7 +36,6 @@ function LoginPageContent() {
 
 
 
-  // React Hook Form com validação Yup
   const { 
     register, 
     handleSubmit, 

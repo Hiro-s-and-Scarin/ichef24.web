@@ -1,55 +1,60 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { useTranslation } from "react-i18next"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChefHat, Send, User, Bot, X } from "lucide-react"
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChefHat, Send, User, Bot, X } from "lucide-react";
 
 interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  timestamp: Date
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
 }
 
 interface AIChatModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  placeholder?: string
-  initialMessage?: string
-  onRecipeGenerated?: (recipe: any) => void
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  placeholder?: string;
+  initialMessage?: string;
+  onRecipeGenerated?: (recipe: any) => void;
 }
 
 export function AIChatModal({
   isOpen,
   onClose,
   title,
-        placeholder = t('ai.chat.placeholder'),
+  placeholder = t("ai.chat.placeholder"),
   initialMessage,
   onRecipeGenerated,
 }: AIChatModalProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   // Estado consolidado
   const [chatState, setChatState] = useState<AIChatModalState>({
     messages: [],
     input: "",
     isLoading: false,
-  })
+  });
 
   // Desestruturação para facilitar o uso
-  const { messages, input, isLoading } = chatState
+  const { messages, input, isLoading } = chatState;
 
   // Função helper para atualizar estado
   const updateChatState = (updates: Partial<AIChatModalState>) => {
-    setChatState(prev => ({ ...prev, ...updates }))
-  }
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
+    setChatState((prev) => ({ ...prev, ...updates }));
+  };
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && initialMessage && messages.length === 0) {
@@ -60,49 +65,49 @@ export function AIChatModal({
           content: initialMessage,
           timestamp: new Date(),
         },
-      ])
+      ]);
     }
-  }, [isOpen, initialMessage, messages.length])
+  }, [isOpen, initialMessage, messages.length]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || isLoading) return
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: input.trim(),
       timestamp: new Date(),
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
 
     // Simulate AI response
     setTimeout(() => {
       const responses = [
-        t('ai.chat.response.1'),
-        t('ai.chat.response.2'),
-        t('ai.chat.response.3'),
-        t('ai.chat.response.4'),
-      ]
+        t("ai.chat.response.1"),
+        t("ai.chat.response.2"),
+        t("ai.chat.response.3"),
+        t("ai.chat.response.4"),
+      ];
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
-      }
+      };
 
-      setMessages((prev) => [...prev, assistantMessage])
-      setIsLoading(false)
+      setMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
 
       // If this is a recipe generation chat, simulate recipe creation
       if (onRecipeGenerated && Math.random() > 0.5) {
@@ -110,7 +115,8 @@ export function AIChatModal({
           const generatedRecipe = {
             id: Date.now(),
             title: "Receita Criada pela IA",
-            description: "Uma deliciosa receita personalizada criada especialmente para você",
+            description:
+              "Uma deliciosa receita personalizada criada especialmente para você",
             image: "/placeholder.svg?height=200&width=300",
             time: "30 min",
             servings: "4 pessoas",
@@ -118,24 +124,28 @@ export function AIChatModal({
             tags: ["IA", "Personalizada", "Especial"],
             date: "Agora",
             rating: 5,
-            ingredients: ["Ingredientes selecionados pela IA", "Temperos especiais", "Elementos únicos da receita"],
+            ingredients: [
+              "Ingredientes selecionados pela IA",
+              "Temperos especiais",
+              "Elementos únicos da receita",
+            ],
             instructions: [
               "Prepare os ingredientes conforme sugerido pela IA",
               "Siga as técnicas culinárias recomendadas",
               "Finalize com o toque especial da receita",
             ],
-          }
-          onRecipeGenerated(generatedRecipe)
-        }, 2000)
+          };
+          onRecipeGenerated(generatedRecipe);
+        }, 2000);
       }
-    }, 1500)
-  }
+    }, 1500);
+  };
 
   const handleClose = () => {
-    setMessages([])
-    setInput("")
-    onClose()
-  }
+    setMessages([]);
+    setInput("");
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -168,9 +178,14 @@ export function AIChatModal({
                       : "bg-black text-gray-100"
                   }`}
                 >
-                                          <div className="text-sm leading-relaxed whitespace-pre-line">{message.content}</div>
+                  <div className="text-sm leading-relaxed whitespace-pre-line">
+                    {message.content}
+                  </div>
                   <span className="text-xs opacity-70 mt-1 block">
-                    {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
                 {message.role === "user" && (
@@ -203,7 +218,10 @@ export function AIChatModal({
           </div>
         </ScrollArea>
 
-        <form onSubmit={handleSubmit} className="flex gap-2 pt-4 border-t border-gray-700 flex-shrink-0">
+        <form
+          onSubmit={handleSubmit}
+          className="flex gap-2 pt-4 border-t border-gray-700 flex-shrink-0"
+        >
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -221,5 +239,5 @@ export function AIChatModal({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

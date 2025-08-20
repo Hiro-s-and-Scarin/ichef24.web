@@ -21,7 +21,14 @@ export const queryKeys = {
   community: {
     posts: ["community", "posts"] as const,
     post: (id: string | number) => ["community", "post", id] as const,
-    postComments: ["community", "postComments"] as const,
+    postComments: (postId: string | number) =>
+      ["community", "postComments", postId] as const,
+    postChat: (postId: string | number) => ["post-chat", postId] as const,
+    postMessages: (postId: string | number) =>
+      ["post-messages", postId] as const,
+    allPostComments: ["community-post-comments"] as const,
+    topChefs: ["top-chefs"] as const,
+    topRecipes: ["top-recipes"] as const,
   },
   chat: {
     sessions: ["chat", "sessions"] as const,
@@ -35,8 +42,9 @@ export const queryKeys = {
   },
   ai: {
     suggestions: (prompt: string) => ["ai", "suggestions", prompt] as const,
-    generate: (type: string, params?: any) => ["ai", "generate", type, params] as const,
+    generate: (type: string, params?: any) =>
+      ["ai", "generate", type, params] as const,
   },
-} as const
+} as const;
 
-export type QueryKeys = typeof queryKeys
+export type QueryKeys = typeof queryKeys;

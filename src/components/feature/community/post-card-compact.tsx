@@ -1,100 +1,97 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { 
-  Heart, 
-  MessageSquare, 
-  Share2, 
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Heart,
+  MessageSquare,
+  Share2,
   Eye,
   Calendar,
   Image as ImageIcon,
   ExternalLink,
-  ChefHat
-} from "lucide-react"
-import { CommunityPost } from "@/types/community"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
-import { toast } from "sonner"
+  ChefHat,
+} from "lucide-react";
+import { CommunityPost } from "@/types/community";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
 
 interface PostCardCompactProps {
-  post: CommunityPost
-  onLikePost: (postId: number, isLiked: boolean) => Promise<void>
+  post: CommunityPost;
+  onLikePost: (postId: number, isLiked: boolean) => Promise<void>;
 }
 
 export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
-  const router = useRouter()
-  const { user } = useAuth()
-  
-  // Estado local para controlar o like - sincronizar com backend
-  const [isLiked, setIsLiked] = useState(false)
-  const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0)
+  const router = useRouter();
+  const { user } = useAuth();
 
-  // Verificar se o usuário já deu like - sincronizar com backend
+  const [isLiked, setIsLiked] = useState(false);
+  const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
+
   useEffect(() => {
     if (user && post.user_is_liked) {
-      const userHasLiked = post.user_is_liked.includes(Number(user.id))
-      setIsLiked(userHasLiked)
+      const userHasLiked = post.user_is_liked.includes(Number(user.id));
+      setIsLiked(userHasLiked);
     }
-  }, [user, post.user_is_liked])
+  }, [user, post.user_is_liked]);
 
-  // Sincronizar likes count com o post atualizado
   useEffect(() => {
-    setLocalLikesCount(post.likes_count || 0)
-  }, [post.likes_count])
+    setLocalLikesCount(post.likes_count || 0);
+  }, [post.likes_count]);
 
   const handleLike = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    
+    e.stopPropagation();
+
     if (!user) {
-      toast.error("Você precisa estar logado para curtir posts")
-      return
+      toast.error("Você precisa estar logado para curtir posts");
+      return;
     }
 
     // Verificar se já deu like
     if (isLiked) {
-      toast.info("Você já curtiu este post")
-      return
+      toast.info("Você já curtiu este post");
+      return;
     }
 
     try {
-      const newIsLiked = true
-      setIsLiked(newIsLiked)
-      
+      const newIsLiked = true;
+      setIsLiked(newIsLiked);
+
       // Atualizar contador local imediatamente para feedback visual
-      setLocalLikesCount(prev => prev + 1)
-      
-      await onLikePost(post.id, newIsLiked)
+      setLocalLikesCount((prev) => prev + 1);
+
+      await onLikePost(post.id, newIsLiked);
     } catch (error) {
-      toast.error("Erro ao curtir post")
+      toast.error("Erro ao curtir post");
       // Reverter o estado em caso de erro
-      setIsLiked(false)
-      setLocalLikesCount(post.likes_count || 0)
+      setIsLiked(false);
+      setLocalLikesCount(post.likes_count || 0);
     }
-  }
+  };
 
   const handleViewDetails = () => {
-    router.push(`/community/post/${post.id}`)
-  }
+    router.push(`/community/post/${post.id}`);
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text
-    return text.substring(0, maxLength) + '...'
-  }
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
 
   return (
-    <Card 
+    <Card
       className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
       onClick={handleViewDetails}
     >
@@ -103,28 +100,31 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.user?.avatar_url} alt={post.user?.name} />
             <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-sm">
-              {post.user?.name?.charAt(0) || 'U'}
+              {post.user?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-800 dark:text-white text-sm">
-                {post.user?.name || 'Usuário'}
+                {post.user?.name || "Usuário"}
               </h3>
               {post.is_featured && (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs">
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs"
+                >
                   Destaque
                 </Badge>
               )}
             </div>
-            
+
             <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDate(post.createdAt)}
               </div>
-              
+
               {post.difficulty_level && (
                 <Badge variant="outline" className="text-xs">
                   {post.difficulty_level}
@@ -142,7 +142,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
             {post.title}
           </h4>
         )}
-        
+
         {/* Conteúdo truncado */}
         <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
           {truncateText(post.content, 120)}
@@ -151,9 +151,9 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
         {/* Imagem do Post (se houver) */}
         {post.image_url && (
           <div className="rounded-lg overflow-hidden">
-            <img 
-              src={post.image_url} 
-              alt={post.title || 'Imagem do post'}
+            <img
+              src={post.image_url}
+              alt={post.title || "Imagem do post"}
               className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-200"
             />
           </div>
@@ -190,8 +190,8 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               )}
             </div>
             {post.recipe.image_url && (
-              <img 
-                src={post.recipe.image_url} 
+              <img
+                src={post.recipe.image_url}
                 alt={post.recipe.title}
                 className="w-8 h-8 rounded object-cover"
               />
@@ -206,12 +206,12 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               <Eye className="w-3 h-3" />
               {post.views_count || 0}
             </div>
-            
+
             <div className="flex items-center gap-1">
               <MessageSquare className="w-3 h-3" />
               {post.comments_count || 0}
             </div>
-            
+
             <div className="flex items-center gap-1">
               <Share2 className="w-3 h-3" />
               {post.shares_count || 0}
@@ -224,15 +224,17 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               size="sm"
               onClick={handleLike}
               className={`flex items-center gap-1 p-2 h-8 ${
-                isLiked 
-                  ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' 
-                  : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20'
+                isLiked
+                  ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
               }`}
             >
-              <Heart className={`w-4 h-4 ${isLiked ? 'text-red-500 fill-current' : 'text-gray-500'}`} />
+              <Heart
+                className={`w-4 h-4 ${isLiked ? "text-red-500 fill-current" : "text-gray-500"}`}
+              />
               <span className="text-xs">{localLikesCount}</span>
             </Button>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -246,5 +248,5 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

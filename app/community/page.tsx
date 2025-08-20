@@ -26,11 +26,11 @@ import { useCommunityPosts, useCreateCommunityPost, usePostComments, useCreatePo
 import { useRecipes, useTopRecipes } from "@/network/hooks/recipes/useRecipes"
 import { useUsers } from "@/network/hooks/users/useUsers"
 import { getTopChefs } from "@/network/actions/users/actionUsers"
+import { useQueryClient } from "@tanstack/react-query"
 import { CreateCommunityPostData, CommunityPost } from "@/types/community"
 import { Recipe } from "@/types/recipe"
 import { toast } from "sonner"
 
-// Dynamic imports para evitar problemas de hidratação
 const CreatePostModal = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.CreatePostModal })), { ssr: false })
 const PostCardCompact = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.PostCardCompact })), { ssr: false })
 const TopChefCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopChefCard })), { ssr: false })
@@ -43,20 +43,18 @@ export default function Community() {
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
   const [searchQuery, setSearchQuery] = useState("")
   
-  // Estado consolidado
   const [state, setState] = useState({
     isCreatingPost: false,
     topChefs: [] as any[],
     isLoadingTopChefs: false
   })
   
-  // Hooks para dados
   const { data: postsData, isLoading: postsLoading } = useCommunityPosts()
   const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 50 })
   const { data: topRecipesData, isLoading: topRecipesLoading } = useTopRecipes()
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
 
-  // Hooks para mutações
+  const queryClient = useQueryClient()
   const createPostMutation = useCreateCommunityPost()
   const createCommentMutation = useCreatePostComment()
   const likePostMutation = useLikeCommunityPost()
@@ -68,7 +66,6 @@ export default function Community() {
 
 
 
-  // Filtrar posts por pesquisa
   const filteredPosts = posts.filter(post => {
     if (!searchQuery.trim()) return true
     const query = searchQuery.toLowerCase()
@@ -79,12 +76,10 @@ export default function Community() {
     )
   })
 
-  // Top receitas ordenadas por likes
   const topRecipesSorted = topRecipes
     .sort((a: Recipe, b: Recipe) => b.likes_count - a.likes_count)
     .slice(0, 3)
 
-  // Atualizar URL quando mudar seção ou pesquisa
   useEffect(() => {
     const params = new URLSearchParams()
     if (activeSection !== 'posts') params.set('section', activeSection)
@@ -94,7 +89,6 @@ export default function Community() {
     router.replace(`/community${newUrl}`, { scroll: false })
   }, [activeSection, searchQuery, router])
 
-  // Ler parâmetros da URL ao carregar
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search)
@@ -111,7 +105,6 @@ export default function Community() {
     }
   }, [])
 
-  // Buscar top chefs quando a seção for ativada
   useEffect(() => {
     if (activeSection === 'top-chefs') {
       setState(prev => ({ ...prev, isLoadingTopChefs: true }))
@@ -144,6 +137,7 @@ export default function Community() {
   const handleCreateComment = async (postId: number, content: string) => {
     try {
       await createCommentMutation.mutateAsync({ postId, content })
+
     } catch (error) {
       toast.error("Erro ao criar comentário")
     }
@@ -152,6 +146,7 @@ export default function Community() {
   const handleLikePost = async (postId: number) => {
     try {
       await likePostMutation.mutateAsync(postId)
+
     } catch (error) {
       toast.error("Erro ao curtir post")
     }

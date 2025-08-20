@@ -1,9 +1,8 @@
 export interface ChatFormData {
-  message: string
+  message: string;
 }
 
 export interface NewSessionFormData {
-  title: string
-  description?: string
+  title: string;
+  description?: string;
 }
-

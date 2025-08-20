@@ -22,11 +22,13 @@ import { useIncrementPostViews } from "@/network/hooks/community/useCommunity"
 import { useLikeRecipe } from "@/network/hooks/recipes/useRecipes"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function PostDetailPage() {
   const params = useParams()
   const router = useRouter()
   const postId = params.id as string
+  const queryClient = useQueryClient()
   
   const [commentContent, setCommentContent] = useState("")
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
@@ -34,7 +36,6 @@ export default function PostDetailPage() {
   const [recipeLikesCount, setRecipeLikesCount] = useState(0)
   const [isRecipeLiked, setIsRecipeLiked] = useState(false)
   
-  // Hooks para dados
   const { data: postData, isLoading: postLoading } = useCommunityPost(postId)
   const { data: commentsData, isLoading: commentsLoading } = usePostComments(postId)
   const createCommentMutation = useCreatePostComment()
@@ -45,18 +46,15 @@ export default function PostDetailPage() {
   const post = postData
   const comments = commentsData?.data || []
 
-  // Atualizar estado local da receita quando o post carregar
   useEffect(() => {
     if (post?.recipe) {
       setRecipeLikesCount(post.recipe.likes_count || 0)
-      // Verificar se o usuário já curtiu a receita
       if (user && post.recipe.user_is_liked) {
         setIsRecipeLiked(post.recipe.user_is_liked.includes(Number(user.id)))
       }
     }
   }, [post?.recipe, user])
 
-  // Incrementar views apenas uma vez quando entrar na página
   useEffect(() => {
     if (postId && !viewsIncremented) {
       incrementViewsMutation.mutate(postId)
@@ -92,6 +90,8 @@ export default function PostDetailPage() {
         setRecipeLikesCount(result.likes_count || recipeLikesCount + 1)
         setIsRecipeLiked(true)
         toast.success("Receita curtida com sucesso!")
+        
+
       }
     } catch (error) {
       toast.error("Erro ao curtir receita")
@@ -114,9 +114,11 @@ export default function PostDetailPage() {
     
     setIsSubmittingComment(true)
     try {
-      await createCommentMutation.mutateAsync({ postId: parseInt(postId), content: commentContent })
+      await createCommentMutation.mutateAsync({ postId: postId, content: commentContent })
       setCommentContent("")
       toast.success("Comentário adicionado com sucesso!")
+      
+
     } catch (error) {
       toast.error("Erro ao criar comentário")
     } finally {

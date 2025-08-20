@@ -1,26 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Star, Heart, Share2, Clock, Users, ChefHat } from "lucide-react"
-import { useGetRecipes, useGetRecipeById, usePostRecipe, useToggleFavoriteRecipe, useGenerateRecipeWithAI } from "@/network/hooks/recipes/useRecipes"
-import { CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Star, Heart, Share2, Clock, Users, ChefHat } from "lucide-react";
+import {
+  useGetRecipes,
+  useGetRecipeById,
+  usePostRecipe,
+  useToggleFavoriteRecipe,
+  useGenerateRecipeWithAI,
+} from "@/network/hooks/recipes/useRecipes";
+import { CreateRecipeData, AIRecipeRequest } from "@/types/recipe";
 
 export function RecipePageExample() {
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string>("")
-  const [showCreateForm, setShowCreateForm] = useState(false)
-  const [showAIForm, setShowAIForm] = useState(false)
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string>("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showAIForm, setShowAIForm] = useState(false);
 
-  const { data: recipes, isLoading: recipesLoading } = useGetRecipes({ page: 1, limit: 10 })
-  const { data: selectedRecipe, isLoading: recipeLoading } = useGetRecipeById(selectedRecipeId)
-  
-  const createRecipeMutation = usePostRecipe()
-  const { addToFavorites, removeFromFavorites } = useToggleFavoriteRecipe()
-  const generateAIRecipeMutation = useGenerateRecipeWithAI()
+  const { data: recipes, isLoading: recipesLoading } = useGetRecipes({
+    page: 1,
+    limit: 10,
+  });
+  const { data: selectedRecipe, isLoading: recipeLoading } =
+    useGetRecipeById(selectedRecipeId);
+
+  const createRecipeMutation = usePostRecipe();
+  const { addToFavorites, removeFromFavorites } = useToggleFavoriteRecipe();
+  const generateAIRecipeMutation = useGenerateRecipeWithAI();
 
   const [newRecipe, setNewRecipe] = useState<CreateRecipeData>({
     title: "",
@@ -31,17 +41,17 @@ export function RecipePageExample() {
     tags: [],
     ingredients: [],
     instructions: [],
-    isPublic: true
-  })
+    isPublic: true,
+  });
 
-  const [aiPrompt, setAiPrompt] = useState("")
+  const [aiPrompt, setAiPrompt] = useState("");
 
   const handleCreateRecipe = async () => {
-    if (!newRecipe.title || !newRecipe.description) return
-    
+    if (!newRecipe.title || !newRecipe.description) return;
+
     try {
-      await createRecipeMutation.mutateAsync(newRecipe)
-      setShowCreateForm(false)
+      await createRecipeMutation.mutateAsync(newRecipe);
+      setShowCreateForm(false);
       setNewRecipe({
         title: "",
         description: "",
@@ -51,45 +61,48 @@ export function RecipePageExample() {
         tags: [],
         ingredients: [],
         instructions: [],
-        isPublic: true
-      })
+        isPublic: true,
+      });
     } catch (error) {
-      toast.error("Erro ao criar receita")
+      toast.error("Erro ao criar receita");
     }
-  }
+  };
 
   const handleGenerateAIRecipe = async () => {
-    if (!aiPrompt) return
-    
+    if (!aiPrompt) return;
+
     const aiRequest: AIRecipeRequest = {
       prompt: aiPrompt,
       preferences: {
         difficulty: "medium",
         time: "30-45 min",
-        servings: 4
-      }
-    }
-    
-    try {
-      await generateAIRecipeMutation.mutateAsync(aiRequest)
-      setShowAIForm(false)
-      setAiPrompt("")
-    } catch (error) {
-      toast.error("Erro ao gerar receita com IA")
-    }
-  }
+        servings: 4,
+      },
+    };
 
-  const handleToggleFavorite = async (recipeId: string, isFavorite: boolean) => {
+    try {
+      await generateAIRecipeMutation.mutateAsync(aiRequest);
+      setShowAIForm(false);
+      setAiPrompt("");
+    } catch (error) {
+      toast.error("Erro ao gerar receita com IA");
+    }
+  };
+
+  const handleToggleFavorite = async (
+    recipeId: string,
+    isFavorite: boolean,
+  ) => {
     try {
       if (isFavorite) {
-        await removeFromFavorites.mutateAsync(recipeId)
+        await removeFromFavorites.mutateAsync(recipeId);
       } else {
-        await addToFavorites.mutateAsync(recipeId)
+        await addToFavorites.mutateAsync(recipeId);
       }
     } catch (error) {
-      toast.error("Erro ao alterar favorito")
+      toast.error("Erro ao alterar favorito");
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -107,7 +120,7 @@ export function RecipePageExample() {
           <ChefHat className="w-4 h-4 mr-2" />
           Nova Receita
         </Button>
-        <Button 
+        <Button
           onClick={() => setShowAIForm(!showAIForm)}
           className="bg-gradient-to-r from-purple-600 to-blue-600"
         >
@@ -124,26 +137,34 @@ export function RecipePageExample() {
             <Input
               placeholder="Título da receita"
               value={newRecipe.title}
-              onChange={(e) => setNewRecipe({ ...newRecipe, title: e.target.value })}
+              onChange={(e) =>
+                setNewRecipe({ ...newRecipe, title: e.target.value })
+              }
             />
             <Textarea
               placeholder="Descrição da receita"
               value={newRecipe.description}
-              onChange={(e) => setNewRecipe({ ...newRecipe, description: e.target.value })}
+              onChange={(e) =>
+                setNewRecipe({ ...newRecipe, description: e.target.value })
+              }
             />
             <div className="grid grid-cols-2 gap-4">
               <Input
                 placeholder="Tempo de preparo"
                 value={newRecipe.time}
-                onChange={(e) => setNewRecipe({ ...newRecipe, time: e.target.value })}
+                onChange={(e) =>
+                  setNewRecipe({ ...newRecipe, time: e.target.value })
+                }
               />
               <Input
                 placeholder="Porções"
                 value={newRecipe.servings}
-                onChange={(e) => setNewRecipe({ ...newRecipe, servings: e.target.value })}
+                onChange={(e) =>
+                  setNewRecipe({ ...newRecipe, servings: e.target.value })
+                }
               />
             </div>
-            <Button 
+            <Button
               onClick={handleCreateRecipe}
               disabled={createRecipeMutation.isPending}
               className="w-full"
@@ -165,12 +186,14 @@ export function RecipePageExample() {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
             />
-            <Button 
+            <Button
               onClick={handleGenerateAIRecipe}
               disabled={generateAIRecipeMutation.isPending}
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600"
             >
-              {generateAIRecipeMutation.isPending ? "Gerando..." : "✨ Gerar Receita"}
+              {generateAIRecipeMutation.isPending
+                ? "Gerando..."
+                : "✨ Gerar Receita"}
             </Button>
           </CardContent>
         </Card>
@@ -184,24 +207,36 @@ export function RecipePageExample() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {recipes?.map((recipe) => (
-                <Card key={recipe.id} className="cursor-pointer hover:shadow-lg transition-shadow">
+                <Card
+                  key={recipe.id}
+                  className="cursor-pointer hover:shadow-lg transition-shadow"
+                >
                   <CardContent className="p-4">
                     <div className="space-y-3">
                       <div className="flex justify-between items-start">
-                        <h3 className="font-semibold text-lg">{recipe.title}</h3>
+                        <h3 className="font-semibold text-lg">
+                          {recipe.title}
+                        </h3>
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleToggleFavorite(recipe.id, recipe.isFavorite || false)}
+                          onClick={() =>
+                            handleToggleFavorite(
+                              recipe.id,
+                              recipe.isFavorite || false,
+                            )
+                          }
                         >
-                          <Heart className={`w-4 h-4 ${recipe.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                          <Heart
+                            className={`w-4 h-4 ${recipe.isFavorite ? "fill-red-500 text-red-500" : ""}`}
+                          />
                         </Button>
                       </div>
-                      
+
                       <p className="text-gray-600 dark:text-gray-300 text-sm">
                         {recipe.description}
                       </p>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
@@ -212,15 +247,19 @@ export function RecipePageExample() {
                           {recipe.servings}
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-1">
                         {recipe.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      
+
                       <Button
                         onClick={() => setSelectedRecipeId(recipe.id)}
                         variant="outline"
@@ -254,9 +293,16 @@ export function RecipePageExample() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleToggleFavorite(selectedRecipe.id, selectedRecipe.isFavorite || false)}
+                        onClick={() =>
+                          handleToggleFavorite(
+                            selectedRecipe.id,
+                            selectedRecipe.isFavorite || false,
+                          )
+                        }
                       >
-                        <Heart className={`w-4 h-4 ${selectedRecipe.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                        <Heart
+                          className={`w-4 h-4 ${selectedRecipe.isFavorite ? "fill-red-500 text-red-500" : ""}`}
+                        />
                       </Button>
                     </div>
                   </CardTitle>
@@ -265,38 +311,50 @@ export function RecipePageExample() {
                   <p className="text-gray-600 dark:text-gray-300">
                     {selectedRecipe.description}
                   </p>
-                  
+
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-lg font-semibold">{selectedRecipe.time}</div>
+                      <div className="text-lg font-semibold">
+                        {selectedRecipe.time}
+                      </div>
                       <div className="text-sm text-gray-500">Tempo</div>
                     </div>
                     <div>
-                      <div className="text-lg font-semibold">{selectedRecipe.servings}</div>
+                      <div className="text-lg font-semibold">
+                        {selectedRecipe.servings}
+                      </div>
                       <div className="text-sm text-gray-500">Porções</div>
                     </div>
                     <div>
-                      <div className="text-lg font-semibold capitalize">{selectedRecipe.difficulty}</div>
+                      <div className="text-lg font-semibold capitalize">
+                        {selectedRecipe.difficulty}
+                      </div>
                       <div className="text-sm text-gray-500">Dificuldade</div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold mb-2">Ingredientes:</h4>
                     <ul className="list-disc list-inside space-y-1">
                       {selectedRecipe.ingredients.map((ingredient, index) => (
-                        <li key={index} className="text-gray-600 dark:text-gray-300">
+                        <li
+                          key={index}
+                          className="text-gray-600 dark:text-gray-300"
+                        >
                           {ingredient}
                         </li>
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold mb-2">Modo de Preparo:</h4>
                     <ol className="list-decimal list-inside space-y-2">
                       {selectedRecipe.instructions.map((instruction, index) => (
-                        <li key={index} className="text-gray-600 dark:text-gray-300">
+                        <li
+                          key={index}
+                          className="text-gray-600 dark:text-gray-300"
+                        >
                           {instruction}
                         </li>
                       ))}
@@ -309,5 +367,5 @@ export function RecipePageExample() {
         )}
       </div>
     </div>
-  )
+  );
 }

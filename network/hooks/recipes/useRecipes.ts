@@ -246,17 +246,19 @@ export function useLikeRecipe() {
         exact: false 
       })
       
-      // Invalidar queries de usuários (para top chefs)
       queryClient.invalidateQueries({ 
-        queryKey: queryKeys.users.all,
+        queryKey: queryKeys.recipes.user,
         exact: false 
       })
       
-      // Invalidar queries de community posts (para top chefs)
       queryClient.invalidateQueries({ 
-        queryKey: queryKeys.community.posts,
+        queryKey: queryKeys.recipes.favorites,
         exact: false 
       })
+      
+      // Invalidar queries de top recipes e top chefs
+      queryClient.invalidateQueries({ queryKey: ['top-recipes'] })
+      queryClient.invalidateQueries({ queryKey: ['top-chefs'] })
       
       toast.success("Receita curtida com sucesso!")
     },

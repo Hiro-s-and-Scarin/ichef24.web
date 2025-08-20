@@ -12,7 +12,6 @@ import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { parseCookies } from 'nookies'
 import { useEffect } from "react"
 
-// Dynamic imports para evitar problemas de hidratação
 const Header = dynamic(() => import("@/components/layout/header").then(mod => ({ default: mod.Header })), { 
   ssr: false,
   loading: () => (
@@ -56,42 +55,35 @@ const AuthProvider = dynamic(() => import("@/contexts/auth-context").then(mod =>
 
 const inter = Inter({ subsets: ["latin"] })
 
-// Componente para proteger rotas
 function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, isAuthPage: boolean }) {
   const router = useRouter()
 
   useEffect(() => {
     if (!isAuthPage) {
-      // Verifica se existe JWT nos cookies
       const cookies = parseCookies()
       const token = cookies.jwt
 
       if (!token) {
-        // Se não há token, redireciona para login
         router.replace('/')
       }
     }
   }, [isAuthPage, router])
 
-  // Se é página de auth, não mostra header
   if (isAuthPage) {
     return <>{children}</>
   }
 
-  // Se não é página de auth, verifica token antes de renderizar
   const cookies = parseCookies()
   const token = cookies.jwt
 
   if (!token) {
-    // Se não há token, não renderiza nada (será redirecionado)
     return null
   }
 
-  // Se há token, mostra header e conteúdo
   return (
     <>
       <Suspense fallback={
-        <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
+        <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between">
             <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
             <div className="w-64 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />

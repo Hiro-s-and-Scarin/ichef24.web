@@ -1,43 +1,52 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  className?: string
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  className?: string;
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange, className = "" }: PaginationProps) {
-  if (totalPages <= 1) return null
+export function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+  className = "",
+}: PaginationProps) {
+  if (totalPages <= 1) return null;
 
   const getVisiblePages = () => {
-    const delta = 2
-    const range = []
-    const rangeWithDots = []
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i)
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...')
+      rangeWithDots.push(1, "...");
     } else {
-      rangeWithDots.push(1)
+      rangeWithDots.push(1);
     }
 
-    rangeWithDots.push(...range)
+    rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages)
+      rangeWithDots.push("...", totalPages);
     } else {
-      rangeWithDots.push(totalPages)
+      rangeWithDots.push(totalPages);
     }
 
-    return rangeWithDots
-  }
+    return rangeWithDots;
+  };
 
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`}>
@@ -54,7 +63,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
 
       {getVisiblePages().map((page, index) => (
         <div key={index}>
-          {page === '...' ? (
+          {page === "..." ? (
             <span className="px-3 py-2 text-gray-500">...</span>
           ) : (
             <Button
@@ -80,5 +89,5 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
         <ChevronRight className="w-4 h-4" />
       </Button>
     </div>
-  )
-} 
+  );
+}

@@ -32,7 +32,6 @@ export default function Profile() {
   const router = useRouter()
   const [isEditingProfile, setIsEditingProfile] = useState(false)
 
-  // Todos os hooks devem ser chamados antes de qualquer return condicional
   const {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
@@ -47,7 +46,6 @@ export default function Profile() {
 
   const updateProfileMutation = useUpdateProfile()
 
-  // Loading state while user is being fetched
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
@@ -61,7 +59,6 @@ export default function Profile() {
 
   const onProfileSubmit = async (data: ProfileFormData) => {
     try {
-      // Filtra apenas os campos que foram preenchidos
       const fieldsToUpdate: Partial<ProfileFormData> = {}
       
       if (data.name && data.name.trim() !== "") {
@@ -72,7 +69,6 @@ export default function Profile() {
         fieldsToUpdate.email = data.email.trim()
       }
       
-      // Só atualiza se houver campos para atualizar
       if (Object.keys(fieldsToUpdate).length > 0) {
         await updateProfileMutation.mutateAsync(fieldsToUpdate)
         setIsEditingProfile(false)

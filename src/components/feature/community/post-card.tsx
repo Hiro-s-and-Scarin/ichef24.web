@@ -1,120 +1,119 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { 
-  Heart, 
-  MessageSquare, 
-  Share2, 
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Heart,
+  MessageSquare,
+  Share2,
   Eye,
   Send,
   Calendar,
   Image as ImageIcon,
-  User
-} from "lucide-react"
-import * as yup from "yup"
-import { CommunityPost, PostComment } from "@/types/community"
-import { usePostComments } from "@/network/hooks/community/useCommunity"
-import { useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
-import { useAuth } from "@/contexts/auth-context"
-import { toast } from "sonner"
+  User,
+} from "lucide-react";
+import * as yup from "yup";
+import { CommunityPost, PostComment } from "@/types/community";
+import { usePostComments } from "@/network/hooks/community/useCommunity";
+import { useLikeCommunityPost } from "@/network/hooks/community/useCommunity";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
-// Schema para comentários
-import { CommentFormData } from "@/types/forms"
-import { commentSchema } from "@/schemas/forms"
+import { CommentFormData } from "@/types/forms";
+import { commentSchema } from "@/schemas/forms";
 
 interface PostCardProps {
-  post: CommunityPost
-  onCreateComment: (postId: number, content: string) => Promise<void>
-  onLikePost: (postId: number) => Promise<void>
+  post: CommunityPost;
+  onCreateComment: (postId: number, content: string) => Promise<void>;
+  onLikePost: (postId: number) => Promise<void>;
 }
 
 export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
-  const { user } = useAuth()
-  const [showComments, setShowComments] = useState(false)
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
-  
-  const { data: commentsData, isLoading: commentsLoading } = usePostComments(post.id)
-  const comments = commentsData?.data || []
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [showComments, setShowComments] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
 
-  const likePostMutation = useLikeCommunityPost()
+  const { data: commentsData, isLoading: commentsLoading } = usePostComments(
+    post.id,
+  );
+  const comments = commentsData?.data || [];
 
-  // Verificar se o usuário já deu like - sincronizar com backend
+  const likePostMutation = useLikeCommunityPost();
+
   useEffect(() => {
     if (user && post.user_is_liked) {
-      const userHasLiked = post.user_is_liked.includes(Number(user.id))
-      setIsLiked(userHasLiked)
+      const userHasLiked = post.user_is_liked.includes(Number(user.id));
+      setIsLiked(userHasLiked);
     }
-  }, [user, post.user_is_liked])
+  }, [user, post.user_is_liked]);
 
-  // Sincronizar likes count com o post atualizado
   useEffect(() => {
-    setLikesCount(post.likes_count || 0)
-  }, [post.likes_count])
+    setLikesCount(post.likes_count || 0);
+  }, [post.likes_count]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<CommentFormData>({
-    resolver: yupResolver(commentSchema)
-  })
+    resolver: yupResolver(commentSchema),
+  });
 
   const handleCommentSubmit = async (data: CommentFormData) => {
-    setIsSubmittingComment(true)
+    setIsSubmittingComment(true);
     try {
-      await onCreateComment(post.id, data.content)
-      reset()
+      await onCreateComment(post.id, data.content);
+      reset();
     } catch (error) {
-      toast.error("Erro ao criar comentário")
+      toast.error("Erro ao criar comentário");
     } finally {
-      setIsSubmittingComment(false)
+      setIsSubmittingComment(false);
     }
-  }
+  };
 
   const handleLike = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado para curtir posts")
-      return
+      toast.error("Você precisa estar logado para curtir posts");
+      return;
     }
 
-    // Verificar se já deu like
     if (isLiked) {
-      toast.info("Você já curtiu este post")
-      return
+      toast.info("Você já curtiu este post");
+      return;
     }
 
     try {
-      const result = await likePostMutation.mutateAsync(post.id)
-      
-      // Atualizar estado local com dados do backend
+      const result = await likePostMutation.mutateAsync(post.id);
+
       if (result) {
-        setIsLiked(true)
-        setLikesCount(result.likes_count || likesCount + 1)
+        setIsLiked(true);
+        setLikesCount(result.likes_count || likesCount + 1);
       }
     } catch (error) {
-      toast.error("Erro ao curtir post")
+      toast.error("Erro ao curtir post");
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
@@ -123,28 +122,31 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
           <Avatar className="w-12 h-12">
             <AvatarImage src={post.user?.avatar_url} alt={post.user?.name} />
             <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
-              {post.user?.name?.charAt(0) || 'U'}
+              {post.user?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-800 dark:text-white">
-                {post.user?.name || 'Usuário'}
+                {post.user?.name || "Usuário"}
               </h3>
               {post.is_featured && (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                >
                   Destaque
                 </Badge>
               )}
             </div>
-            
+
             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                          <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              {formatDate(post.createdAt || new Date().toISOString())}
-            </div>
-              
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                {formatDate(post.createdAt || new Date().toISOString())}
+              </div>
+
               {post.difficulty_level && (
                 <Badge variant="outline" className="text-xs">
                   {post.difficulty_level}
@@ -162,7 +164,7 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
             {post.title}
           </h4>
         )}
-        
+
         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
           {post.content}
         </p>
@@ -170,9 +172,9 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
         {/* Imagem do Post */}
         {post.image_url && (
           <div className="rounded-lg overflow-hidden">
-            <img 
-              src={post.image_url} 
-              alt={post.title || 'Imagem do post'}
+            <img
+              src={post.image_url}
+              alt={post.title || "Imagem do post"}
               className="w-full h-64 object-cover"
             />
           </div>
@@ -198,14 +200,14 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
                 {post.views_count || 0}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 {post.comments_count || 0}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Share2 className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -215,19 +217,19 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={handleLike}
               disabled={likePostMutation.isPending}
               className={`flex items-center space-x-1 transition-colors ${
-                isLiked 
-                  ? 'text-red-500 hover:text-red-600' 
-                  : 'text-gray-500 hover:text-red-500'
+                isLiked
+                  ? "text-red-500 hover:text-red-600"
+                  : "text-gray-500 hover:text-red-500"
               }`}
             >
-              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
               <span className="text-sm">{likesCount}</span>
             </button>
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -246,17 +248,20 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
             <h5 className="font-semibold text-gray-800 dark:text-white">
               Comentários ({comments.length})
             </h5>
-            
+
             {/* Formulário de Comentário */}
-            <form onSubmit={handleSubmit(handleCommentSubmit)} className="flex gap-2">
+            <form
+              onSubmit={handleSubmit(handleCommentSubmit)}
+              className="flex gap-2"
+            >
               <Input
                 {...register("content")}
                 placeholder="Adicione um comentário..."
                 className="flex-1"
                 disabled={isSubmittingComment}
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 size="sm"
                 disabled={isSubmittingComment}
                 className="bg-orange-500 hover:bg-orange-600"
@@ -280,21 +285,29 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
             ) : (
               <div className="space-y-3">
                 {comments.map((comment: PostComment) => (
-                  <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div
+                    key={comment.id}
+                    className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                  >
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={comment.user?.avatar_url} alt={comment.user?.name} />
+                      <AvatarImage
+                        src={comment.user?.avatar_url}
+                        alt={comment.user?.name}
+                      />
                       <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-xs">
-                        {comment.user?.name?.charAt(0) || 'U'}
+                        {comment.user?.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm text-gray-800 dark:text-white">
-                          {comment.user?.name || 'Usuário'}
+                          {comment.user?.name || "Usuário"}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatDate(comment.createdAt || new Date().toISOString())}
+                          {formatDate(
+                            comment.createdAt || new Date().toISOString(),
+                          )}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -309,5 +322,5 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

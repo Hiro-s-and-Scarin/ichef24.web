@@ -11,7 +11,6 @@ import { useParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { translateDynamicData } from "@/lib/config/i18n"
 
-// Estado consolidado para a página de receita
 interface RecipePageState {
   isFavorite: boolean
   rating: number
@@ -22,7 +21,6 @@ interface RecipePageState {
 export default function RecipePage() {
   const { t, i18n } = useTranslation()
   const params = useParams()
-  // Estado consolidado
   const [recipeState, setRecipeState] = useState<RecipePageState>({
     isFavorite: false,
     rating: 0,
@@ -30,10 +28,8 @@ export default function RecipePage() {
     mounted: false,
   })
 
-  // Desestruturação para facilitar o uso
   const { isFavorite, rating, userRating, mounted } = recipeState
 
-  // Função helper para atualizar estado
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
   }
@@ -96,7 +92,6 @@ export default function RecipePage() {
 
   const handleRating = (newRating: number) => {
     updateRecipeState({ userRating: newRating })
-    // In a real app, this would save to backend
   }
 
   if (!mounted) {

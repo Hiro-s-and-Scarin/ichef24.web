@@ -1,64 +1,62 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { 
-  Trophy, 
-  ChefHat, 
-  ThumbsUp
-} from "lucide-react"
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Trophy, ChefHat, ThumbsUp } from "lucide-react";
 
 interface TopChef {
-  id: number
-  name: string
-  email?: string
-  avatar_url?: string
-  totalLikes: number
-  recipeCount: number
+  id: number;
+  name: string;
+  email?: string;
+  avatar_url?: string;
+  totalLikes: number;
+  recipeCount: number;
 }
 
 interface TopChefCardProps {
-  chef: TopChef
-  rank: number
+  chef: TopChef;
+  rank: number;
 }
 
 export function TopChefCard({ chef, rank }: TopChefCardProps) {
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
-        return "bg-yellow-500 text-white"
+        return "bg-yellow-500 text-white";
       case 2:
-        return "bg-gray-400 text-white"
+        return "bg-gray-400 text-white";
       case 3:
-        return "bg-orange-600 text-white"
+        return "bg-orange-600 text-white";
       default:
-        return "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+        return "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
     }
-  }
+  };
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <Trophy className="w-5 h-5" />
+        return <Trophy className="w-5 h-5" />;
       case 2:
-        return <Trophy className="w-5 h-5" />
+        return <Trophy className="w-5 h-5" />;
       case 3:
-        return <Trophy className="w-5 h-5" />
+        return <Trophy className="w-5 h-5" />;
       default:
-        return <Trophy className="w-5 h-5" />
+        return <Trophy className="w-5 h-5" />;
     }
-  }
+  };
 
   return (
     <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
           {/* Ranking */}
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${getRankColor(rank)}`}>
+          <div
+            className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${getRankColor(rank)}`}
+          >
             {getRankIcon(rank)}
           </div>
-          
+
           {/* Avatar e Nome */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3">
@@ -68,7 +66,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
                   {chef.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              
+
               <div className="min-w-0">
                 <h3 className="font-bold text-lg text-gray-800 dark:text-white truncate">
                   {chef.name}
@@ -93,7 +91,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
               {chef.recipeCount}
             </p>
           </div>
-          
+
           <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
             <div className="flex items-center justify-center mb-2">
               <ThumbsUp className="w-5 h-5 text-red-600 dark:text-red-400" />
@@ -107,30 +105,30 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
         {/* Badges de Conquistas */}
         <div className="flex flex-wrap gap-2">
           {rank === 1 && (
-            <Badge className="bg-yellow-500 text-white">
-              🥇 1º Lugar
-            </Badge>
+            <Badge className="bg-yellow-500 text-white">🥇 1º Lugar</Badge>
           )}
           {rank === 2 && (
-            <Badge className="bg-gray-400 text-white">
-              🥈 2º Lugar
-            </Badge>
+            <Badge className="bg-gray-400 text-white">🥈 2º Lugar</Badge>
           )}
           {rank === 3 && (
-            <Badge className="bg-orange-600 text-white">
-              🥉 3º Lugar
-            </Badge>
+            <Badge className="bg-orange-600 text-white">🥉 3º Lugar</Badge>
           )}
-          
+
           {chef.recipeCount >= 10 && (
-            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+            <Badge
+              variant="secondary"
+              className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+            >
               <ChefHat className="w-3 h-3 mr-1" />
               Chef Experiente
             </Badge>
           )}
-          
+
           {chef.totalLikes >= 100 && (
-            <Badge variant="secondary" className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+            <Badge
+              variant="secondary"
+              className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+            >
               <ThumbsUp className="w-3 h-3 mr-1" />
               Receitas Populares
             </Badge>
@@ -140,7 +138,9 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
         {/* Performance */}
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Performance:</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              Performance:
+            </span>
             <div className="flex items-center gap-2">
               <span className="text-orange-500 font-medium">
                 {chef.totalLikes}
@@ -151,17 +151,17 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
               </span>
             </div>
           </div>
-          
+
           <div className="mt-2 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div 
+            <div
               className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full transition-all duration-300"
-              style={{ 
-                width: `${Math.min(100, (chef.totalLikes / Math.max(1, chef.recipeCount)) * 10)}%` 
+              style={{
+                width: `${Math.min(100, (chef.totalLikes / Math.max(1, chef.recipeCount)) * 10)}%`,
               }}
             />
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

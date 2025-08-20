@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { ChefHat, Menu, X } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTranslation } from "react-i18next"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChefHat, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
-  const { t } = useTranslation()
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const { t } = useTranslation();
 
   const navItems = [
-    { href: "/", label: t('header.home') },
-    { href: "/history", label: t('header.history') },
-    { href: "/favorites", label: t('header.favorites') },
-    { href: "/plans", label: t('header.plans') },
-  ]
+    { href: "/", label: t("header.home") },
+    { href: "/history", label: t("header.history") },
+    { href: "/favorites", label: t("header.favorites") },
+    { href: "/plans", label: t("header.plans") },
+  ];
 
   return (
     <header className="border-b border-gray-700/20 backdrop-blur-sm bg-black/80 sticky top-0 z-50">
@@ -37,7 +37,9 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={`transition-colors ${
-                  pathname === item.href ? "text-[#ff7518]" : "text-gray-300 hover:text-[#ff7518]"
+                  pathname === item.href
+                    ? "text-[#ff7518]"
+                    : "text-gray-300 hover:text-[#ff7518]"
                 }`}
               >
                 {item.label}
@@ -46,13 +48,22 @@ export function Navigation() {
           </nav>
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden text-white"
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-gray-700/50" asChild>
+            <Button
+              variant="ghost"
+              className="text-gray-300 hover:text-white hover:bg-gray-700/50"
+              asChild
+            >
               <Link href="/">Entrar</Link>
             </Button>
             <Button
@@ -73,7 +84,9 @@ export function Navigation() {
                   key={item.href}
                   href={item.href}
                   className={`transition-colors ${
-                    pathname === item.href ? "text-[#ff7518]" : "text-gray-300 hover:text-[#ff7518]"
+                    pathname === item.href
+                      ? "text-[#ff7518]"
+                      : "text-gray-300 hover:text-[#ff7518]"
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -104,5 +117,5 @@ export function Navigation() {
         )}
       </div>
     </header>
-  )
+  );
 }

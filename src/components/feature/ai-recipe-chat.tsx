@@ -1,58 +1,62 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ChefHat, Send, Sparkles, MessageCircle, Mic } from "lucide-react"
-import { useTranslation } from "react-i18next"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChefHat, Send, Sparkles, MessageCircle, Mic } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AIRecipeChatProps {
-  onRecipeGenerated?: (recipe: any) => void
+  onRecipeGenerated?: (recipe: any) => void;
 }
 
 export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
-  const { t } = useTranslation()
-  const [input, setInput] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
+  const { t } = useTranslation();
+  const [input, setInput] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || isGenerating) return
+    e.preventDefault();
+    if (!input.trim() || isGenerating) return;
 
-    setIsGenerating(true)
+    setIsGenerating(true);
 
     // Simulate AI recipe generation
     setTimeout(() => {
       const generatedRecipe = {
         id: Date.now(),
-        title: t('ai.generated.title'),
-        description: `${t('ai.generated.description')}: "${input}"`,
+        title: t("ai.generated.title"),
+        description: `${t("ai.generated.description")}: "${input}"`,
         image: "/placeholder.svg?height=200&width=300",
         time: "25 min",
         servings: "3 pessoas",
-        difficulty: t('common.medium'),
-        tags: [t('ai.tag'), t('ai.personalized'), t('ai.quick')],
-        date: t('common.now'),
+        difficulty: t("common.medium"),
+        tags: [t("ai.tag"), t("ai.personalized"), t("ai.quick")],
+        date: t("common.now"),
         rating: 5,
-        ingredients: [t('ai.ingredients.selected'), t('ai.ingredients.spices'), t('ai.ingredients.unique')],
-        instructions: [
-          t('ai.instructions.prepare'),
-          t('ai.instructions.follow'),
-          t('ai.instructions.finish'),
+        ingredients: [
+          t("ai.ingredients.selected"),
+          t("ai.ingredients.spices"),
+          t("ai.ingredients.unique"),
         ],
-      }
+        instructions: [
+          t("ai.instructions.prepare"),
+          t("ai.instructions.follow"),
+          t("ai.instructions.finish"),
+        ],
+      };
 
       if (onRecipeGenerated) {
-        onRecipeGenerated(generatedRecipe)
+        onRecipeGenerated(generatedRecipe);
       }
 
-      setInput("")
-      setIsGenerating(false)
-    }, 3000)
-  }
+      setInput("");
+      setIsGenerating(false);
+    }, 3000);
+  };
 
   return (
     <Card className="bg-white/95 border-orange-200 backdrop-blur-sm dark:bg-gray-800/95 dark:border-gray-600 shadow-xl">
@@ -63,9 +67,11 @@ export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
             <ChefHat className="w-6 h-6 text-white" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-white">{t('ai.chat.title')}</h3>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+              {t("ai.chat.title")}
+            </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              {t('ai.chat.subtitle')}
+              {t("ai.chat.subtitle")}
             </p>
           </div>
         </div>
@@ -75,7 +81,7 @@ export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
           <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
             <div className="text-center space-y-2">
               <MessageCircle className="w-8 h-8 mx-auto opacity-50" />
-              <p className="text-xs">{t('ai.chat.area')}</p>
+              <p className="text-xs">{t("ai.chat.area")}</p>
             </div>
           </div>
         </div>
@@ -86,7 +92,7 @@ export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={t('ai.placeholder')}
+              placeholder={t("ai.placeholder")}
               className="h-12 pr-20 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-base rounded-xl shadow-lg focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
               disabled={isGenerating}
             />
@@ -113,20 +119,22 @@ export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
           {isGenerating && (
             <div className="flex items-center justify-center gap-2 text-orange-600 dark:text-orange-400 py-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
               <Sparkles className="w-4 h-4 animate-spin" />
-              <span className="text-sm font-medium">{t('ai.generating')}</span>
+              <span className="text-sm font-medium">{t("ai.generating")}</span>
             </div>
           )}
         </form>
 
         {/* Quick Suggestions */}
         <div className="space-y-3">
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center font-medium">{t('ai.suggestions')}:</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center font-medium">
+            {t("ai.suggestions")}:
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              t('ai.suggestion.vegetarian'), 
-              t('ai.suggestion.chicken'), 
-              t('ai.suggestion.dessert'), 
-              t('ai.suggestion.italian')
+              t("ai.suggestion.vegetarian"),
+              t("ai.suggestion.chicken"),
+              t("ai.suggestion.dessert"),
+              t("ai.suggestion.italian"),
             ].map((suggestion) => (
               <Button
                 key={suggestion}
@@ -143,5 +151,5 @@ export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

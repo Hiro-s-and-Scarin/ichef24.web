@@ -1,34 +1,52 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm, Controller, useFieldArray } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, X, Save, ChefHat, Clock, ChevronDown } from "lucide-react"
-import { allRecipeTags } from "@/lib/constants/recipe-tags"
-import { useTranslation } from "react-i18next"
-import { useCreateRecipe } from "@/network/hooks/recipes/useRecipes"
-import { createRecipeSchema, CreateRecipeFormData } from "@/schemas/create-recipe.schema"
-import { CreateRecipeData } from "@/types/recipe"
+import { useState } from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, X, Save, ChefHat, Clock, ChevronDown } from "lucide-react";
+import { allRecipeTags } from "@/lib/constants/recipe-tags";
+import { useTranslation } from "react-i18next";
+import { useCreateRecipe } from "@/network/hooks/recipes/useRecipes";
+import {
+  createRecipeSchema,
+  CreateRecipeFormData,
+} from "@/schemas/create-recipe.schema";
+import { CreateRecipeData } from "@/types/recipe";
 
 interface CreateRecipeModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSave?: (recipe: CreateRecipeFormData) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSave?: (recipe: CreateRecipeFormData) => void;
 }
 
-export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModalProps) {
-  const { t } = useTranslation()
-  const [newTag, setNewTag] = useState("")
-  const [isTagSelectOpen, setIsTagSelectOpen] = useState(false)
+export function CreateRecipeModal({
+  isOpen,
+  onClose,
+  onSave,
+}: CreateRecipeModalProps) {
+  const { t } = useTranslation();
+  const [newTag, setNewTag] = useState("");
+  const [isTagSelectOpen, setIsTagSelectOpen] = useState(false);
 
-  const createRecipeMutation = useCreateRecipe()
+  const createRecipeMutation = useCreateRecipe();
 
   const {
     control,
@@ -36,7 +54,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
     formState: { errors, isSubmitting },
     reset,
     watch,
-    setValue
+    setValue,
   } = useForm<CreateRecipeFormData>({
     resolver: yupResolver(createRecipeSchema),
     defaultValues: {
@@ -53,45 +71,56 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
       is_ai_generated: false,
       ai_prompt: "",
       ai_model_version: "",
-      is_public: true
-    }
-  })
+      is_public: true,
+    },
+  });
 
-  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient } = useFieldArray({
+  const {
+    fields: ingredientFields,
+    append: appendIngredient,
+    remove: removeIngredient,
+  } = useFieldArray({
     control,
-    name: "ingredients"
-  })
+    name: "ingredients",
+  });
 
-  const { fields: stepFields, append: appendStep, remove: removeStep } = useFieldArray({
+  const {
+    fields: stepFields,
+    append: appendStep,
+    remove: removeStep,
+  } = useFieldArray({
     control,
-    name: "steps"
-  })
+    name: "steps",
+  });
 
-  const watchedTags = watch("tags")
+  const watchedTags = watch("tags");
 
   const addIngredient = () => {
-    appendIngredient({ name: "", amount: "" })
-  }
+    appendIngredient({ name: "", amount: "" });
+  };
 
   const addStep = () => {
-    const nextStep = stepFields.length + 1
-    appendStep({ step: nextStep, description: "" })
-  }
+    const nextStep = stepFields.length + 1;
+    appendStep({ step: nextStep, description: "" });
+  };
 
   const addTag = () => {
     if (newTag.trim() && !watchedTags?.includes(newTag.trim())) {
-      setValue("tags", [...(watchedTags || []), newTag.trim()])
-      setNewTag("")
+      setValue("tags", [...(watchedTags || []), newTag.trim()]);
+      setNewTag("");
     }
-  }
+  };
 
   const removeTag = (tagToRemove: string) => {
-    setValue("tags", watchedTags?.filter(tag => tag !== tagToRemove) || [])
-  }
+    setValue(
+      "tags",
+      watchedTags?.filter((tag: string | undefined) => tag !== tagToRemove) ||
+        [],
+    );
+  };
 
   const onSubmit = async (data: CreateRecipeFormData) => {
     try {
-      // Garantir que os dados obrigatórios estejam presentes
       const recipeData: CreateRecipeData = {
         title: data.title,
         description: data.description,
@@ -101,30 +130,30 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
         servings: data.servings,
         difficulty_level: data.difficulty_level,
         cuisine_type: data.cuisine_type || "",
-        tags: data.tags?.filter(tag => tag !== undefined) || [],
+        tags:
+          data.tags?.filter((tag: string | undefined) => tag !== undefined) ||
+          [],
         image_url: data.image_url,
         is_ai_generated: data.is_ai_generated,
         ai_prompt: data.ai_prompt,
         ai_model_version: data.ai_model_version,
-        is_public: data.is_public
-      }
-      
-      await createRecipeMutation.mutateAsync(recipeData)
-      reset()
-      onClose()
-      if (onSave) onSave(data)
-    } catch (error) {
-      // Erro já tratado pelo hook
-    }
-  }
+        is_public: data.is_public,
+      };
+
+      await createRecipeMutation.mutateAsync(recipeData);
+      reset();
+      onClose();
+      if (onSave) onSave(data);
+    } catch (error) {}
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-white dark:bg-black border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
+      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-white dark:bg-black border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-xl">
         <DialogHeader className="pb-6">
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <ChefHat className="w-6 h-6 text-orange-500" />
-            {t('form.create.recipe')}
+            {t("form.create.recipe")}
           </DialogTitle>
         </DialogHeader>
 
@@ -134,7 +163,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
             <div className="space-y-2">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <ChefHat className="w-4 h-4 text-orange-500" />
-                {t('form.recipe.name')}
+                {t("form.recipe.name")}
               </Label>
               <Controller
                 name="title"
@@ -142,7 +171,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 render={({ field }) => (
                   <Input
                     {...field}
-                    placeholder={t('form.recipe.name.placeholder')}
+                    placeholder={t("form.recipe.name.placeholder")}
                     className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                   />
                 )}
@@ -155,7 +184,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
             <div className="space-y-2">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <ChefHat className="w-4 h-4 text-orange-500" />
-                {t('form.description')}
+                {t("form.description")}
               </Label>
               <Controller
                 name="description"
@@ -163,7 +192,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 render={({ field }) => (
                   <Textarea
                     {...field}
-                    placeholder={t('form.description.placeholder')}
+                    placeholder={t("form.description.placeholder")}
                     className="min-h-[100px] text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                   />
                 )}
@@ -174,7 +203,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
               <div className="space-y-2">
                 <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <Clock className="w-4 h-4 text-orange-500" />
-                  {t('form.time')} (minutos)
+                  {t("form.time")} (minutos)
                 </Label>
                 <Controller
                   name="cooking_time"
@@ -189,14 +218,16 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                   )}
                 />
                 {errors.cooking_time && (
-                  <p className="text-red-500 text-sm">{errors.cooking_time.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.cooking_time.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <ChefHat className="w-4 h-4 text-orange-500" />
-                  {t('form.servings')}
+                  {t("form.servings")}
                 </Label>
                 <Controller
                   name="servings"
@@ -211,20 +242,25 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                   )}
                 />
                 {errors.servings && (
-                  <p className="text-red-500 text-sm">{errors.servings.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.servings.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <ChefHat className="w-4 h-4 text-orange-500" />
-                  {t('form.difficulty')}
+                  {t("form.difficulty")}
                 </Label>
                 <Controller
                   name="difficulty_level"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value?.toString()}
+                    >
                       <SelectTrigger className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors">
                         <SelectValue placeholder="Selecione a dificuldade" />
                       </SelectTrigger>
@@ -239,7 +275,9 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                   )}
                 />
                 {errors.difficulty_level && (
-                  <p className="text-red-500 text-sm">{errors.difficulty_level.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.difficulty_level.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -279,7 +317,9 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 )}
               />
               {errors.image_url && (
-                <p className="text-red-500 text-sm">{errors.image_url.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.image_url.message}
+                </p>
               )}
             </div>
           </div>
@@ -288,13 +328,16 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
           <div className="space-y-4">
             <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
               <ChefHat className="w-4 h-4 text-orange-500" />
-              {t('form.tags')}
+              {t("form.tags")}
             </Label>
-            
+
             <div className="relative tag-select-container">
               <div className="flex flex-wrap gap-2 mb-4">
-                {watchedTags?.map((tag, index) => (
-                  <Badge key={index} className="bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700 rounded-full px-3 py-1 text-sm font-medium">
+                {watchedTags?.map((tag: string | undefined, index: number) => (
+                  <Badge
+                    key={index}
+                    className="bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700 rounded-full px-3 py-1 text-sm font-medium"
+                  >
                     {tag}
                     <Button
                       type="button"
@@ -313,10 +356,15 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 <Input
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
-                  placeholder={t('form.custom.tag')}
+                  placeholder={t("form.custom.tag")}
                   className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                 />
-                <Button type="button" onClick={addTag} variant="outline" className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                <Button
+                  type="button"
+                  onClick={addTag}
+                  variant="outline"
+                  className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+                >
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
@@ -328,22 +376,22 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                   variant="outline"
                   className="w-full mt-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                 >
-                  {t('form.tags.select')}
+                  {t("form.tags.select")}
                   <ChevronDown className="w-4 h-4 ml-2" />
                 </Button>
 
                 {isTagSelectOpen && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-                    {allRecipeTags.map((tag) => (
+                    {allRecipeTags.map((tag: string) => (
                       <Button
                         key={tag}
                         type="button"
                         variant="ghost"
                         onClick={() => {
                           if (!watchedTags?.includes(tag)) {
-                            setValue("tags", [...(watchedTags || []), tag])
+                            setValue("tags", [...(watchedTags || []), tag]);
                           }
-                          setIsTagSelectOpen(false)
+                          setIsTagSelectOpen(false);
                         }}
                         className="w-full justify-start text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
@@ -360,7 +408,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
           <div className="space-y-4">
             <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
               <ChefHat className="w-4 h-4 text-orange-500" />
-              {t('form.ingredients')}
+              {t("form.ingredients")}
             </Label>
             {ingredientFields.map((field, index) => (
               <div key={field.id} className="flex gap-2">
@@ -399,9 +447,14 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 )}
               </div>
             ))}
-            <Button type="button" onClick={addIngredient} variant="outline" className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+            <Button
+              type="button"
+              onClick={addIngredient}
+              variant="outline"
+              className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+            >
               <Plus className="w-4 h-4 mr-2" />
-              {t('form.ingredients.add')}
+              {t("form.ingredients.add")}
             </Button>
           </div>
 
@@ -409,7 +462,7 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
           <div className="space-y-4">
             <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
               <ChefHat className="w-4 h-4 text-orange-500" />
-              {t('form.instructions')}
+              {t("form.instructions")}
             </Label>
             {stepFields.map((field, index) => (
               <div key={field.id} className="flex gap-2">
@@ -440,9 +493,14 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
                 )}
               </div>
             ))}
-            <Button type="button" onClick={addStep} variant="outline" className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+            <Button
+              type="button"
+              onClick={addStep}
+              variant="outline"
+              className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+            >
               <Plus className="w-4 h-4 mr-2" />
-              {t('form.instructions.add')}
+              {t("form.instructions.add")}
             </Button>
           </div>
 
@@ -454,11 +512,13 @@ export function CreateRecipeModal({ isOpen, onClose, onSave }: CreateRecipeModal
               className="h-12 px-8 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 font-medium text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Save className="w-5 h-5 mr-2" />
-              {isSubmitting || createRecipeMutation.isPending ? "Criando..." : t('form.create.recipe')}
+              {isSubmitting || createRecipeMutation.isPending
+                ? "Criando..."
+                : t("form.create.recipe")}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,24 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Globe } from "lucide-react"
-import { useTranslation } from "react-i18next"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function LanguageToggle() {
-  const { i18n } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
+  const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const languages = [
-    { code: 'pt', name: 'Português', flag: '🇧🇷' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-  ]
+    { code: "pt", name: "Português", flag: "🇧🇷" },
+    { code: "en", name: "English", flag: "🇺🇸" },
+  ];
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode)
-    setIsOpen(false)
-  }
+    i18n.changeLanguage(languageCode);
+    setIsOpen(false);
+  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -55,5 +60,5 @@ export function LanguageToggle() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

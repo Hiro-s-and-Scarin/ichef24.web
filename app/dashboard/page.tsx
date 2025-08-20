@@ -35,7 +35,6 @@ function HomePageContent() {
     isCreateAIModalOpen: false
   })
 
-  // Captura o token da URL se existir
   useTokenCapture()
 
   return (
