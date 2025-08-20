@@ -33,3 +33,4 @@ export const checkoutSchema = yup.object({
     .required("Nome é obrigatório")
     .min(2, "Nome deve ter pelo menos 2 caracteres"),
 });
+

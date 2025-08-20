@@ -9,6 +9,7 @@ import {
   useMe,
 } from "@/network/hooks/auth/useAuth";
 import { User as AuthUser } from "@/types/auth";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 interface User {
   id: string;
@@ -58,6 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     setIsLoading(isUserLoading);
   }, [userData, isUserLoading]);
+
+  // Conectar websocket quando usuário estiver logado
+  console.log('🔌 AuthProvider: Tentando conectar WebSocket com email:', user?.email);
+  useWebSocket(user?.email);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {

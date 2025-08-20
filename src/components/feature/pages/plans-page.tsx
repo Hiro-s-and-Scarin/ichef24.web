@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
-import { useGetPlans } from "@/network/hooks/plans/usePlans";
+import { useGetStripeProducts } from "@/network/hooks/stripe";
 import { useCurrencyFormatter } from "@/lib/utils/currency";
 import { Plan } from "@/src/types";
+import { convertStripeProductsToPlans } from "@/lib/utils/stripe-to-plans";
 
 export function PlansPageContent() {
   const { t } = useTranslation();
@@ -20,45 +21,63 @@ export function PlansPageContent() {
     "monthly",
   );
 
-  const { data: plansData, isLoading } = useGetPlans();
+  const { data: stripeProductsData, isLoading, error } = useGetStripeProducts();
 
   const { formatCurrency } = useCurrencyFormatter();
 
-  const getPlanIcon = (planType: string) => {
+  // Converter produtos do Stripe para planos usando useMemo para evitar re-renders
+  const plans: Plan[] = useMemo(() => {
+    if (!stripeProductsData?.success || !stripeProductsData.data) {
+      return [];
+    }
+    return convertStripeProductsToPlans(stripeProductsData.data);
+  }, [stripeProductsData]);
+
+  const getPlanIcon = useCallback((planType: string) => {
     switch (planType.toLowerCase()) {
       case "free":
+      case "trial":
+      case "aprendiz":
         return <ChefHat className="w-8 h-8" />;
       case "basic":
+      case "chef":
         return <Sparkles className="w-8 h-8" />;
       case "premium":
+      case "master":
         return <Crown className="w-8 h-8" />;
       case "enterprise":
         return <Zap className="w-8 h-8" />;
       default:
         return <ChefHat className="w-8 h-8" />;
     }
-  };
+  }, []);
 
   // Função para obter cor baseada no tipo de plano
-  const getPlanColor = (planType: string) => {
+  const getPlanColor = useCallback((planType: string) => {
     switch (planType.toLowerCase()) {
       case "free":
+      case "trial":
+      case "aprendiz":
         return "from-gray-500 to-gray-600";
       case "basic":
+      case "chef":
         return "from-[#f54703] to-[#ff7518]";
       case "premium":
+      case "master":
         return "from-purple-500 to-purple-600";
       case "enterprise":
         return "from-blue-500 to-blue-600";
       default:
         return "from-gray-500 to-gray-600";
     }
-  };
+  }, []);
 
   // Função para obter features baseadas no tipo de plano
-  const getPlanFeatures = (planType: string) => {
+  const getPlanFeatures = useCallback((planType: string) => {
     switch (planType.toLowerCase()) {
       case "free":
+      case "trial":
+      case "aprendiz":
         return [
           t("plans.free.features.recipes"),
           t("plans.free.features.generation"),
@@ -66,6 +85,7 @@ export function PlansPageContent() {
           t("plans.free.features.support"),
         ];
       case "basic":
+      case "chef":
         return [
           t("plans.pro.features.recipes"),
           t("plans.pro.features.generation"),
@@ -75,6 +95,7 @@ export function PlansPageContent() {
           t("plans.pro.features.support"),
         ];
       case "premium":
+      case "master":
         return [
           t("plans.premium.features.recipes"),
           t("plans.premium.features.ai"),
@@ -94,17 +115,55 @@ export function PlansPageContent() {
       default:
         return [];
     }
-  };
+  }, [t]);
 
-  // Use real data from API
-  const plans = plansData || [];
+  const handleSubscribe = useCallback(async (plan: Plan) => {
+    console.log('Plano selecionado:', plan);
+    console.log('Dados do Stripe:', stripeProductsData);
+    
+    // Encontrar o preço correto baseado no ciclo de cobrança selecionado
+    let priceId = plan.stripe_subscription_id; // Fallback para o ID do produto
+    
+    // Se temos informações de preço específicas, usar o preço correto
+    if (plan.price && stripeProductsData?.data) {
+      // Buscar o produto correspondente no Stripe
+      const stripeProduct = stripeProductsData.data.find(
+        product => product.id === plan.stripe_subscription_id
+      );
+      
+      console.log('Produto encontrado no Stripe:', stripeProduct);
+      
+      if (stripeProduct) {
+        if (billingCycle === "monthly") {
+          // Buscar o preço mensal do Stripe
+          const monthlyPrice = stripeProduct.prices.find(price => 
+            price.recurring?.interval === "month" && price.active
+          );
+          if (monthlyPrice) {
+            priceId = monthlyPrice.id;
+            console.log('Preço mensal encontrado:', monthlyPrice);
+          }
+        } else if (billingCycle === "yearly") {
+          // Buscar o preço anual do Stripe
+          const yearlyPrice = stripeProduct.prices.find(price => 
+            price.recurring?.interval === "year" && price.active
+          );
+          if (yearlyPrice) {
+            priceId = yearlyPrice.id;
+            console.log('Preço anual encontrado:', yearlyPrice);
+          }
+        }
+      }
+    }
 
-  const handleSubscribe = async (plan: Plan) => {
-    // Redirecionar para checkout com dados do plano usando stripe_subscription_id
+    console.log('ID do preço final:', priceId);
+    console.log('Ciclo de cobrança:', billingCycle);
+
+    // Redirecionar para checkout com o ID do preço correto
     router.push(
-      `/checkout?planId=${plan.stripe_subscription_id}&planName=${plan.name}&price=${plan.amount}&billingCycle=${plan.billing_cycle}`,
+      `/checkout?planId=${priceId}&planName=${plan.name}&price=${billingCycle === "monthly" ? plan.price?.monthly || plan.amount : plan.price?.yearly || plan.amount * 12 * 0.8}&billingCycle=${billingCycle}`,
     );
-  };
+  }, [stripeProductsData, billingCycle, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -188,7 +247,7 @@ export function PlansPageContent() {
               <div className="grid md:grid-cols-3 gap-8 mb-16">
                 {plans.map((plan: Plan) => (
                   <Card
-                    key={plan.id}
+                    key={plan.stripe_subscription_id}
                     className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 ${
                       plan.plan_type === "basic"
                         ? "border-[#ff7518]/50 shadow-2xl shadow-[#ff7518]/20"
@@ -225,8 +284,8 @@ export function PlansPageContent() {
                       <div className="py-6">
                         <div className="text-4xl font-bold text-gray-800 dark:text-white">
                           {billingCycle === "monthly"
-                            ? formatCurrency(plan.amount)
-                            : formatCurrency(plan.amount * 12 * 0.8)}
+                            ? formatCurrency(plan.price?.monthly || plan.amount)
+                            : formatCurrency(plan.price?.yearly || plan.amount * 12 * 0.8)}
                           {plan.amount > 0 && (
                             <span className="text-lg text-gray-500 dark:text-gray-400">
                               /mês
@@ -235,7 +294,7 @@ export function PlansPageContent() {
                         </div>
                         {billingCycle === "yearly" && plan.amount > 0 && (
                           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            ou {formatCurrency(plan.amount * 12 * 0.8)} por ano
+                            ou {formatCurrency(plan.price?.yearly || plan.amount * 12 * 0.8)} por ano
                             (20% off)
                           </p>
                         )}

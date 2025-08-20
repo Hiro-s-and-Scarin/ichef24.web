@@ -1,4 +1,5 @@
-import { api } from "@/lib/api/api"
+import { api } from "@/lib/api/api";
+import { StripeProductsResponse } from "@/src/types";
 
 export interface CreatePaymentRequest {
   productId: string // Este é o stripe_subscription_id do backend
@@ -27,3 +28,28 @@ export async function createPayment(paymentData: CreatePaymentRequest): Promise<
 //   const { data } = await api.post(`/stripe/confirm-payment/${paymentIntentId}`)
 //   return data
 // } 
+
+export async function getStripeProducts(): Promise<StripeProductsResponse> {
+  const { data } = await api.get("/stripe/products");
+  return data;
+}
+
+export interface CreateCheckoutRequest {
+  priceId: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export interface CreateCheckoutResponse {
+  success: boolean;
+  data: {
+    url: string;
+    sessionId: string;
+  };
+  message: string;
+}
+
+export async function createStripeCheckout(checkoutData: CreateCheckoutRequest): Promise<CreateCheckoutResponse> {
+  const { data } = await api.post("/stripe/checkout", checkoutData);
+  return data;
+} 

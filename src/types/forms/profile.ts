@@ -8,3 +8,4 @@ export interface PasswordFormData {
   newPassword: string;
   confirmPassword: string;
 }
+

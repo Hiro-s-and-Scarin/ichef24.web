@@ -16,3 +16,4 @@ export const passwordSchema = yup.object({
     .oneOf([yup.ref("newPassword")], "Senhas devem ser iguais")
     .required("Confirmação de senha é obrigatória"),
 });
+

@@ -36,3 +36,4 @@ export const confirmResetPasswordSchema = yup.object({
     .required("Nova senha é obrigatória")
     .min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
+

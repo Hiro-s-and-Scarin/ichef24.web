@@ -1,22 +1,38 @@
 "use client"
 
-import { useMutation } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { createPayment, CreatePaymentRequest } from "@/network/actions/stripe"
-import { queryKeys } from "@/lib/config/query-keys"
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getStripeProducts, createStripeCheckout } from "@/network/actions/stripe";
+import { StripeProductsResponse } from "@/src/types";
 
 export function useCreatePayment() {
   return useMutation({
-    mutationFn: async (paymentData: CreatePaymentRequest) => {
-      return await createPayment(paymentData)
-    },
+    mutationFn: createStripeCheckout,
     onSuccess: (data) => {
-      toast.success("Pagamento criado com sucesso!")
-      console.log("Payment created:", data)
+      console.log("Payment created successfully:", data);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao criar pagamento")
-      console.error("Error creating payment:", error)
+    onError: (error) => {
+      console.error("Payment creation failed:", error);
     },
-  })
+  });
+}
+
+export function useGetStripeProducts() {
+  return useQuery<StripeProductsResponse>({
+    queryKey: ["stripe", "products"],
+    queryFn: getStripeProducts,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
+  });
+}
+
+export function useCreateStripeCheckout() {
+  return useMutation({
+    mutationFn: createStripeCheckout,
+    onSuccess: (data) => {
+      console.log("Checkout session created successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Checkout session creation failed:", error);
+    },
+  });
 } 

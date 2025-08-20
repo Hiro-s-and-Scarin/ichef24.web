@@ -59,3 +59,4 @@ import { profileSchema } from "@/schemas/forms"
 - ✅ **Consistência**: Padrões uniformes em todo o projeto
 - ✅ **Type Safety**: Melhor inferência de tipos do TypeScript
 
+
