@@ -8,8 +8,8 @@ import type {
 } from "@/schemas/auth.schema"
 
 export const postLogin = async (body: LoginFormData) => {
-  const response = await api.post("/auth", body)
-  return response.data
+  const { data } = await api.post("/auth", body)
+  return data.data
 }
 
 export const postRegister = async (body: RegisterFormData) => {

@@ -105,12 +105,12 @@ export function DynamicTranslationExample() {
           </h4>
           <div className="space-y-2 text-sm">
             <p>
-              <strong>PT:</strong> {translate.difficulty(3, "pt")} |{" "}
-              {translate.cuisine("italian", "pt")}
+              <strong>PT:</strong> {translate.difficulty(3)} |{" "}
+              {translate.cuisine("italian")}
             </p>
             <p>
-              <strong>EN:</strong> {translate.difficulty(3, "en")} |{" "}
-              {translate.cuisine("italian", "en")}
+              <strong>EN:</strong> {translate.difficulty(3)} |{" "}
+              {translate.cuisine("italian")}
             </p>
           </div>
         </div>

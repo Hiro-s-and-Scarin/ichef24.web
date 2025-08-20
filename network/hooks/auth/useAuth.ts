@@ -33,7 +33,7 @@ export function useLogin() {
       return await postLogin(body)
     },
     onSuccess: (response) => {
-      setCookie(null, 'jwt', response.data.token, {
+      setCookie(null, 'jwt', response, {
         maxAge: 30 * 24 * 60 * 60,
         path: '/',
       })

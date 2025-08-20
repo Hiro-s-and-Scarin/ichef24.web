@@ -46,15 +46,19 @@ export function useCreateRecipe() {
       return await postRecipe(body)
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas às receitas
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita criada com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao criar receita")
-      console.error("Error creating recipe:", error)
     },
   })
 }
@@ -68,14 +72,19 @@ export function useUpdateRecipe() {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(variables.id) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita atualizada com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar receita")
-      console.error("Error updating recipe:", error)
     },
   })
 }
@@ -88,30 +97,19 @@ export function useDeleteRecipe() {
       return await deleteRecipe(id)
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas às receitas
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top })
-      
-      // Invalidar queries de usuários (para top chefs)
-      queryClient.invalidateQueries({ 
-        queryKey: queryKeys.users.all,
-        exact: false 
-      })
-      
-      // Invalidar queries de community posts (para top chefs)
-      queryClient.invalidateQueries({ 
-        queryKey: queryKeys.community.posts,
-        exact: false 
-      })
-      
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita deletada com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao deletar receita")
-      console.error("Error deleting recipe:", error)
     },
   })
 }
@@ -132,16 +130,19 @@ export function useAddToFavorites() {
       return await postFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas às receitas
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita adicionada aos favoritos!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao adicionar aos favoritos")
-      console.error("Error adding to favorites:", error)
     },
   })
 }
@@ -154,16 +155,19 @@ export function useRemoveFromFavorites() {
       return await deleteFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas às receitas
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita removida dos favoritos!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao remover dos favoritos")
-      console.error("Error removing from favorites:", error)
     },
   })
 }
@@ -200,16 +204,19 @@ export function useGenerateRecipeWithAI() {
       return await postGenerateRecipeWithAI(body)
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas às receitas
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Receita gerada com IA com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao gerar receita com IA")
-      console.error("Error generating recipe with AI:", error)
     },
   })
 }
@@ -230,7 +237,6 @@ export function useLikeRecipe() {
       return await likeRecipe(recipeId.toString())
     },
     onSuccess: (data, variables) => {
-      // Invalidar queries de receitas
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.recipes.all,
         exact: false 
@@ -256,15 +262,15 @@ export function useLikeRecipe() {
         exact: false 
       })
       
-      // Invalidar queries de top recipes e top chefs
-      queryClient.invalidateQueries({ queryKey: ['top-recipes'] })
-      queryClient.invalidateQueries({ queryKey: ['top-chefs'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       
       toast.success("Receita curtida com sucesso!")
     },
     onError: (error: any) => {
       toast.error("Erro ao curtir receita")
-      console.error("Error liking recipe:", error)
     },
   })
 }

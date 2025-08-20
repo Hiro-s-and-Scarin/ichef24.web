@@ -32,7 +32,7 @@ export function useUsers(params: { page?: number; limit?: number } = {}) {
 
 export function useUser(id: string) {
   return useQuery({
-    queryKey: [...queryKeys.users.one, id],
+    queryKey: queryKeys.users.one(id),
     queryFn: async () => await getUserById(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
@@ -47,13 +47,15 @@ export function useUpdateUser() {
       return await updateUser(id, body)
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables.id] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.one(variables.id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.me })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       toast.success("Usuário atualizado com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar usuário")
-      console.error("Error updating user:", error)
     },
   })
 }
@@ -66,13 +68,12 @@ export function useToggleUserStatus() {
       return await toggleUserStatus(id)
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.one(variables) })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       toast.success("Status do usuário alterado com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao alterar status do usuário")
-      console.error("Error toggling user status:", error)
     },
   })
 }
@@ -85,13 +86,12 @@ export function useActiveUser() {
       return await activeUser(id, body)
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.users.one, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.one(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       toast.success("Usuário ativado/desativado com sucesso!")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao alterar status do usuário")
-      console.error("Error activating/deactivating user:", error)
     },
   })
 }
