@@ -12,3 +12,4 @@ export const checkoutSchema = yup.object({
   email: yup.string().email("Email deve ser válido").required("Email é obrigatório"),
   name: yup.string().required("Nome é obrigatório").min(2, "Nome deve ter pelo menos 2 caracteres")
 })
+

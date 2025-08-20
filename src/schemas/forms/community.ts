@@ -12,3 +12,4 @@ export const postSchema = yup.object({
 export const commentSchema = yup.object({
   content: yup.string().required("Comentário é obrigatório").min(1, "Comentário deve ter pelo menos 1 caractere")
 })
+

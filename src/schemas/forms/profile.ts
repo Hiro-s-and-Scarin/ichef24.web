@@ -10,3 +10,4 @@ export const passwordSchema = yup.object({
   newPassword: yup.string().required("Nova senha é obrigatória").min(6, "Senha deve ter pelo menos 6 caracteres"),
   confirmPassword: yup.string().oneOf([yup.ref('newPassword')], 'Senhas devem ser iguais').required("Confirmação de senha é obrigatória")
 })
+

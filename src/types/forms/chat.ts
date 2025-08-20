@@ -6,3 +6,4 @@ export interface NewSessionFormData {
   title: string
   description?: string
 }
+

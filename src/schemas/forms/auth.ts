@@ -18,3 +18,4 @@ export const confirmResetPasswordSchema = yup.object({
   code: yup.string().required("Código é obrigatório").length(6, "Código deve ter 6 dígitos"),
   newPassword: yup.string().required("Nova senha é obrigatória").min(6, "Senha deve ter pelo menos 6 caracteres")
 })
+
