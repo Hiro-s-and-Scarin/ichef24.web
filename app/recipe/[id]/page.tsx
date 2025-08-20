@@ -8,7 +8,8 @@ import { ChefHat, Heart, Share2, Clock, Users, Utensils, BookOpen, ArrowLeft, St
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { useTranslation } from "react-i18next"
+import { translateDynamicData } from "@/lib/config/i18n"
 
 // Estado consolidado para a página de receita
 interface RecipePageState {
@@ -19,6 +20,7 @@ interface RecipePageState {
 }
 
 export default function RecipePage() {
+  const { t, i18n } = useTranslation()
   const params = useParams()
   // Estado consolidado
   const [recipeState, setRecipeState] = useState<RecipePageState>({
@@ -40,7 +42,7 @@ export default function RecipePage() {
     updateRecipeState({ mounted: true })
   }, [])
 
-  // Mock recipe data - in a real app, this would be fetched based on the ID
+
   const recipe = {
     id: params.id,
     title: "Risotto de Frango com Limão e Ervas",
@@ -93,7 +95,7 @@ export default function RecipePage() {
   }
 
   const handleRating = (newRating: number) => {
-    setUserRating(newRating)
+    updateRecipeState({ userRating: newRating })
     // In a real app, this would save to backend
   }
 
@@ -104,7 +106,7 @@ export default function RecipePage() {
           <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat className="w-8 h-8 text-white" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300">Carregando receita...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('common.loading')} receita...</p>
         </div>
       </div>
     )
@@ -112,31 +114,6 @@ export default function RecipePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-gray-900">
-      {/* Header */}
-              <header className="border-b border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-white/80 dark:bg-black/80 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl flex items-center justify-center">
-              <ChefHat className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">iChef24</span>
-          </Link>
-
-          <nav className="flex items-center gap-6">
-            <Link href="/generate" className="text-gray-600 hover:text-orange-600 transition-colors dark:text-gray-300 dark:hover:text-orange-400">
-              Gerar Receita
-            </Link>
-            <Link href="/history" className="text-gray-600 hover:text-orange-600 transition-colors dark:text-gray-300 dark:hover:text-orange-400">
-              Histórico
-            </Link>
-            <Link href="/favorites" className="text-gray-600 hover:text-orange-600 transition-colors dark:text-gray-300 dark:hover:text-orange-400">
-              Favoritos
-            </Link>
-            <ThemeToggle />
-          </nav>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Back Button */}
@@ -147,7 +124,7 @@ export default function RecipePage() {
           >
             <Link href="/history">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao Histórico
+              {t('common.back')} ao {t('header.history')}
             </Link>
           </Button>
 
@@ -169,7 +146,7 @@ export default function RecipePage() {
                     <div className="flex flex-wrap gap-2">
                       {recipe.tags.map((tag, index) => (
                         <Badge key={index} className="bg-white/20 text-white border-white/30">
-                          {tag}
+                          {translateDynamicData.recipeTag(tag, i18n.language)}
                         </Badge>
                       ))}
                     </div>
@@ -177,7 +154,7 @@ export default function RecipePage() {
                   <div className="flex gap-2 ml-6">
                     <Button
                       variant="secondary"
-                      onClick={() => setIsFavorite(!isFavorite)}
+                      onClick={() => updateRecipeState({ isFavorite: !isFavorite })}
                       className={`w-12 h-12 p-0 ${
                         isFavorite
                           ? "bg-[#ff7518] text-white hover:bg-[#f54703]"
@@ -200,27 +177,27 @@ export default function RecipePage() {
                 <div className="text-center">
                   <Clock className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
                   <div className="text-white font-medium">{recipe.time}</div>
-                  <div className="text-gray-400 text-sm">Tempo</div>
+                  <div className="text-gray-400 text-sm">{t('form.time')}</div>
                 </div>
                 <div className="text-center">
                   <Users className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
                   <div className="text-white font-medium">{recipe.servings}</div>
-                  <div className="text-gray-400 text-sm">Porções</div>
+                  <div className="text-gray-400 text-sm">{t('form.servings')}</div>
                 </div>
                 <div className="text-center">
                   <Utensils className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.difficulty}</div>
-                  <div className="text-gray-400 text-sm">Dificuldade</div>
+                  <div className="text-white font-medium">{translateDynamicData.difficulty(recipe.difficulty, i18n.language)}</div>
+                  <div className="text-gray-400 text-sm">{t('form.difficulty')}</div>
                 </div>
                 <div className="text-center">
                   <Star className="w-6 h-6 text-[#ff7518] mx-auto mb-2 fill-current" />
                   <div className="text-white font-medium">{recipe.rating}</div>
-                  <div className="text-gray-400 text-sm">Avaliação</div>
+                  <div className="text-gray-400 text-sm">{t('recipe.rating')}</div>
                 </div>
                 <div className="text-center">
                   <MessageCircle className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
                   <div className="text-white font-medium">{recipe.reviews}</div>
-                  <div className="text-gray-400 text-sm">Avaliações</div>
+                  <div className="text-gray-400 text-sm">{t('recipe.reviews')}</div>
                 </div>
               </div>
             </div>
@@ -234,7 +211,7 @@ export default function RecipePage() {
                 <CardContent className="p-6">
                   <h3 className="text-2xl font-semibold text-white flex items-center gap-3 mb-6">
                     <BookOpen className="w-6 h-6 text-[#ff7518]" />
-                    Ingredientes
+                    {t('form.ingredients')}
                   </h3>
                   <ul className="space-y-4">
                     {recipe.ingredients.map((ingredient, index) => (
@@ -252,7 +229,7 @@ export default function RecipePage() {
                 <CardContent className="p-6">
                   <h3 className="text-2xl font-semibold text-white flex items-center gap-3 mb-6">
                     <Utensils className="w-6 h-6 text-[#ff7518]" />
-                    Modo de Preparo
+                    {t('recipe.instructions')}
                   </h3>
                   <ol className="space-y-6">
                     {recipe.instructions.map((instruction, index) => (
@@ -273,26 +250,26 @@ export default function RecipePage() {
               {/* Nutrition Info */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Informações Nutricionais</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.nutrition')}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Calorias</span>
+                      <span className="text-gray-300">{t('recipe.calories')}</span>
                       <span className="text-white font-medium">{recipe.nutrition.calories}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Proteína</span>
+                      <span className="text-gray-300">{t('recipe.protein')}</span>
                       <span className="text-white font-medium">{recipe.nutrition.protein}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Carboidratos</span>
+                      <span className="text-gray-300">{t('recipe.carbs')}</span>
                       <span className="text-white font-medium">{recipe.nutrition.carbs}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Gordura</span>
+                      <span className="text-gray-300">{t('recipe.fat')}</span>
                       <span className="text-white font-medium">{recipe.nutrition.fat}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Fibra</span>
+                      <span className="text-gray-300">{t('recipe.fiber')}</span>
                       <span className="text-white font-medium">{recipe.nutrition.fiber}</span>
                     </div>
                   </div>
@@ -302,7 +279,7 @@ export default function RecipePage() {
               {/* Tips */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Dicas do Chef</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.chef.tips')}</h3>
                   <ul className="space-y-3">
                     {recipe.tips.map((tip, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-300">
@@ -317,7 +294,7 @@ export default function RecipePage() {
               {/* Rating */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Avalie esta receita</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.rate')}</h3>
                   <div className="flex gap-2 mb-4">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button key={star} onClick={() => handleRating(star)} className="transition-colors">
@@ -331,7 +308,7 @@ export default function RecipePage() {
                   </div>
                   {userRating > 0 && (
                     <p className="text-sm text-gray-300">
-                      Obrigado pela sua avaliação de {userRating} estrela{userRating > 1 ? "s" : ""}!
+                      {t('recipe.rating.thank.you', { rating: userRating, stars: userRating > 1 ? t('recipe.rating.stars') : t('recipe.rating.star') })}
                     </p>
                   )}
                 </CardContent>

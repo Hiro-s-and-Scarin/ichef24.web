@@ -14,102 +14,42 @@ import {
   getMyRecipes,
   getRecipeTags,
   getRecipeCategories,
-  postRecipeReview,
   postGenerateRecipeWithAI,
-  postImproveRecipeWithAI
+  getTopRecipes,
+  likeRecipe
 } from "@/network/actions/recipes/actionRecipes"
-import { queryKeys } from "@/lib/query-keys"
-import { RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
+import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
+import { queryKeys } from "@/lib/config/query-keys"
 
-export function useGetRecipes(params: RecipeParams = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.list(params),
+export function useRecipes(params: RecipeParams = {}) {
+  return useQuery({
+    queryKey: [...queryKeys.recipes.all, params],
     queryFn: async () => await getRecipes(params),
-    retry: 0,
+    staleTime: 1000 * 60 * 5,
   })
-
-  return {
-    data: data?.data,
-    isLoading,
-  }
 }
 
-export function useGetRecipeById(id: string) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.detail(id),
+export function useRecipe(id: string | number) {
+  return useQuery({
+    queryKey: queryKeys.recipes.one(id),
     queryFn: async () => await getRecipeById(id),
     enabled: !!id,
-    retry: 0,
+    staleTime: 1000 * 60 * 5,
   })
-
-  return {
-    data,
-    isLoading,
-  }
 }
 
-export function useGetFavoriteRecipes(params: RecipeParams = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.favorites(),
-    queryFn: async () => await getFavoriteRecipes(params),
-    retry: 0,
-  })
-
-  return {
-    data: data?.data,
-    isLoading,
-  }
-}
-
-export function useGetMyRecipes(params: RecipeParams = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.history(),
-    queryFn: async () => await getMyRecipes(params),
-    retry: 0,
-  })
-
-  return {
-    data: data?.data,
-    isLoading,
-  }
-}
-
-export function useGetRecipeTags() {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.tags,
-    queryFn: async () => await getRecipeTags(),
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
-
-export function useGetRecipeCategories() {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.recipes.categories,
-    queryFn: async () => await getRecipeCategories(),
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
-
-export function usePostRecipe() {
+export function useCreateRecipe() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
+  return useMutation({
     mutationFn: async (body: CreateRecipeData) => {
       return await postRecipe(body)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita criada com sucesso!")
     },
     onError: (error: any) => {
@@ -117,21 +57,20 @@ export function usePostRecipe() {
       console.error("Error creating recipe:", error)
     },
   })
-
-  return mutate
 }
 
-export function usePutRecipe(id: string) {
+export function useUpdateRecipe() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
-    mutationFn: async (body: Partial<CreateRecipeData>) => {
-      return await putRecipe(id, body)
+  return useMutation({
+    mutationFn: async ({ id, ...data }: { id: string | number } & Partial<CreateRecipeData>) => {
+      return await putRecipe(id, data)
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(variables.id) })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.detail(id) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita atualizada com sucesso!")
     },
     onError: (error: any) => {
@@ -139,41 +78,65 @@ export function usePutRecipe(id: string) {
       console.error("Error updating recipe:", error)
     },
   })
-
-  return mutate
 }
 
 export function useDeleteRecipe() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
-    mutationFn: async (id: string) => {
+  return useMutation({
+    mutationFn: async (id: string | number) => {
       return await deleteRecipe(id)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history() })
-      toast.success("Receita excluída com sucesso!")
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top })
+      
+      // Invalidar queries de usuários (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.users.all,
+        exact: false 
+      })
+      
+      // Invalidar queries de community posts (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.community.posts,
+        exact: false 
+      })
+      
+      toast.success("Receita deletada com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao excluir receita")
+      toast.error(error.response?.data?.message || "Erro ao deletar receita")
       console.error("Error deleting recipe:", error)
     },
   })
-
-  return mutate
 }
 
-export function useToggleFavoriteRecipe() {
+export function useFavoriteRecipes(params: RecipeParams = {}) {
+  return useQuery({
+    queryKey: [...queryKeys.recipes.favorites, params],
+    queryFn: async () => await getFavoriteRecipes(params),
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useAddToFavorites() {
   const queryClient = useQueryClient()
 
-  const addToFavorites = useMutation({
-    mutationFn: async (recipeId: string) => {
+  return useMutation({
+    mutationFn: async (recipeId: string | number) => {
       return await postFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites() })
+      // Invalidar todas as queries relacionadas às receitas
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita adicionada aos favoritos!")
     },
     onError: (error: any) => {
@@ -181,14 +144,21 @@ export function useToggleFavoriteRecipe() {
       console.error("Error adding to favorites:", error)
     },
   })
+}
 
-  const removeFromFavorites = useMutation({
-    mutationFn: async (recipeId: string) => {
+export function useRemoveFromFavorites() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (recipeId: string | number) => {
       return await deleteFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites() })
+      // Invalidar todas as queries relacionadas às receitas
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       toast.success("Receita removida dos favoritos!")
     },
     onError: (error: any) => {
@@ -196,40 +166,45 @@ export function useToggleFavoriteRecipe() {
       console.error("Error removing from favorites:", error)
     },
   })
-
-  return { addToFavorites, removeFromFavorites }
 }
 
-export function usePostRecipeReview() {
-  const queryClient = useQueryClient()
-
-  const mutate = useMutation({
-    mutationFn: async ({ recipeId, ...body }: { recipeId: string; rating: number; comment?: string }) => {
-      return await postRecipeReview(recipeId, body)
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.detail(variables.recipeId) })
-      toast.success("Avaliação enviada com sucesso!")
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao enviar avaliação")
-      console.error("Error posting review:", error)
-    },
+export function useMyRecipes(params: RecipeParams = {}) {
+  return useQuery({
+    queryKey: [...queryKeys.recipes.my, params],
+    queryFn: async () => await getMyRecipes(params),
+    staleTime: 1000 * 60 * 5,
   })
+}
 
-  return mutate
+export function useRecipeTags() {
+  return useQuery({
+    queryKey: queryKeys.recipes.tags,
+    queryFn: async () => await getRecipeTags(),
+    staleTime: 1000 * 60 * 60, // Tags don't change often
+  })
+}
+
+export function useRecipeCategories() {
+  return useQuery({
+    queryKey: queryKeys.recipes.categories,
+    queryFn: async () => await getRecipeCategories(),
+    staleTime: 1000 * 60 * 60, // Categories don't change often
+  })
 }
 
 export function useGenerateRecipeWithAI() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
+  return useMutation({
     mutationFn: async (body: AIRecipeRequest) => {
       return await postGenerateRecipeWithAI(body)
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas às receitas
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       toast.success("Receita gerada com IA com sucesso!")
     },
     onError: (error: any) => {
@@ -237,27 +212,57 @@ export function useGenerateRecipeWithAI() {
       console.error("Error generating recipe with AI:", error)
     },
   })
-
-  return mutate
 }
 
-export function useImproveRecipeWithAI() {
+export function useTopRecipes() {
+  return useQuery({
+    queryKey: [...queryKeys.recipes.top],
+    queryFn: async () => await getTopRecipes(),
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useLikeRecipe() {
   const queryClient = useQueryClient()
 
-  const mutate = useMutation({
-    mutationFn: async ({ recipeId, prompt }: { recipeId: string; prompt: string }) => {
-      return await postImproveRecipeWithAI(recipeId, { prompt })
+  return useMutation({
+    mutationFn: async (recipeId: string | number) => {
+      return await likeRecipe(recipeId.toString())
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.detail(variables.recipeId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history() })
-      toast.success("Receita melhorada com IA com sucesso!")
+    onSuccess: (data, variables) => {
+      // Invalidar queries de receitas
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.all,
+        exact: false 
+      })
+      
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.my,
+        exact: false 
+      })
+      
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.top,
+        exact: false 
+      })
+      
+      // Invalidar queries de usuários (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.users.all,
+        exact: false 
+      })
+      
+      // Invalidar queries de community posts (para top chefs)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.community.posts,
+        exact: false 
+      })
+      
+      toast.success("Receita curtida com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao melhorar receita com IA")
-      console.error("Error improving recipe with AI:", error)
+      toast.error("Erro ao curtir receita")
+      console.error("Error liking recipe:", error)
     },
   })
-
-  return mutate
 }

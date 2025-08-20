@@ -1,4 +1,4 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 import { Recipe, RecipeParams, RecipeResponse, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
 
 export async function getRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
@@ -6,67 +6,78 @@ export async function getRecipes(params: RecipeParams = {}): Promise<RecipeRespo
   return data
 }
 
-export async function getRecipeById(id: string): Promise<Recipe> {
+export async function getRecipeById(id: string | number): Promise<Recipe> {
   const { data } = await api.get(`/recipes/${id}`)
-  return data.recipe
+  return data.data
 }
 
 export async function postRecipe(body: CreateRecipeData): Promise<Recipe> {
   const { data } = await api.post("/recipes", body)
-  return data.recipe
+  return data
 }
 
-export async function putRecipe(id: string, body: Partial<CreateRecipeData>): Promise<Recipe> {
+export async function putRecipe(id: string | number, body: Partial<CreateRecipeData>): Promise<Recipe> {
   const { data } = await api.put(`/recipes/${id}`, body)
-  return data.recipe
+  return data
 }
 
-export async function deleteRecipe(id: string): Promise<{ message: string }> {
+export async function deleteRecipe(id: string | number): Promise<{ message: string }> {
   const { data } = await api.delete(`/recipes/${id}`)
   return data
 }
 
 export async function getFavoriteRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
-  const { data } = await api.get("/recipes/favorites", { params })
+  const { data } = await api.get("/favorites", { params })
   return data
 }
 
-export async function postFavoriteRecipe(recipeId: string): Promise<{ message: string }> {
-  const { data } = await api.post(`/recipes/${recipeId}/favorite`)
+export async function postFavoriteRecipe(recipeId: string | number): Promise<{ message: string }> {
+  const { data } = await api.post(`/favorites/${recipeId}`)
   return data
 }
 
-export async function deleteFavoriteRecipe(recipeId: string): Promise<{ message: string }> {
-  const { data } = await api.delete(`/recipes/${recipeId}/favorite`)
+export async function deleteFavoriteRecipe(recipeId: string | number): Promise<{ message: string }> {
+  const { data } = await api.delete(`/favorites/${recipeId}`)
   return data
 }
 
 export async function getMyRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
-  const { data } = await api.get("/recipes/my-recipes", { params })
+  // Usar a rota /recipes com filtros para buscar receitas do usuário atual
+  const { data } = await api.get("/recipes", { params })
   return data
 }
 
 export async function getRecipeTags(): Promise<string[]> {
-  const { data } = await api.get("/recipes/tags")
-  return data.tags
+  // Esta rota não existe no backend, vamos retornar tags padrão
+  return ['Italiana', 'Brasileira', 'Japonesa', 'Mexicana', 'Indiana', 'Francesa', 'Chinesa', 'Tailandesa']
 }
 
 export async function getRecipeCategories(): Promise<string[]> {
-  const { data } = await api.get("/recipes/categories")
-  return data.categories
+  // Esta rota não existe no backend, vamos retornar categorias padrão
+  return ['Sobremesas', 'Prato Principal', 'Entrada', 'Sopa', 'Salada', 'Bebidas', 'Pães', 'Massas']
 }
 
 export async function postRecipeReview(recipeId: string, body: { rating: number; comment?: string }): Promise<{ message: string }> {
-  const { data } = await api.post(`/recipes/${recipeId}/reviews`, body)
-  return data
+  // Esta funcionalidade não existe no backend ainda
+  throw new Error("Funcionalidade de reviews não implementada")
 }
 
 export async function postGenerateRecipeWithAI(body: AIRecipeRequest): Promise<Recipe> {
-  const { data } = await api.post("/recipes/ai/generate", body)
-  return data.recipe
+  const { data } = await api.post("/openai", body)
+  return data.data || data
 }
 
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {
-  const { data } = await api.post(`/recipes/${recipeId}/ai/improve`, body)
-  return data.recipe
+  // Esta funcionalidade não existe no backend ainda
+  throw new Error("Funcionalidade de melhoria de receitas não implementada")
+}
+
+export async function getTopRecipes(): Promise<RecipeResponse> {
+  const { data } = await api.get("/recipes/top")
+  return data
+}
+
+export async function likeRecipe(id: string): Promise<Recipe> {
+  const { data } = await api.post(`/recipes/${id}/like`)
+  return data.data || data
 }

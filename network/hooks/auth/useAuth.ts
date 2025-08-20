@@ -3,7 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import type { LoginFormData, RegisterFormData, ResetPasswordData, ConfirmResetPasswordData } from "@/types/auth"
+import type { 
+  LoginFormData, 
+  RegisterFormData, 
+  ResetPasswordFormData, 
+  ConfirmResetPasswordFormData,
+  ForgotPasswordFormData
+} from "@/schemas/auth.schema"
 import { 
   getMe, 
   postLogin, 
@@ -16,7 +22,7 @@ import {
   putUpdatePassword
 } from "@/network/actions/auth/auth"
 import { setCookie, destroyCookie, parseCookies } from 'nookies'
-import { queryKeys } from "@/lib/query-keys"
+import { queryKeys } from "@/lib/config/query-keys"
 
 export function useLogin() {
   const router = useRouter()
@@ -27,7 +33,7 @@ export function useLogin() {
       return await postLogin(body)
     },
     onSuccess: (response) => {
-      setCookie(null, 'jwt', response.data, {
+      setCookie(null, 'jwt', response.data.token, {
         maxAge: 30 * 24 * 60 * 60,
         path: '/',
       })
@@ -37,7 +43,7 @@ export function useLogin() {
       toast.success("Login realizado com sucesso!")
       
       setTimeout(() => {
-        router.push("/")
+        router.push("/dashboard")
       }, 100)
     },
     onError: (error: any) => {
@@ -58,7 +64,7 @@ export function useRegister() {
     },
     onSuccess: (data) => {
       toast.success("Conta criada com sucesso! Faça login para continuar.")
-      router.push("/login")
+      router.push("/")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao criar conta")
@@ -107,7 +113,7 @@ export function useLogout() {
       destroyCookie(null, 'jwt')
       queryClient.clear()
       toast.success("Logout realizado com sucesso!")
-      router.push("/login")
+      router.push("/")
     },
     onError: (error: any) => {
       destroyCookie(null, 'jwt')
@@ -115,7 +121,7 @@ export function useLogout() {
       
       queryClient.clear()
       toast.error(error.response?.data?.message || "Erro ao fazer logout")
-      router.push("/login")
+      router.push("/")
     },
   })
 
@@ -126,7 +132,7 @@ export function useSendResetPassword() {
   const router = useRouter()
 
   const mutate = useMutation({
-    mutationFn: async (body: ResetPasswordData) => {
+    mutationFn: async (body: ResetPasswordFormData) => {
       return await postSendResetPassword(body)
     },
     onSuccess: (data, variables) => {
@@ -147,7 +153,7 @@ export function useSendResetPassword() {
       toast.success(data.message || "Código de verificação enviado para seu email!")
       
       setTimeout(() => {
-        router.push("/reset-password")
+        router.push("/auth/reset-password")
       }, 1000)
     },
     onError: (error: any) => {
@@ -163,7 +169,7 @@ export function useConfirmCodeResetPassword() {
   const router = useRouter()
   
   const mutate = useMutation({
-    mutationFn: async (body: ConfirmResetPasswordData) => {
+    mutationFn: async (body: ConfirmResetPasswordFormData) => {
       return await postConfirmCodeResetPassword(body)
     },
     onSuccess: (data) => {
@@ -171,9 +177,7 @@ export function useConfirmCodeResetPassword() {
       destroyCookie(null, 'reset_password')
       
       toast.success("Senha alterada com sucesso!")
-      setTimeout(() => {
-        router.push("/login")
-      }, 1500)
+    
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Código inválido ou expirado")

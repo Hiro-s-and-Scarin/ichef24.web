@@ -1,27 +1,34 @@
-import { api } from "@/lib/api"
-import { User } from "@/types"
+import { api } from "@/lib/api/api"
+import { User, UpdateUserData } from "@/types/user"
 
-export async function getUsers(params: { search?: string; page?: number; limit?: number } = {}): Promise<{
-  data: User[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}> {
+export async function getCurrentUser(): Promise<User> {
+  const { data } = await api.get("/users/me")
+  return data.data
+}
+
+export async function getAllUsers(params: { page?: number; limit?: number } = {}): Promise<{ data: User[]; pagination: any }> {
   const { data } = await api.get("/users", { params })
   return data
 }
 
 export async function getUserById(id: string): Promise<User> {
   const { data } = await api.get(`/users/${id}`)
-  return data.user
+  return data.data
 }
 
-export async function putUser(id: string, body: Partial<User>): Promise<User> {
+export async function updateUser(id: string, body: UpdateUserData): Promise<User> {
   const { data } = await api.put(`/users/${id}`, body)
-  return data.user
+  return data.data
+}
+
+export async function toggleUserStatus(id: string): Promise<User> {
+  const { data } = await api.patch(`/users/${id}/status`)
+  return data.data
+}
+
+export async function activeUser(id: string, body: { is_active: boolean }): Promise<User> {
+  const { data } = await api.patch(`/users/${id}`, body)
+  return data.data
 }
 
 export async function deleteUser(id: string): Promise<{ message: string }> {
@@ -59,8 +66,8 @@ export async function getCommunityPosts(params: {
 }
 
 export async function getTopChefs(): Promise<any[]> {
-  const { data } = await api.get("/community/top-chefs")
-  return data.chefs
+  const { data } = await api.get("/community-posts/top-chefs")
+  return data.data || data
 }
 
 export async function getTrendingPosts(): Promise<any[]> {

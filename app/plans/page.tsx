@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { getPlans } from "@/network/actions/plans/actionPlans";
-import { PlansPageContent } from "@/components/pages/plans-page";
+import { PlansPageContent } from "@/components/feature/pages/plans-page";
 
 export default async function PlansPage() {
   const queryClient = new QueryClient();

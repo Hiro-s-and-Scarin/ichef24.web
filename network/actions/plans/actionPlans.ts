@@ -1,4 +1,4 @@
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/api"
 import { Plan, Subscription } from "@/types"
 
 export async function getPlans(): Promise<Plan[]> {
