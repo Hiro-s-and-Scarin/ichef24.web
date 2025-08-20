@@ -48,13 +48,11 @@ function CheckoutContent() {
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       // Aqui você integraria com a API do Stripe
-      console.log("Dados do cartão:", data)
-      console.log("Plano:", planDetails)
+
       
       setIsSuccess(true)
       toast.success("Pagamento processado com sucesso!")
     } catch (error) {
-      console.error("Erro no pagamento:", error)
       toast.error("Erro ao processar pagamento. Tente novamente.")
     } finally {
       setIsProcessing(false)
@@ -68,12 +66,11 @@ function CheckoutContent() {
       await new Promise(resolve => setTimeout(resolve, 1500))
       
       // Aqui você geraria o QR Code do PIX
-      console.log("Gerando PIX para:", planDetails)
+
       
       setIsSuccess(true)
       toast.success("PIX gerado com sucesso!")
     } catch (error) {
-      console.error("Erro ao gerar PIX:", error)
       toast.error("Erro ao gerar PIX. Tente novamente.")
     } finally {
       setIsProcessing(false)

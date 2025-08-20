@@ -46,6 +46,8 @@ export interface RecipeParams {
   page?: number
   limit?: number
   search?: string
+  title?: string
+  description?: string
   tags?: string[]
   difficulty?: string[]
   time?: string

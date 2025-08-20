@@ -54,7 +54,7 @@ export function RecipePageExample() {
         isPublic: true
       })
     } catch (error) {
-      console.error("Erro ao criar receita:", error)
+      toast.error("Erro ao criar receita")
     }
   }
 
@@ -75,7 +75,7 @@ export function RecipePageExample() {
       setShowAIForm(false)
       setAiPrompt("")
     } catch (error) {
-      console.error("Erro ao gerar receita com IA:", error)
+      toast.error("Erro ao gerar receita com IA")
     }
   }
 
@@ -87,7 +87,7 @@ export function RecipePageExample() {
         await addToFavorites.mutateAsync(recipeId)
       }
     } catch (error) {
-      console.error("Erro ao alterar favorito:", error)
+      toast.error("Erro ao alterar favorito")
     }
   }
 

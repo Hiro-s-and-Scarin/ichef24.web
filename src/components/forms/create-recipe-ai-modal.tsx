@@ -12,6 +12,7 @@ import { X, Save, ChefHat, Mic, Send, Sparkles, Bot, Crown, Wand2, Leaf, Timer, 
 import { useGenerateRecipeWithAI } from "@/network/hooks"
 import { useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/config/query-keys"
+import { toast } from "sonner"
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean
@@ -184,7 +185,7 @@ export function CreateRecipeAIModal({ isOpen, onClose, onSave }: CreateRecipeAIM
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
 
     } catch (error) {
-      console.error("Erro ao gerar receita:", error)
+      toast.error("Erro ao gerar receita")
       updateModalState({
         isGenerating: false,
         chatMessages: [...chatMessages, {

@@ -238,7 +238,7 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
         isGenerating: false
       })
     } catch (error) {
-      console.error("Erro no chat de IA:", error)
+      toast.error("Erro no chat de IA")
       updateModalState({
         isGenerating: false,
         chatMessages: [...chatMessages, {
@@ -309,7 +309,6 @@ export function EditRecipeModal({ recipe, isOpen, onClose, onSave }: EditRecipeM
       onClose()
       toast.success("Receita atualizada com sucesso!")
     } catch (error) {
-      console.error("Error updating recipe:", error)
       toast.error("Erro ao atualizar receita")
     }
   }

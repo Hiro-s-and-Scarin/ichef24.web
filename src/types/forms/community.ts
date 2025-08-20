@@ -4,7 +4,7 @@ export interface PostFormData {
   image_url?: string
   difficulty_level?: "Fácil" | "Intermediário" | "Avançado"
   recipe_tags?: string[]
-  recipe_id?: number
+  recipe_id?: string
 }
 
 export interface CommentFormData {

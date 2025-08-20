@@ -94,7 +94,6 @@ export default function PostDetailPage() {
         toast.success("Receita curtida com sucesso!")
       }
     } catch (error) {
-      console.error("Erro ao curtir receita:", error)
       toast.error("Erro ao curtir receita")
     }
   }
@@ -119,7 +118,7 @@ export default function PostDetailPage() {
       setCommentContent("")
       toast.success("Comentário adicionado com sucesso!")
     } catch (error) {
-      console.error("Error creating comment:", error)
+      toast.error("Erro ao criar comentário")
     } finally {
       setIsSubmittingComment(false)
     }

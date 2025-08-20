@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
       setStep("code")
       resetPassword()
     } catch (error) {
-      console.error("Error sending reset password:", error)
+      toast.error("Erro ao enviar código de redefinição")
     }
   }
 
@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
         router.push("/profile")
       }, 1500)
     } catch (error) {
-      console.error("Error confirming code:", error)
+      toast.error("Erro ao confirmar código")
     }
   }
 

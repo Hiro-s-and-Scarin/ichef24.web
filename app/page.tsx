@@ -225,8 +225,7 @@ function LoginPageContent() {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  console.log("🖱️ Botão Facebook clicado!")
-                  console.log("handleFacebookAuth é:", typeof handleFacebookAuth)
+                  
                   handleFacebookAuth()
                 }}
                 className="w-full border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"

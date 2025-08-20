@@ -114,7 +114,7 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
           const { error: confirmError } = await stripe.confirmCardPayment(result.client_secret)
           
           if (confirmError) {
-            console.error('Erro na confirmação:', confirmError.message)
+            toast.error('Erro na confirmação: ' + confirmError.message)
           } else {
             setIsSuccess(true)
             setTimeout(() => {
@@ -129,7 +129,7 @@ export function StripeCheckout({ planDetails, onSuccess, onBack }: StripeCheckou
         }, 2000)
       }
     } catch (error) {
-      console.error('Erro no pagamento:', error)
+      toast.error('Erro no pagamento')
     }
   }
 

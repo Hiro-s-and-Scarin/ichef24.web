@@ -69,11 +69,10 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
       
       await onLikePost(post.id, newIsLiked)
     } catch (error) {
-      console.error("Error liking post:", error)
+      toast.error("Erro ao curtir post")
       // Reverter o estado em caso de erro
       setIsLiked(false)
       setLocalLikesCount(post.likes_count || 0)
-      toast.error("Erro ao curtir post")
     }
   }
 

@@ -31,7 +31,9 @@ export default function HomePage() {
 function HomePageContent() {
   const { t } = useTranslation()
 
-  const [isCreateAIModalOpen, setIsCreateAIModalOpen] = useState(false)
+  const [modalState, setModalState] = useState({
+    isCreateAIModalOpen: false
+  })
 
   // Captura o token da URL se existir
   useTokenCapture()
@@ -59,7 +61,7 @@ function HomePageContent() {
           {/* Botão para abrir Modal AI */}
           <div className="max-w-xl mx-auto">
                 <Button
-              onClick={() => setIsCreateAIModalOpen(true)}
+              onClick={() => setModalState(prev => ({ ...prev, isCreateAIModalOpen: true }))}
               className="w-full h-16 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-orange-600 text-white border-0 font-bold text-xl rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 group"
             >
               <div className="flex items-center justify-center gap-4">
@@ -134,11 +136,10 @@ function HomePageContent() {
 
       {/* Modal AI */}
       <CreateRecipeAIModal
-        isOpen={isCreateAIModalOpen}
-        onClose={() => setIsCreateAIModalOpen(false)}
+        isOpen={modalState.isCreateAIModalOpen}
+        onClose={() => setModalState(prev => ({ ...prev, isCreateAIModalOpen: false }))}
         onSave={(recipe) => {
-          console.log("Receita criada:", recipe)
-          setIsCreateAIModalOpen(false)
+          setModalState(prev => ({ ...prev, isCreateAIModalOpen: false }))
           toast.success("Receita criada com sucesso!")
         }}
       />

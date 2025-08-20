@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await loginMutation.mutateAsync({ email, password })
       return true
     } catch (error) {
-      console.error("Login error:", error)
+      // Error already handled by mutation
       return false
     }
   }
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       return true
     } catch (error) {
-      console.error("Register error:", error)
+      // Error already handled by mutation
       return false
     }
   }

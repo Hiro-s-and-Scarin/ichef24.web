@@ -48,6 +48,6 @@ export const postSendResetPassword = async (body: ResetPasswordFormData) => {
 }
 
 export const postConfirmCodeResetPassword = async (body: ConfirmResetPasswordFormData) => {
-  const response = await api.post("/auth/confirm-forgot-password", body)
+  const response = await api.post("/auth/confirm-code-reset-password", body)
   return response.data
 }

@@ -62,13 +62,13 @@ export function CommunityPage({
         difficulty_level: data.difficulty_level as 'Fácil' | 'Intermediário' | 'Avançado',
         image_url: data.image_url,
         recipe_tags: data.recipe_tags?.filter((tag): tag is string => tag !== undefined),
-        recipe_id: data.recipe_id
+        recipe_id: data.recipe_id ? Number(data.recipe_id) : undefined
       }
       await onCreatePost(postData)
       reset()
       onToggleCreatePost()
     } catch (error) {
-      console.error("Error creating post:", error)
+      // Error handling
     }
   }
 

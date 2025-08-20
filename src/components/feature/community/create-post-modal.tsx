@@ -56,11 +56,14 @@ export function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePostModalPr
   const handleFormSubmit = async (data: PostFormData) => {
     setIsSubmitting(true)
     try {
-      await onSubmit(data)
+      const postData = {
+        ...data,
+        recipe_id: data.recipe_id ? Number(data.recipe_id) : undefined
+      }
+      await onSubmit(postData)
       reset()
       onClose()
     } catch (error) {
-      console.error("Erro ao criar post:", error)
       toast.error("Erro ao criar post. Tente novamente.")
     } finally {
       setIsSubmitting(false)

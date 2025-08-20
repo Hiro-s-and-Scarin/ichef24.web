@@ -19,24 +19,29 @@ import { useTranslation } from "react-i18next"
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
 import { useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/config/query-keys"
+import { toast } from "sonner"
 
 export function FavoritesPageContent() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [selectedRecipe, setSelectedRecipe] = useState<any>(null)
-  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-  const [isCreateAIModalOpen, setIsCreateAIModalOpen] = useState(false)
+  
+  // Estado consolidado para modais
+  const [modalState, setModalState] = useState({
+    selectedRecipe: null as any,
+    isRecipeModalOpen: false,
+    isFilterModalOpen: false,
+    isCreateAIModalOpen: false
+  })
 
   // TanStack Query hooks
   const { data: favorites, isLoading, error } = useFavoriteRecipes({
     page: currentPage,
-    limit: 6,
-    search: searchTerm,
+    limit: 12,
+    title: searchTerm || undefined,
     tags: selectedFilters
   })
   const removeFromFavoritesMutation = useRemoveFromFavorites()
@@ -47,26 +52,21 @@ export function FavoritesPageContent() {
     try {
       await removeFromFavoritesMutation.mutateAsync(id)
     } catch (error) {
-      console.error("Erro ao remover dos favoritos:", error)
+      toast.error("Erro ao remover dos favoritos")
     }
   }
 
   const openRecipeModal = (recipe: any) => {
-    setSelectedRecipe(recipe)
-    setIsRecipeModalOpen(true)
+    setModalState(prev => ({
+      ...prev,
+      selectedRecipe: recipe,
+      isRecipeModalOpen: true
+    }))
   }
 
 
   const currentFavorites = favorites?.data || []
   const totalPages = favorites?.pagination?.totalPages || 1
-
-  // Debug temporário
-  console.log('Favorites data:', favorites)
-  console.log('Current favorites:', currentFavorites)
-  if (currentFavorites.length > 0) {
-    console.log('First favorite:', currentFavorites[0])
-    console.log('First favorite.recipe:', (currentFavorites[0] as any)?.recipe)
-  }
 
   const handleApplyFilters = (filters: string[]) => {
     setSelectedFilters(filters)
@@ -134,7 +134,7 @@ export function FavoritesPageContent() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setIsFilterModalOpen(true)}
+                    onClick={() => setModalState(prev => ({ ...prev, isFilterModalOpen: true }))}
                     className="border-gray-200 dark:border-gray-600"
                   >
                     <Filter className="w-4 h-4 mr-2" />
@@ -177,20 +177,10 @@ export function FavoritesPageContent() {
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
                   {currentFavorites.map((favorite: any) => {
-                    // Debug detalhado
-                    console.log('=== DEBUG FAVORITE ===')
-                    console.log('Favorite completo:', favorite)
-                    console.log('Favorite.recipe:', favorite.recipe)
-                    console.log('Favorite.recipe.title:', favorite.recipe?.title)
-                    console.log('Favorite.recipe.description:', favorite.recipe?.description)
-                    console.log('Favorite.recipe.cooking_time:', favorite.recipe?.cooking_time)
-                    console.log('Favorite.recipe.servings:', favorite.recipe?.servings)
-                    console.log('Favorite.recipe.difficulty_level:', favorite.recipe?.difficulty_level)
-                    console.log('=====================')
+
                     
                     // Verificar se a receita existe antes de renderizar
                     if (!favorite.recipe) {
-                      console.warn('Favorite sem recipe:', favorite)
                       return null
                     }
                     
@@ -214,11 +204,12 @@ export function FavoritesPageContent() {
                       is_public: favorite.recipe.is_public,
                       views_count: favorite.recipe.views_count,
                       likes_count: favorite.recipe.likes_count,
+                      user_is_liked: favorite.recipe.user_is_liked || [],
                       createdAt: favorite.recipe.createdAt,
                       updatedAt: favorite.recipe.updatedAt
                     }
                     
-                    console.log('Clean recipe para RecipeCard:', cleanRecipe)
+
                     
                     return (
                       <RecipeCard
@@ -307,7 +298,7 @@ export function FavoritesPageContent() {
                 <p className="text-gray-600 dark:text-gray-300">
                   Você ainda não tem receitas favoritas. Comece explorando e salvando suas receitas preferidas!
                 </p>
-                <Button onClick={() => setIsCreateAIModalOpen(true)}>
+                <Button onClick={() => setModalState(prev => ({ ...prev, isCreateAIModalOpen: true }))}>
                   {t('dashboard.ai.button')}
                 </Button>
               </CardContent>
@@ -317,32 +308,30 @@ export function FavoritesPageContent() {
       </div>
 
       {/* Recipe Modal */}
-      {selectedRecipe && (
+      {modalState.selectedRecipe && (
         <RecipeModal
-          recipe={selectedRecipe}
-          isOpen={isRecipeModalOpen}
-          onClose={() => setIsRecipeModalOpen(false)}
-          onFavorite={() => removeFavorite(selectedRecipe.id)}
+          recipe={modalState.selectedRecipe}
+          isOpen={modalState.isRecipeModalOpen}
+          onClose={() => setModalState(prev => ({ ...prev, isRecipeModalOpen: false }))}
+          onFavorite={() => removeFavorite(modalState.selectedRecipe.id)}
           isFavorite={true}
         />
       )}
 
       {/* Filter Modal */}
       <FilterModal
-        isOpen={isFilterModalOpen}
-        onClose={() => setIsFilterModalOpen(false)}
+        isOpen={modalState.isFilterModalOpen}
+        onClose={() => setModalState(prev => ({ ...prev, isFilterModalOpen: false }))}
         filters={{ tags: selectedFilters }}
         onFiltersChange={(newFilters: any) => handleApplyFilters(newFilters.tags || [])}
       />
 
       {/* Create Recipe AI Modal */}
       <CreateRecipeAIModal
-        isOpen={isCreateAIModalOpen}
-        onClose={() => setIsCreateAIModalOpen(false)}
+        isOpen={modalState.isCreateAIModalOpen}
+        onClose={() => setModalState(prev => ({ ...prev, isCreateAIModalOpen: false }))}
         onSave={(recipe) => {
-          console.log('Receita criada:', recipe)
-          setIsCreateAIModalOpen(false)
-          // Invalidar queries para atualizar a lista de favoritos
+          setModalState(prev => ({ ...prev, isCreateAIModalOpen: false }))
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })

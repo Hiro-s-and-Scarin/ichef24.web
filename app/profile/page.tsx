@@ -82,7 +82,6 @@ export default function Profile() {
         toast.info("Nenhum campo foi alterado")
       }
     } catch (error) {
-      console.error("Error updating profile:", error)
       toast.error("Erro ao atualizar perfil")
     }
   }

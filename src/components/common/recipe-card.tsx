@@ -55,7 +55,7 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
         setIsFavorite(true)
       }
     } catch (error) {
-      console.error("Error toggling favorite:", error)
+      toast.error("Erro ao alterar favoritos")
     }
   }
 
@@ -80,7 +80,6 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
         setLikesCount(result.likes_count || likesCount + 1)
       }
     } catch (error) {
-      console.error("Erro ao curtir receita:", error)
       toast.error("Erro ao curtir receita")
     }
   }

@@ -11,7 +11,7 @@ export default async function PlansPage() {
       try {
         return await getPlans();
       } catch (error) {
-        console.error("Erro ao pré-buscar planos durante o build:", error);
+        // Error during build-time fetching
         return [];
       }
     },

@@ -75,7 +75,7 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
       await onCreateComment(post.id, data.content)
       reset()
     } catch (error) {
-      console.error("Erro ao criar comentário:", error)
+      toast.error("Erro ao criar comentário")
     } finally {
       setIsSubmittingComment(false)
     }
@@ -102,7 +102,6 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
         setLikesCount(result.likes_count || likesCount + 1)
       }
     } catch (error) {
-      console.error("Erro ao curtir post:", error)
       toast.error("Erro ao curtir post")
     }
   }

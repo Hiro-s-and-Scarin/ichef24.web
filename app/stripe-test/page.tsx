@@ -71,13 +71,12 @@ function CheckoutForm() {
           backendResponse: result
         })
         toast.success('Pagamento processado com sucesso!')
-        console.log('Resposta do backend:', result)
+
       } else {
         const errorData = await response.json()
         toast.error('Erro no backend: ' + (errorData.message || 'Erro desconhecido'))
       }
     } catch (error) {
-      console.error('Erro:', error)
       toast.error('Erro ao processar pagamento: ' + (error as Error).message)
     } finally {
       setIsLoading(false)

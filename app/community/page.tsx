@@ -41,19 +41,20 @@ type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 export default function Community() {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
-  const [isCreatingPost, setIsCreatingPost] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [isClient, setIsClient] = useState(false)
+  
+  // Estado consolidado
+  const [state, setState] = useState({
+    isCreatingPost: false,
+    topChefs: [] as any[],
+    isLoadingTopChefs: false
+  })
   
   // Hooks para dados
   const { data: postsData, isLoading: postsLoading } = useCommunityPosts()
   const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 50 })
   const { data: topRecipesData, isLoading: topRecipesLoading } = useTopRecipes()
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
-  
-  // Estado para top chefs
-  const [topChefs, setTopChefs] = useState<any[]>([])
-  const [isLoadingTopChefs, setIsLoadingTopChefs] = useState(false)
 
   // Hooks para mutações
   const createPostMutation = useCreateCommunityPost()
@@ -65,10 +66,7 @@ export default function Community() {
   const topRecipes = topRecipesData?.data || []
   const users = usersData?.data || []
 
-  // Evitar problemas de hydration
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
+
 
   // Filtrar posts por pesquisa
   const filteredPosts = posts.filter(post => {
@@ -116,43 +114,29 @@ export default function Community() {
   // Buscar top chefs quando a seção for ativada
   useEffect(() => {
     if (activeSection === 'top-chefs') {
-      setIsLoadingTopChefs(true)
+      setState(prev => ({ ...prev, isLoadingTopChefs: true }))
       getTopChefs()
         .then((data) => {
           if (data && Array.isArray(data)) {
-            setTopChefs(data)
+            setState(prev => ({ ...prev, topChefs: data }))
           }
         })
         .catch((error) => {
-          console.error('Erro ao buscar top chefs:', error)
           toast.error('Erro ao carregar top chefs')
         })
         .finally(() => {
-          setIsLoadingTopChefs(false)
+          setState(prev => ({ ...prev, isLoadingTopChefs: false }))
         })
     }
   }, [activeSection])
 
-  // Renderizar apenas no cliente para evitar problemas de hydration
-  if (!isClient) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="mt-2 text-gray-500">Carregando comunidade...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+
 
   const handleCreatePost = async (data: CreateCommunityPostData) => {
     try {
       await createPostMutation.mutateAsync(data)
-      setIsCreatingPost(false)
+      setState(prev => ({ ...prev, isCreatingPost: false }))
     } catch (error) {
-      console.error("Error creating post:", error)
       toast.error("Erro ao criar post. Tente novamente.")
     }
   }
@@ -161,7 +145,7 @@ export default function Community() {
     try {
       await createCommentMutation.mutateAsync({ postId, content })
     } catch (error) {
-      console.error("Error creating comment:", error)
+      toast.error("Erro ao criar comentário")
     }
   }
 
@@ -169,7 +153,7 @@ export default function Community() {
     try {
       await likePostMutation.mutateAsync(postId)
     } catch (error) {
-      console.error("Erro ao curtir post:", error)
+      toast.error("Erro ao curtir post")
     }
   }
 
@@ -218,7 +202,7 @@ export default function Community() {
                 </div>
                 
                 <Button 
-                  onClick={() => setIsCreatingPost(true)}
+                  onClick={() => setState(prev => ({ ...prev, isCreatingPost: true }))}
                   className="bg-orange-500 hover:bg-orange-600 whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -274,12 +258,12 @@ export default function Community() {
               </p>
             </div>
             
-            {isLoadingTopChefs ? (
+            {state.isLoadingTopChefs ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando chefs...</p>
               </div>
-            ) : topChefs.length === 0 ? (
+            ) : state.topChefs.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -293,7 +277,7 @@ export default function Community() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {topChefs.map((chef, index) => (
+                {state.topChefs.map((chef, index) => (
                   <TopChefCard
                     key={chef.user_id}
                     chef={{
@@ -362,12 +346,7 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
-      {!isClient ? (
-        // Loading state para evitar hydration mismatch
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-        </div>
-      ) : (
+      {(
         <>
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -422,8 +401,8 @@ export default function Community() {
 
           {/* Modal de Criação de Post */}
           <CreatePostModal
-            isOpen={isCreatingPost}
-            onClose={() => setIsCreatingPost(false)}
+            isOpen={state.isCreatingPost}
+            onClose={() => setState(prev => ({ ...prev, isCreatingPost: false }))}
             onSubmit={handleCreatePost}
           />
         </>

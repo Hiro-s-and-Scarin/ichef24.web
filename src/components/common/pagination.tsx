@@ -1,6 +1,7 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useTranslation } from "react-i18next"
 
 interface PaginationProps {
   currentPage: number
@@ -10,7 +11,6 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, onPageChange, className = "" }: PaginationProps) {
-  const { t } = useTranslation()
   if (totalPages <= 1) return null
 
   const getVisiblePages = () => {
@@ -40,48 +40,44 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
   }
 
   return (
-    <div className={`flex justify-center items-center gap-2 ${className}`}>
+    <div className={`flex items-center justify-center gap-2 ${className}`}>
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+        className="flex items-center gap-1"
       >
-        <ChevronLeft className="w-4 h-4 mr-1" />
-        {t('pagination.previous')}
+        <ChevronLeft className="w-4 h-4" />
+        Anterior
       </Button>
-      
+
       {getVisiblePages().map((page, index) => (
         <div key={index}>
           {page === '...' ? (
-            <span className="px-3 py-2 text-gray-500 dark:text-gray-400">...</span>
+            <span className="px-3 py-2 text-gray-500">...</span>
           ) : (
             <Button
               variant={currentPage === page ? "default" : "outline"}
               size="sm"
               onClick={() => onPageChange(page as number)}
-              className={`${
-                currentPage === page
-                  ? "bg-gradient-to-r from-orange-500 to-yellow-500 text-white"
-                  : "text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-              }`}
+              className="min-w-[40px]"
             >
               {page}
             </Button>
           )}
         </div>
       ))}
-      
+
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+        onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+        className="flex items-center gap-1"
       >
-        {t('pagination.next')}
-        <ChevronRight className="w-4 h-4 ml-1" />
+        Próxima
+        <ChevronRight className="w-4 h-4" />
       </Button>
     </div>
   )
