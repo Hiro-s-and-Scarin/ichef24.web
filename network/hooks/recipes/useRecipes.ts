@@ -14,7 +14,9 @@ import {
   getMyRecipes,
   getRecipeTags,
   getRecipeCategories,
-  postGenerateRecipeWithAI
+  postGenerateRecipeWithAI,
+  getTopRecipes,
+  likeRecipe
 } from "@/network/actions/recipes/actionRecipes"
 import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
 import { queryKeys } from "@/lib/config/query-keys"
@@ -194,6 +196,46 @@ export function useGenerateRecipeWithAI() {
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao gerar receita com IA")
       console.error("Error generating recipe with AI:", error)
+    },
+  })
+}
+
+export function useTopRecipes() {
+  return useQuery({
+    queryKey: [...queryKeys.recipes.top],
+    queryFn: async () => await getTopRecipes(),
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useLikeRecipe() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (recipeId: string | number) => {
+      return await likeRecipe(recipeId.toString())
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.all,
+        exact: false 
+      })
+      
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.my,
+        exact: false 
+      })
+      
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.top,
+        exact: false 
+      })
+      
+      toast.success("Receita curtida com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao curtir receita")
+      console.error("Error liking recipe:", error)
     },
   })
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -17,6 +17,8 @@ import {
 } from "lucide-react"
 import { CommunityPost } from "@/types/community"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 interface PostCardCompactProps {
   post: CommunityPost
@@ -25,29 +27,53 @@ interface PostCardCompactProps {
 
 export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
   const router = useRouter()
-  // Estado local para controlar o like
+  const { user } = useAuth()
+  
+  // Estado local para controlar o like - sincronizar com backend
   const [isLiked, setIsLiked] = useState(false)
   const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0)
 
+  // Verificar se o usuário já deu like - sincronizar com backend
+  useEffect(() => {
+    if (user && post.user_is_liked) {
+      const userHasLiked = post.user_is_liked.includes(Number(user.id))
+      setIsLiked(userHasLiked)
+    }
+  }, [user, post.user_is_liked])
+
+  // Sincronizar likes count com o post atualizado
+  useEffect(() => {
+    setLocalLikesCount(post.likes_count || 0)
+  }, [post.likes_count])
+
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation()
+    
+    if (!user) {
+      toast.error("Você precisa estar logado para curtir posts")
+      return
+    }
+
+    // Verificar se já deu like
+    if (isLiked) {
+      toast.info("Você já curtiu este post")
+      return
+    }
+
     try {
-      const newIsLiked = !isLiked
+      const newIsLiked = true
       setIsLiked(newIsLiked)
       
       // Atualizar contador local imediatamente para feedback visual
-      if (newIsLiked) {
-        setLocalLikesCount(prev => prev + 1)
-      } else {
-        setLocalLikesCount(prev => Math.max(0, prev - 1))
-      }
+      setLocalLikesCount(prev => prev + 1)
       
       await onLikePost(post.id, newIsLiked)
     } catch (error) {
       console.error("Error liking post:", error)
       // Reverter o estado em caso de erro
-      setIsLiked(!isLiked)
+      setIsLiked(false)
       setLocalLikesCount(post.likes_count || 0)
+      toast.error("Erro ao curtir post")
     }
   }
 

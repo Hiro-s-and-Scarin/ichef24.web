@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,9 @@ import {
 import * as yup from "yup"
 import { CommunityPost, PostComment } from "@/types/community"
 import { usePostComments } from "@/network/hooks/community/useCommunity"
+import { useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 // Schema para comentários
 const commentSchema = yup.object({
@@ -36,11 +39,29 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
+  const { user } = useAuth()
   const [showComments, setShowComments] = useState(false)
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
   
   const { data: commentsData, isLoading: commentsLoading } = usePostComments(post.id)
   const comments = commentsData?.data || []
+
+  const likePostMutation = useLikeCommunityPost()
+
+  // Verificar se o usuário já deu like - sincronizar com backend
+  useEffect(() => {
+    if (user && post.user_is_liked) {
+      const userHasLiked = post.user_is_liked.includes(Number(user.id))
+      setIsLiked(userHasLiked)
+    }
+  }, [user, post.user_is_liked])
+
+  // Sincronizar likes count com o post atualizado
+  useEffect(() => {
+    setLikesCount(post.likes_count || 0)
+  }, [post.likes_count])
 
   const {
     register,
@@ -64,10 +85,28 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
   }
 
   const handleLike = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para curtir posts")
+      return
+    }
+
+    // Verificar se já deu like
+    if (isLiked) {
+      toast.info("Você já curtiu este post")
+      return
+    }
+
     try {
-      await onLikePost(post.id)
+      const result = await likePostMutation.mutateAsync(post.id)
+      
+      // Atualizar estado local com dados do backend
+      if (result) {
+        setIsLiked(true)
+        setLikesCount(result.likes_count || likesCount + 1)
+      }
     } catch (error) {
       console.error("Erro ao curtir post:", error)
+      toast.error("Erro ao curtir post")
     }
   }
 
@@ -179,16 +218,19 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex items-center space-x-4">
+            <button 
               onClick={handleLike}
-              className="flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20"
+              disabled={likePostMutation.isPending}
+              className={`flex items-center space-x-1 transition-colors ${
+                isLiked 
+                  ? 'text-red-500 hover:text-red-600' 
+                  : 'text-gray-500 hover:text-red-500'
+              }`}
             >
-              <Heart className={`w-4 h-4 ${post.likes_count > 0 ? 'text-red-500 fill-current' : 'text-gray-500'}`} />
-              <span className="text-sm">{post.likes_count || 0}</span>
-            </Button>
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span className="text-sm">{likesCount}</span>
+            </button>
             
             <Button
               variant="ghost"

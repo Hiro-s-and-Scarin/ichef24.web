@@ -1,16 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Card, CardContent } from "@/components/ui/card"
 import { translateDynamicData } from "@/lib/config/i18n"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Heart, Clock, Users, Star, Eye } from "lucide-react"
+import { Heart, Clock, Users, Star, Eye, ThumbsUp } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Recipe } from "@/types/recipe"
 import { useAddToFavorites, useRemoveFromFavorites } from "@/network/hooks"
+import { useLikeRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 interface RecipeCardProps {
   recipe: Recipe
@@ -20,9 +23,27 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = false }: RecipeCardProps) {
   const { t, i18n } = useTranslation()
+  const { user } = useAuth()
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(recipe.likes_count || 0)
+  
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
+  const likeRecipeMutation = useLikeRecipe()
+
+  // Verificar se o usuário já deu like
+  useEffect(() => {
+    if (user && recipe.user_is_liked) {
+      const userHasLiked = recipe.user_is_liked.includes(Number(user.id))
+      setIsLiked(userHasLiked)
+    }
+  }, [user, recipe.user_is_liked])
+
+  // Sincronizar likes count com a receita atualizada
+  useEffect(() => {
+    setLikesCount(recipe.likes_count || 0)
+  }, [recipe.likes_count])
 
   const handleToggleFavorite = async () => {
     try {
@@ -35,6 +56,32 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
       }
     } catch (error) {
       console.error("Error toggling favorite:", error)
+    }
+  }
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    
+    if (!user) {
+      toast.error("Você precisa estar logado para curtir receitas")
+      return
+    }
+
+    if (isLiked) {
+      toast.info("Você já curtiu esta receita")
+      return
+    }
+
+    try {
+      const result = await likeRecipeMutation.mutateAsync(recipe.id)
+      
+      if (result) {
+        setIsLiked(true)
+        setLikesCount(result.likes_count || likesCount + 1)
+      }
+    } catch (error) {
+      console.error("Erro ao curtir receita:", error)
+      toast.error("Erro ao curtir receita")
     }
   }
 
@@ -61,7 +108,7 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
 
   return (
     <Card 
-      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer"
+      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer min-h-[480px] w-full max-w-md mx-auto"
       onClick={onClick}
     >
       {/* Recipe Image */}
@@ -84,7 +131,7 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
           size="icon"
           variant="ghost"
           onClick={(e) => {
-            e.stopPropagation() // Evitar que o clique do botão propague para o card
+            e.stopPropagation()
             handleToggleFavorite()
           }}
           className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
@@ -147,13 +194,31 @@ export function RecipeCard({ recipe, onClick, isFavorite: initialIsFavorite = fa
           </Badge>
         )}
 
-        {/* View Recipe Button */}
-        <div className="flex justify-end mt-auto">
-          <Link href={`/recipe/${recipe.id}`}>
-            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-              {t('recipe.view')}
+        {/* View Recipe Button and Like Button */}
+        <div className="flex justify-between items-center mt-auto pt-3">
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <ThumbsUp className="w-4 h-4" />
+            <span>{likesCount}</span>
+          </div>
+          
+          <div className="flex gap-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleLike}
+              disabled={isLiked}
+              className={`text-xs px-3 py-1.5 h-8 ${isLiked ? 'bg-blue-100 text-blue-700 border-blue-300' : 'hover:bg-blue-50'}`}
+            >
+              <ThumbsUp className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? 'fill-current' : ''}`} />
+              {isLiked ? 'Curtido' : 'Curtir'}
             </Button>
-          </Link>
+            
+            <Link href={`/recipe/${recipe.id}`}>
+              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1.5 h-8">
+                {t('recipe.view')}
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

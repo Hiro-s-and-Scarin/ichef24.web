@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,12 +23,18 @@ import {
   X
 } from "lucide-react"
 import { useCommunityPosts, useCreateCommunityPost, usePostComments, useCreatePostComment, useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
-import { useRecipes } from "@/network/hooks/recipes/useRecipes"
+import { useRecipes, useTopRecipes } from "@/network/hooks/recipes/useRecipes"
 import { useUsers } from "@/network/hooks/users/useUsers"
+import { getTopChefs } from "@/network/actions/users/actionUsers"
 import { CreateCommunityPostData, CommunityPost } from "@/types/community"
 import { Recipe } from "@/types/recipe"
 import { toast } from "sonner"
-import { CreatePostModal, PostCardCompact, TopChefCard, TopRecipeCard } from "@/components/feature/community"
+
+// Dynamic imports para evitar problemas de hydration
+const CreatePostModal = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.CreatePostModal })), { ssr: false })
+const PostCardCompact = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.PostCardCompact })), { ssr: false })
+const TopChefCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopChefCard })), { ssr: false })
+const TopRecipeCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopRecipeCard })), { ssr: false })
 
 type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 
@@ -37,14 +44,18 @@ export default function Community() {
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
   const [isCreatingPost, setIsCreatingPost] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [isClient, setIsClient] = useState(false)
   
   // Hooks para dados
   const { data: postsData, isLoading: postsLoading } = useCommunityPosts()
   const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 50 })
+  const { data: topRecipesData, isLoading: topRecipesLoading } = useTopRecipes()
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
   
+  // Estado para top chefs
+  const [topChefs, setTopChefs] = useState<any[]>([])
+  const [isLoadingTopChefs, setIsLoadingTopChefs] = useState(false)
 
-  
   // Hooks para mutações
   const createPostMutation = useCreateCommunityPost()
   const createCommentMutation = useCreatePostComment()
@@ -52,7 +63,13 @@ export default function Community() {
 
   const posts = postsData?.data || []
   const recipes = recipesData?.data || []
+  const topRecipes = topRecipesData?.data || []
   const users = usersData?.data || []
+
+  // Evitar problemas de hydration
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Filtrar posts por pesquisa
   const filteredPosts = posts.filter(post => {
@@ -66,11 +83,12 @@ export default function Community() {
   })
 
   // Calcular top chefs baseado nas receitas mais curtidas
-  const topChefs = users
+  const topChefsCalculated = users
     .map(user => {
       const userRecipes = recipes.filter(recipe => recipe.user_id === parseInt(user.id))
-      const totalLikes = userRecipes.reduce((acc, recipe) => acc + recipe.likes_count, 0)
-      const totalViews = userRecipes.reduce((acc, recipe) => acc + recipe.views_count, 0)
+      const totalLikes = userRecipes.reduce((sum, recipe) => sum + (recipe.likes_count || 0), 0)
+      const totalViews = userRecipes.reduce((sum, recipe) => sum + (recipe.views_count || 0), 0)
+      
       return {
         ...user,
         id: parseInt(user.id),
@@ -84,9 +102,9 @@ export default function Community() {
     .slice(0, 10)
 
   // Top receitas ordenadas por likes
-  const topRecipes = recipes
-    .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
-    .slice(0, 10)
+  const topRecipesSorted = topRecipes
+    .sort((a: Recipe, b: Recipe) => b.likes_count - a.likes_count)
+    .slice(0, 3)
 
   // Atualizar URL quando mudar seção ou pesquisa
   useEffect(() => {
@@ -111,6 +129,17 @@ export default function Community() {
     }
   }, [searchParams])
 
+  // Carregar top chefs quando a seção for ativada
+  useEffect(() => {
+    if (activeSection === 'top-chefs' && topChefs.length === 0) {
+      setIsLoadingTopChefs(true)
+      getTopChefs()
+        .then(chefs => setTopChefs(chefs))
+        .catch(error => console.error('Erro ao carregar top chefs:', error))
+        .finally(() => setIsLoadingTopChefs(false))
+    }
+  }, [activeSection, topChefs.length])
+
   const handleCreatePost = async (data: CreateCommunityPostData) => {
     try {
       await createPostMutation.mutateAsync(data)
@@ -129,11 +158,11 @@ export default function Community() {
     }
   }
 
-  const handleLikePost = async (postId: number, isLiked: boolean) => {
+  const handleLikePost = async (postId: number) => {
     try {
-      await likePostMutation.mutateAsync({ postId, isLiked })
+      await likePostMutation.mutateAsync(postId)
     } catch (error) {
-      console.error("Error liking post:", error)
+      console.error("Erro ao curtir post:", error)
     }
   }
 
@@ -238,7 +267,7 @@ export default function Community() {
               </p>
             </div>
             
-            {usersLoading ? (
+            {isLoadingTopChefs ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando chefs...</p>
@@ -256,11 +285,19 @@ export default function Community() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {topChefs.map((chef, index) => (
                   <TopChefCard
-                    key={chef.id}
-                    chef={chef}
+                    key={chef.user_id}
+                    chef={{
+                      id: chef.user_id,
+                      name: chef.name || 'Chef',
+                      email: chef.email,
+                      avatar_url: chef.avatar_url,
+                      totalLikes: chef.totalLikes || 0,
+                      totalViews: 0, // Não temos esse dado no backend ainda
+                      recipeCount: chef.recipeCount || 0
+                    }}
                     rank={index + 1}
                   />
                 ))}
@@ -281,12 +318,12 @@ export default function Community() {
               </p>
             </div>
             
-            {recipesLoading ? (
+            {topRecipesLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando receitas...</p>
               </div>
-            ) : topRecipes.length === 0 ? (
+            ) : topRecipesSorted.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -299,8 +336,8 @@ export default function Community() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {topRecipes.map((recipe, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {topRecipesSorted.map((recipe, index) => (
                   <TopRecipeCard
                     key={recipe.id}
                     recipe={recipe}
@@ -319,63 +356,72 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              Comunidade iChef24
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Conecte-se com outros chefs, compartilhe experiências e descubra as melhores receitas da comunidade
-            </p>
-          </div>
+      {!isClient ? (
+        // Loading state para evitar hydration mismatch
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        </div>
+      ) : (
+        <>
+          <div className="container mx-auto px-4 py-8">
+            <div className="max-w-7xl mx-auto space-y-8">
+              {/* Header */}
+              <div className="text-center">
+                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+                  Comunidade iChef24
+                </h1>
+                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Conecte-se com outros chefs, compartilhe experiências e descubra as melhores receitas da comunidade
+                </p>
+              </div>
 
-          {/* Navegação das Seções */}
-          <div className="flex justify-center">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 border border-gray-200 dark:border-gray-700">
-              <div className="flex space-x-2">
-                <Button
-                  variant={activeSection === 'posts' ? 'default' : 'ghost'}
-                  onClick={() => setActiveSection('posts')}
-                  className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Posts
-                </Button>
-                <Button
-                  variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
-                  onClick={() => setActiveSection('top-chefs')}
-                  className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Top Chefs
-                </Button>
-                <Button
-                  variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
-                  onClick={() => setActiveSection('top-recipes')}
-                  className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                >
-                  <ChefHat className="w-4 h-4 mr-2" />
-                  Top Receitas
-                </Button>
+              {/* Navegação das Seções */}
+              <div className="flex justify-center">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+                  <div className="flex space-x-2">
+                    <Button
+                      variant={activeSection === 'posts' ? 'default' : 'ghost'}
+                      onClick={() => setActiveSection('posts')}
+                      className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Posts
+                    </Button>
+                    <Button
+                      variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
+                      onClick={() => setActiveSection('top-chefs')}
+                      className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Top Chefs
+                    </Button>
+                    <Button
+                      variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
+                      onClick={() => setActiveSection('top-recipes')}
+                      className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                    >
+                      <ChefHat className="w-4 h-4 mr-2" />
+                      Top Receitas
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Conteúdo da Seção */}
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                {renderSectionContent()}
               </div>
             </div>
           </div>
 
-          {/* Conteúdo da Seção */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-            {renderSectionContent()}
-          </div>
-        </div>
-      </div>
-
-      {/* Modal de Criação de Post */}
-      <CreatePostModal
-        isOpen={isCreatingPost}
-        onClose={() => setIsCreatingPost(false)}
-        onSubmit={handleCreatePost}
-      />
+          {/* Modal de Criação de Post */}
+          <CreatePostModal
+            isOpen={isCreatingPost}
+            onClose={() => setIsCreatingPost(false)}
+            onSubmit={handleCreatePost}
+          />
+        </>
+      )}
     </div>
   )
 }

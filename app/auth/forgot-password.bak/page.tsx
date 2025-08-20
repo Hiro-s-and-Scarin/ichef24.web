@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,7 @@ import Link from "next/link"
 import { useForgotPassword } from "@/network/hooks"
 import { forgotPasswordSchema, ForgotPasswordFormData } from "@/schemas/auth.schema"
 
-export default function ForgotPassword() {
+function ForgotPasswordContent() {
   const [isEmailSent, setIsEmailSent] = useState(false)
   const [email, setEmail] = useState("")
   
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
       <Card className="w-full max-w-md bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="mx-auto w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4">
-            <Mail className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+            <Mail className="w-8 h-8 text-orange-600 dark:text-green-400" />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
             Esqueceu sua senha?
@@ -100,23 +100,22 @@ export default function ForgotPassword() {
                 className="border-gray-300 dark:border-gray-600"
               />
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {errors.email.message}
+                </p>
               )}
             </div>
-
+            
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50"
+              className="w-full bg-orange-500 hover:bg-orange-600"
             >
               {isSubmitting ? "Enviando..." : "Enviar Código"}
             </Button>
-
+            
             <div className="text-center">
-              <Link 
-                href="/"
-                className="inline-flex items-center text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-              >
+              <Link href="/" className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Voltar ao Login
               </Link>
@@ -125,5 +124,20 @@ export default function ForgotPassword() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function ForgotPassword() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-500">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <ForgotPasswordContent />
+    </Suspense>
   )
 } 

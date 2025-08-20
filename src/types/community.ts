@@ -27,6 +27,8 @@ export interface CommunityPost {
     image_url?: string
     description?: string
   }
+  is_liked?: boolean
+  user_is_liked?: number[]
 }
 
 export interface CreateCommunityPostData {

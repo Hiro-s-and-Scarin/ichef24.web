@@ -17,6 +17,7 @@ export interface Recipe {
   is_public: boolean
   views_count: number
   likes_count: number
+  user_is_liked: number[]
   createdAt: string
   updatedAt: string
   user?: {

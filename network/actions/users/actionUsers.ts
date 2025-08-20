@@ -66,8 +66,8 @@ export async function getCommunityPosts(params: {
 }
 
 export async function getTopChefs(): Promise<any[]> {
-  const { data } = await api.get("/community/top-chefs")
-  return data.chefs
+  const { data } = await api.get("/community-posts/top-chefs")
+  return data.data || data
 }
 
 export async function getTrendingPosts(): Promise<any[]> {

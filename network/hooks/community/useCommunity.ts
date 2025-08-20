@@ -7,7 +7,9 @@ import {
   getCommunityPostById, 
   createCommunityPost, 
   updateCommunityPost, 
-  deleteCommunityPost
+  deleteCommunityPost,
+  incrementPostViews,
+  likeCommunityPost
 } from "@/network/actions/community/actionCommunity"
 import { api } from "@/lib/api/api"
 import { CreateCommunityPostData, UpdateCommunityPostData } from "@/types/community"
@@ -24,9 +26,13 @@ export function useCommunityPosts(params: { page?: number; limit?: number } = {}
 export function useCommunityPost(id: string) {
   return useQuery({
     queryKey: [...queryKeys.community.post(id)],
-    queryFn: async () => await getCommunityPostById(id),
+    queryFn: async () => {
+      const result = await getCommunityPostById(id);
+      return result;
+    },
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
+    retry: 1,
   })
 }
 
@@ -161,46 +167,69 @@ export function useLikeCommunityPost() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ postId, isLiked }: { postId: string | number; isLiked: boolean }) => {
-      // Buscar o post atual para obter o likes_count atual
-      const currentPost = await getCommunityPostById(postId.toString())
-      const currentLikes = currentPost.likes_count || 0
-      
-      // Lógica corrigida:
-      // - Se isLiked = true (usuário quer curtir), incrementa
-      // - Se isLiked = false (usuário quer descurtir), decrementa
-      const newLikesCount = isLiked ? currentLikes + 1 : Math.max(0, currentLikes - 1)
-      
-      // Atualizar o post usando o endpoint PUT existente
-      const result = await updateCommunityPost(postId.toString(), {
-        likes_count: newLikesCount
-      })
-      
-      return result
+    mutationFn: async (postId: string | number) => {
+      return await likeCommunityPost(postId.toString())
     },
     onSuccess: (data, variables) => {
-      const action = variables.isLiked ? 'curtido' : 'descurtido'
-      
-      // Invalidar TODAS as queries de posts (com e sem parâmetros)
+      // Invalidar queries de posts
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.community.posts,
         exact: false 
       })
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.community.post(variables.postId)] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.community.postComments })
       
-      // Forçar refetch imediato para mostrar contagem atualizada
-      queryClient.refetchQueries({ 
+      // Invalidar query específica do post
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.community.post(variables)] })
+      
+      // Atualizar o estado local para refletir o like
+      queryClient.setQueryData(
+        queryKeys.community.posts,
+        (oldData: any) => {
+          if (!oldData?.data) return oldData
+          
+          return {
+            ...oldData,
+            data: oldData.data.map((post: any) => {
+              if (post.id === variables) {
+                return {
+                  ...post,
+                  likes_count: data.likes_count,
+                  user_is_liked: data.user_is_liked || []
+                }
+              }
+              return post
+            })
+          }
+        }
+      )
+      
+      toast.success("Post curtido com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao curtir post")
+      console.error("Error liking community post:", error)
+    },
+  })
+} 
+
+export function useIncrementPostViews() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (postId: string | number) => {
+      return await incrementPostViews(postId.toString())
+    },
+    onSuccess: (data, variables) => {
+      // Invalidar queries de posts
+      queryClient.invalidateQueries({ 
         queryKey: queryKeys.community.posts,
         exact: false 
       })
-      queryClient.refetchQueries({ queryKey: [...queryKeys.community.post(variables.postId)] })
       
-      toast.success(`Post ${action}!`)
+      // Invalidar query específica do post
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.community.post(variables)] })
     },
     onError: (error: any) => {
-      toast.error("Erro ao curtir/descurtir post")
-      console.error("Error liking/unliking post:", error)
+      console.error("Error incrementing post views:", error)
     },
   })
 } 

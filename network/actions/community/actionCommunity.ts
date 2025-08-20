@@ -8,7 +8,7 @@ export async function getCommunityPosts(params: { page?: number; limit?: number 
 
 export async function getCommunityPostById(id: string): Promise<CommunityPost> {
   const { data } = await api.get(`/community-posts/${id}`)
-  return data.data
+  return data.data || data
 }
 
 export async function createCommunityPost({ recipe_id, ...body }: CreateCommunityPostData): Promise<CommunityPost> {
@@ -24,4 +24,14 @@ export async function updateCommunityPost(id: string, body: UpdateCommunityPostD
 export async function deleteCommunityPost(id: string): Promise<{ message: string }> {
   const { data } = await api.delete(`/community-posts/${id}`)
   return data
+}
+
+export async function incrementPostViews(id: string): Promise<CommunityPost> {
+  const { data } = await api.patch(`/community-posts/${id}/increment-views`)
+  return data.data
+}
+
+export async function likeCommunityPost(id: string): Promise<CommunityPost> {
+  const { data } = await api.post(`/community-posts/${id}/like`)
+  return data.data || data
 } 

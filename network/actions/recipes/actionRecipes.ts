@@ -71,3 +71,13 @@ export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: 
   // Esta funcionalidade não existe no backend ainda
   throw new Error("Funcionalidade de melhoria de receitas não implementada")
 }
+
+export async function getTopRecipes(): Promise<RecipeResponse> {
+  const { data } = await api.get("/recipes/top")
+  return data
+}
+
+export async function likeRecipe(id: string): Promise<Recipe> {
+  const { data } = await api.post(`/recipes/${id}/like`)
+  return data.data || data
+}

@@ -9,6 +9,7 @@ export const queryKeys = {
     favorites: ["recipes", "favorites"] as const,
     my: ["recipes", "my"] as const,
     user: ["recipes", "user"] as const,
+    top: ["recipes", "top"] as const,
     tags: ["recipes", "tags"] as const,
     categories: ["recipes", "categories"] as const,
   },
