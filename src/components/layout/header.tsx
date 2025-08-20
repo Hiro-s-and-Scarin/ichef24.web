@@ -25,7 +25,7 @@ export function Header() {
   ]
 
   return (
-    <header className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
+    <header className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50" suppressHydrationWarning>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">

@@ -2,59 +2,40 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { 
   User, 
   Lock, 
   Settings, 
-  Camera, 
   Save, 
   Edit,
-  Calendar,
   Mail,
+  Calendar,
   Shield
 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { useUpdateProfile, useUpdatePassword } from "@/network/hooks"
+import { useUpdateProfile } from "@/network/hooks/auth/useAuth"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { LanguageToggle } from "@/components/layout/language-toggle"
 import { toast } from "sonner"
-import { useTranslation } from "react-i18next"
+import { useRouter } from "next/navigation"
 
 interface ProfileFormData {
   name: string
-  avatar_url?: string
-}
-
-interface PasswordFormData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  email: string
 }
 
 export default function Profile() {
-  const { t } = useTranslation()
   const { user } = useAuth()
+  const router = useRouter()
   const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
-  // Loading state while user is being fetched
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">{t('common.loading')} perfil...</p>
-        </div>
-      </div>
-    )
-  }
-  
+  // Todos os hooks devem ser chamados antes de qualquer return condicional
   const {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
@@ -63,47 +44,49 @@ export default function Profile() {
   } = useForm<ProfileFormData>({
     defaultValues: {
       name: user?.name || "",
-      avatar_url: user?.avatar || ""
+      email: user?.email || ""
     }
   })
 
-  const {
-    register: registerPassword,
-    handleSubmit: handlePasswordSubmit,
-    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
-    reset: resetPassword
-  } = useForm<PasswordFormData>()
-
   const updateProfileMutation = useUpdateProfile()
-  const updatePasswordMutation = useUpdatePassword()
+
+  // Loading state while user is being fetched
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando perfil...</p>
+        </div>
+      </div>
+    )
+  }
 
   const onProfileSubmit = async (data: ProfileFormData) => {
     try {
-      await updateProfileMutation.mutateAsync(data)
-      setIsEditingProfile(false)
-      resetProfile(data)
-      toast.success("Perfil atualizado com sucesso!")
+      // Filtra apenas os campos que foram preenchidos
+      const fieldsToUpdate: Partial<ProfileFormData> = {}
+      
+      if (data.name && data.name.trim() !== "") {
+        fieldsToUpdate.name = data.name.trim()
+      }
+      
+      if (data.email && data.email.trim() !== "") {
+        fieldsToUpdate.email = data.email.trim()
+      }
+      
+      // Só atualiza se houver campos para atualizar
+      if (Object.keys(fieldsToUpdate).length > 0) {
+        await updateProfileMutation.mutateAsync(fieldsToUpdate)
+        setIsEditingProfile(false)
+        resetProfile({ ...data, ...fieldsToUpdate })
+        toast.success("Perfil atualizado com sucesso!")
+      } else {
+        toast.info("Nenhum campo foi alterado")
+      }
     } catch (error) {
       console.error("Error updating profile:", error)
-    }
-  }
-
-  const onPasswordSubmit = async (data: PasswordFormData) => {
-    if (data.newPassword !== data.confirmPassword) {
-      toast.error("As senhas não coincidem")
-      return
-    }
-
-    try {
-      await updatePasswordMutation.mutateAsync({
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword
-      })
-      setIsChangingPassword(false)
-      resetPassword()
-      toast.success("Senha atualizada com sucesso!")
-    } catch (error) {
-      console.error("Error updating password:", error)
+      toast.error("Erro ao atualizar perfil")
     }
   }
 
@@ -111,16 +94,9 @@ export default function Profile() {
     setIsEditingProfile(false)
     resetProfile({
       name: user?.name || "",
-      avatar_url: user?.avatar || ""
+      email: user?.email || ""
     })
   }
-
-  const cancelPasswordEdit = () => {
-    setIsChangingPassword(false)
-    resetPassword()
-  }
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -147,13 +123,6 @@ export default function Profile() {
                       {user.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-700"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </Button>
                 </div>
                 
                 <div className="flex-1 text-center sm:text-left">
@@ -178,14 +147,10 @@ export default function Profile() {
 
           {/* Settings Tabs */}
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50">
+            <TabsList className="grid w-full grid-cols-2 bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Perfil
-              </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Segurança
+                Dados da Conta
               </TabsTrigger>
               <TabsTrigger value="preferences" className="flex items-center gap-2">
                 <Settings className="w-4 h-4" />
@@ -208,11 +173,16 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('auth.name')}
+                            Nome Completo
                           </label>
                           <Input
-                            {...registerProfile("name")}
-                            placeholder="Seu nome completo"
+                            {...registerProfile("name", {
+                              minLength: {
+                                value: 2,
+                                message: "Nome deve ter pelo menos 2 caracteres"
+                              }
+                            })}
+                            placeholder="Seu nome completo (opcional)"
                             className="border-gray-300 dark:border-gray-600"
                           />
                           {profileErrors.name && (
@@ -221,22 +191,32 @@ export default function Profile() {
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            URL do Avatar
+                            Email
                           </label>
                           <Input
-                            {...registerProfile("avatar_url")}
-                            placeholder="https://exemplo.com/avatar.jpg"
+                            {...registerProfile("email", {
+                              pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: "Email inválido"
+                              }
+                            })}
+                            type="email"
+                            placeholder="seu@email.com (opcional)"
                             className="border-gray-300 dark:border-gray-600"
                           />
+                          {profileErrors.email && (
+                            <p className="text-red-500 text-sm">{profileErrors.email.message}</p>
+                          )}
                         </div>
                       </div>
                       
                       <div className="flex gap-3 pt-4">
                         <Button type="submit" disabled={isProfileSubmitting} className="bg-orange-500 hover:bg-orange-600">
+                          <Save className="w-4 h-4 mr-2" />
                           {isProfileSubmitting ? "Salvando..." : "Salvar Alterações"}
                         </Button>
                         <Button type="button" variant="outline" onClick={cancelProfileEdit}>
-                          {t('common.cancel')}
+                          Cancelar
                         </Button>
                       </div>
                     </form>
@@ -245,13 +225,13 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {t('auth.name')}
+                            Nome Completo
                           </label>
                           <p className="text-gray-900 dark:text-white">{user.name}</p>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {t('auth.email')}
+                            Email
                           </label>
                           <p className="text-gray-900 dark:text-white">{user.email}</p>
                         </div>
@@ -259,7 +239,7 @@ export default function Profile() {
                       
                       <Button onClick={() => setIsEditingProfile(true)} className="bg-orange-500 hover:bg-orange-600">
                         <Edit className="w-4 h-4 mr-2" />
-                        Editar Perfil
+                        Editar Dados
                       </Button>
                     </div>
                   )}
@@ -267,94 +247,7 @@ export default function Profile() {
               </Card>
             </TabsContent>
 
-            {/* Security Tab */}
-            <TabsContent value="security" className="mt-6">
-              <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="w-5 h-5" />
-                    Segurança da Conta
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isChangingPassword ? (
-                    <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Senha Atual
-                        </label>
-                        <Input
-                          {...registerPassword("currentPassword")}
-                          type="password"
-                          placeholder="Digite sua senha atual"
-                          className="border-gray-300 dark:border-gray-600"
-                        />
-                        {passwordErrors.currentPassword && (
-                          <p className="text-red-500 text-sm">{passwordErrors.currentPassword.message}</p>
-                        )}
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Nova Senha
-                          </label>
-                          <Input
-                            {...registerPassword("newPassword")}
-                            type="password"
-                            placeholder="Digite a nova senha"
-                            className="border-gray-300 dark:border-gray-600"
-                          />
-                          {passwordErrors.newPassword && (
-                            <p className="text-red-500 text-sm">{passwordErrors.newPassword.message}</p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Confirmar Nova Senha
-                          </label>
-                          <Input
-                            {...registerPassword("confirmPassword")}
-                            type="password"
-                            placeholder="Confirme a nova senha"
-                            className="border-gray-300 dark:border-gray-600"
-                          />
-                          {passwordErrors.confirmPassword && (
-                            <p className="text-red-500 text-sm">{passwordErrors.confirmPassword.message}</p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-3 pt-4">
-                        <Button type="submit" disabled={isPasswordSubmitting} className="bg-orange-500 hover:bg-orange-600">
-                          {isPasswordSubmitting ? "Alterando..." : "Alterar Senha"}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={cancelPasswordEdit}>
-                          {t('common.cancel')}
-                        </Button>
-                      </div>
-                    </form>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Shield className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">Senha da Conta</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Última alteração: {new Date().toLocaleDateString('pt-BR')}
-                            </p>
-                          </div>
-                        </div>
-                        <Button onClick={() => setIsChangingPassword(true)} variant="outline">
-                          Alterar Senha
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+
 
             {/* Preferences Tab */}
             <TabsContent value="preferences" className="mt-6">
@@ -367,33 +260,67 @@ export default function Profile() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
+                    {/* Theme Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">Tema da Interface</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Escolha entre tema claro e escuro
+                          </p>
+                        </div>
+                      </div>
+                      <ThemeToggle />
+                    </div>
+
+                    {/* Language Toggle */}
                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">Notificações por Email</p>
+                          <p className="font-medium text-gray-900 dark:text-white">Idioma</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Receber atualizações sobre receitas e comunidade
+                            Escolha o idioma da interface
                           </p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Configurar
-                      </Button>
+                      <LanguageToggle />
                     </div>
 
+                    {/* Account Status */}
                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">Fuso Horário</p>
+                          <p className="font-medium text-gray-900 dark:text-white">Status da Conta</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            UTC-3 (Brasília)
+                            Sua conta está ativa e funcionando normalmente
                           </p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Alterar
+                      <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        Ativo
+                      </Badge>
+                    </div>
+
+                    {/* Change Password */}
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Shield className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">Senha da Conta</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Mantenha sua conta segura com uma senha forte
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => router.push("/auth/reset-password")} 
+                        variant="outline"
+                      >
+                        <Lock className="w-4 h-4 mr-2" />
+                        Alterar Senha
                       </Button>
                     </div>
                   </div>
@@ -405,4 +332,4 @@ export default function Profile() {
       </div>
     </div>
   )
-} 
+}

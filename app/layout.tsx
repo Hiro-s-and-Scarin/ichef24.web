@@ -4,14 +4,55 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import { QueryProvider } from "@/providers/query-provider"
-import { Header } from "@/components/layout/header"
-import { AuthProvider } from "@/contexts/auth-context"
-import { I18nProvider } from "@/components/layout/i18n-provider"
+import dynamic from "next/dynamic"
+import { Suspense } from "react"
 import { Toaster } from "sonner"
 import { usePathname, useRouter } from "next/navigation"
 import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { parseCookies } from 'nookies'
 import { useEffect } from "react"
+
+// Dynamic imports para evitar problemas de hidratação
+const Header = dynamic(() => import("@/components/layout/header").then(mod => ({ default: mod.Header })), { 
+  ssr: false,
+  loading: () => (
+    <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="w-64 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+      </div>
+    </div>
+  )
+})
+
+const I18nProvider = dynamic(() => import("@/components/layout/i18n-provider").then(mod => ({ default: mod.I18nProvider })), { 
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-500">Carregando idioma...</p>
+        </div>
+      </div>
+    </div>
+  )
+})
+
+const AuthProvider = dynamic(() => import("@/contexts/auth-context").then(mod => ({ default: mod.AuthProvider })), { 
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-500">Carregando autenticação...</p>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -49,7 +90,17 @@ function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, i
   // Se há token, mostra header e conteúdo
   return (
     <>
-      <Header />
+      <Suspense fallback={
+        <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="w-64 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          </div>
+        </div>
+      }>
+        <Header />
+      </Suspense>
       {children}
     </>
   )

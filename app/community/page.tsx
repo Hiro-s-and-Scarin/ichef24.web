@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,7 +30,7 @@ import { CreateCommunityPostData, CommunityPost } from "@/types/community"
 import { Recipe } from "@/types/recipe"
 import { toast } from "sonner"
 
-// Dynamic imports para evitar problemas de hydration
+// Dynamic imports para evitar problemas de hidratação
 const CreatePostModal = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.CreatePostModal })), { ssr: false })
 const PostCardCompact = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.PostCardCompact })), { ssr: false })
 const TopChefCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopChefCard })), { ssr: false })
@@ -40,7 +40,6 @@ type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 
 export default function Community() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
   const [isCreatingPost, setIsCreatingPost] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -99,35 +98,54 @@ export default function Community() {
 
   // Ler parâmetros da URL ao carregar
   useEffect(() => {
-    const section = searchParams.get('section') as CommunitySection
-    const search = searchParams.get('search')
-    
-    if (section && ['posts', 'top-chefs', 'top-recipes'].includes(section)) {
-      setActiveSection(section)
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const section = urlParams.get('section') as CommunitySection
+      const search = urlParams.get('search')
+      
+      if (section && ['posts', 'top-chefs', 'top-recipes'].includes(section)) {
+        setActiveSection(section)
+      }
+      
+      if (search) {
+        setSearchQuery(search)
+      }
     }
-    if (search) {
-      setSearchQuery(search)
-    }
-  }, [searchParams])
+  }, [])
 
-  // Carregar top chefs quando a seção for ativada
+  // Buscar top chefs quando a seção for ativada
   useEffect(() => {
     if (activeSection === 'top-chefs') {
       setIsLoadingTopChefs(true)
-      console.log('Carregando top chefs...')
       getTopChefs()
-        .then(chefs => {
-          console.log('Top Chefs carregados:', chefs)
-          console.log('Estrutura do primeiro chef:', chefs[0])
-          setTopChefs(chefs)
+        .then((data) => {
+          if (data && Array.isArray(data)) {
+            setTopChefs(data)
+          }
         })
-        .catch(error => {
-          console.error('Erro ao carregar top chefs:', error)
+        .catch((error) => {
+          console.error('Erro ao buscar top chefs:', error)
           toast.error('Erro ao carregar top chefs')
         })
-        .finally(() => setIsLoadingTopChefs(false))
+        .finally(() => {
+          setIsLoadingTopChefs(false)
+        })
     }
   }, [activeSection])
+
+  // Renderizar apenas no cliente para evitar problemas de hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+            <p className="mt-2 text-gray-500">Carregando comunidade...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleCreatePost = async (data: CreateCommunityPostData) => {
     try {
