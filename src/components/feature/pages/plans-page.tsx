@@ -10,15 +10,19 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 import { useGetStripeProducts } from "@/network/hooks/stripe";
+import { useCreateFreePlan } from "@/network/hooks/plans";
 import { useCurrencyFormatter } from "@/lib/utils/currency";
 import { Plan } from "@/src/types";
 import { convertStripeProductsToPlans } from "@/lib/utils/stripe-to-plans";
+import { toast } from "sonner";
 
 export function PlansPageContent() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: stripeProductsData, isLoading, error } = useGetStripeProducts();
+  const { data: stripeProductsData, isLoading: isLoadingProducts, error } = useGetStripeProducts();
+  const createFreePlanMutation = useCreateFreePlan();
 
   const { formatCurrency } = useCurrencyFormatter();
 
@@ -114,8 +118,37 @@ export function PlansPageContent() {
   }, [t]);
 
   const handleSubscribe = useCallback(async (plan: Plan) => {
-    console.log('Plano selecionado:', plan);
-    console.log('Dados do Stripe:', stripeProductsData);
+   
+    
+    if (plan.amount === 0) {
+      try {
+        setIsLoading(true);
+        
+        await createFreePlanMutation.mutateAsync({
+          plan_type: plan.plan_type,
+          billing_cycle: 'monthly',
+          amount: 0,
+          currency: 'BRL',
+          stripe_subscription_id: plan.stripe_subscription_id,
+        });
+
+        toast.success("Plano gratuito ativado com sucesso! Bem-vindo ao iChef!");
+        router.push('/dashboard');
+      } catch (error: any) {
+        console.error('Erro ao criar plano gratuito:', error);
+        const errorMessage = error?.response?.data?.message || "Erro ao ativar plano gratuito";
+        
+        if (errorMessage.includes('já está vinculado')) {
+          toast.info("Você já possui um plano ativo!");
+          router.push('/dashboard');
+        } else {
+          toast.error(errorMessage);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
     
     // Encontrar o preço correto baseado no ciclo de cobrança selecionado
     let priceId = plan.stripe_subscription_id; // Fallback para o ID do produto
@@ -148,7 +181,7 @@ export function PlansPageContent() {
     router.push(
       `/checkout?planId=${priceId}&planName=${plan.name}&price=${plan.price?.monthly || plan.amount}&billingCycle=monthly`,
     );
-  }, [stripeProductsData, router]);
+  }, [stripeProductsData, router, createFreePlanMutation]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -182,7 +215,7 @@ export function PlansPageContent() {
           </div>
 
           {/* Loading State */}
-          {isLoading ? (
+          {isLoadingProducts ? (
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
@@ -196,7 +229,7 @@ export function PlansPageContent() {
                 {plans.map((plan: Plan) => (
                   <Card
                     key={plan.stripe_subscription_id}
-                    className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 ${
+                    className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 flex flex-col ${
                       plan.plan_type === "basic"
                         ? "border-[#ff7518]/50 shadow-2xl shadow-[#ff7518]/20"
                         : ""
@@ -241,8 +274,8 @@ export function PlansPageContent() {
                       </div>
                     </CardHeader>
 
-                    <CardContent className="space-y-6">
-                      <ul className="space-y-3">
+                    <CardContent className="space-y-6 flex-1 flex flex-col">
+                      <ul className="space-y-3 flex-1">
                         {getPlanFeatures(plan.plan_type).map(
                           (feature: string, featureIndex: number) => (
                             <li
@@ -258,7 +291,8 @@ export function PlansPageContent() {
                         )}
                       </ul>
 
-                      <Button
+                      <div className="mt-auto pt-4">
+                                              <Button
                         className={`w-full py-6 text-lg font-medium ${
                           plan.plan_type === "basic"
                             ? "bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#f54703] text-white border-0"
@@ -268,11 +302,17 @@ export function PlansPageContent() {
                           plan.plan_type === "basic" ? "default" : "outline"
                         }
                         onClick={() => handleSubscribe(plan)}
+                        disabled={isLoading}
                       >
-                        {plan.amount === 0
-                          ? t("plans.start.free")
-                          : t("plans.upgrade")}
+                        {isLoading ? (
+                          "Processando..."
+                        ) : (
+                          plan.amount === 0
+                            ? t("plans.start.free")
+                            : t("plans.upgrade")
+                        )}
                       </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}

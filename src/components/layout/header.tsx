@@ -31,7 +31,7 @@ export function Header() {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-lg flex items-center justify-center">
             <ChefHat className="w-4 h-4 text-white" />
           </div>
@@ -61,23 +61,6 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          <Link href="/">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-600 hover:text-gray-800 hover:bg-orange-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 text-sm"
-            >
-              {t("header.login")}
-            </Button>
-          </Link>
-          <Link href="/plans">
-            <Button
-              size="sm"
-              className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 text-sm"
-            >
-              {t("header.start")}
-            </Button>
-          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -166,19 +149,7 @@ export function Header() {
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-              ) : (
-                <Link
-                  href="/"
-                  className="flex items-center gap-4 px-4 py-4 rounded-xl text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-900/20 dark:hover:to-yellow-900/20 transition-all duration-300 group"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className="w-3 h-3 bg-orange-500 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
-                  <span className="font-medium">Entrar</span>
-                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <ChefHat className="w-4 h-4 text-orange-500" />
-                  </div>
-                </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
+import { Plan, Subscription, CreatePlanRequest, CreatePlanResponse } from "@/src/types"
 import { api } from "@/lib/api/api"
-import { Plan, Subscription } from "@/types"
 
 export async function getPlans(): Promise<Plan[]> {
   const { data } = await api.get("/plans")
@@ -11,22 +11,27 @@ export async function getPlanById(id: string): Promise<Plan> {
   return data.plan
 }
 
-export async function getUserSubscription(userId: string): Promise<Subscription> {
-  const { data } = await api.get(`/users/${userId}/subscription`)
-  return data.subscription
+export async function createPlan(planData: CreatePlanRequest): Promise<CreatePlanResponse> {
+  const { data } = await api.post("/plans", planData)
+  return data
+}
+
+export async function createFreePlan(planData: CreatePlanRequest): Promise<CreatePlanResponse> {
+  const { data } = await api.post("/plans/free", planData)
+  return data
 }
 
 export async function postSubscribeToPlan(planId: string, paymentMethodId?: string): Promise<Subscription> {
-  const { data } = await api.post("/subscriptions", {
+  const { data } = await api.post("/stripe/subscribe", {
     planId,
-    paymentMethodId
+    paymentMethodId,
   })
   return data.subscription
 }
 
 export async function putChangeSubscription(subscriptionId: string, planId: string): Promise<Subscription> {
   const { data } = await api.put(`/subscriptions/${subscriptionId}`, {
-    planId
+    planId,
   })
   return data.subscription
 }

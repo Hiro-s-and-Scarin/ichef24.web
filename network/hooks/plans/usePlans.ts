@@ -5,13 +5,15 @@ import { toast } from "sonner"
 import { 
   getPlans, 
   getPlanById, 
-  getUserSubscription,
   postSubscribeToPlan,
   putChangeSubscription,
   postCancelSubscription,
   postReactivateSubscription,
-  getBillingHistory
+  getBillingHistory,
+  createPlan,
+  createFreePlan
 } from "@/network/actions/plans/actionPlans"
+import { CreatePlanRequest } from "@/src/types"
 import { queryKeys } from "@/lib/config/query-keys"
 
 export function useGetPlans() {
@@ -41,19 +43,6 @@ export function useGetPlanById(id: string) {
   }
 }
 
-export function useGetUserSubscription(userId: string) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.plans.active(userId),
-    queryFn: async () => await getUserSubscription(userId),
-    enabled: !!userId,
-    retry: 0,
-  })
-
-  return {
-    data,
-    isLoading,
-  }
-}
 
 export function useGetBillingHistory(userId: string) {
   const { data, isLoading } = useQuery({
@@ -147,6 +136,27 @@ export function useReactivateSubscription() {
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao reativar plano")
       console.error("Error reactivating subscription:", error)
+    },
+  })
+
+  return mutate
+}
+
+export function useCreateFreePlan() {
+  const queryClient = useQueryClient()
+
+  const mutate = useMutation({
+    mutationFn: async (planData: CreatePlanRequest) => {
+      return await createFreePlan(planData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.plans.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me })
+      toast.success("Plano gratuito criado com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erro ao criar plano gratuito")
+      console.error("Error creating free plan:", error)
     },
   })
 

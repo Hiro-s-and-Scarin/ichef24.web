@@ -28,3 +28,4 @@ export const commentSchema = yup.object({
     .min(1, "Comentário deve ter pelo menos 1 caractere"),
 });
 
+

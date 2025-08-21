@@ -29,3 +29,4 @@ export interface StripeProductsResponse {
   data: StripeProduct[];
   message: string;
 }
+

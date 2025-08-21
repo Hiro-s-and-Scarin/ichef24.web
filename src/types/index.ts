@@ -70,3 +70,17 @@ export interface ApiError {
   status: number;
   details?: any;
 }
+
+export interface CreatePlanRequest {
+  plan_type: "free" | "basic" | "premium" | "enterprise";
+  billing_cycle: "monthly" | "yearly" | "one_time";
+  amount: number;
+  currency: string;
+  stripe_subscription_id?: string;
+}
+
+export interface CreatePlanResponse {
+  success: boolean;
+  data: Plan;
+  message: string;
+}
