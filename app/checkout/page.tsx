@@ -10,9 +10,11 @@ import { useTranslation } from "react-i18next"
 import { PlanDetails } from "@/types/forms"
 import { useCreateStripeCheckout } from "@/network/hooks/stripe"
 import { PaymentStatus } from "@/src/components/ui/payment-status"
+import { useAuth } from "@/src/contexts/auth-context"
 
 function CheckoutContent() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | 'processing'>('pending')
@@ -34,27 +36,30 @@ function CheckoutContent() {
   const createCheckoutMutation = useCreateStripeCheckout()
 
   const handleCreateCheckout = async () => {
+    // Verificar se o usuário está logado
+    if (!user?.email) {
+      toast.error("Você precisa estar logado para continuar")
+      return
+    }
+
     setIsLoading(true)
     setPaymentStatus('processing')
     
     try {
-      // Garantir que estamos no browser e gerar URLs válidas
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
       
-      // Criar sessão de checkout do Stripe
       const result = await createCheckoutMutation.mutateAsync({
-        priceId: planDetails.id, // Este é o ID do preço do Stripe
+        priceId: planDetails.id,  
+        email: user?.email || '', 
         successUrl: `${baseUrl}/checkout/success?planName=${encodeURIComponent(planDetails.name)}`,
         cancelUrl: `${baseUrl}/plans`,
       })
 
       if (result.data?.url) {
-        // Redirecionar automaticamente para o checkout do Stripe
         console.log('Redirecionando para checkout do Stripe:', result.data.url)
         setPaymentStatus('pending')
         toast.success("Redirecionando para o Stripe...")
         
-        // Pequeno delay para mostrar o status antes de redirecionar
         setTimeout(() => {
           window.location.href = result.data.url
         }, 1500)

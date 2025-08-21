@@ -36,6 +36,7 @@ export async function getStripeProducts(): Promise<StripeProductsResponse> {
 
 export interface CreateCheckoutRequest {
   priceId: string;
+  email: string;
   successUrl: string;
   cancelUrl: string;
 }
