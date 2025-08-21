@@ -17,15 +17,11 @@ import { convertStripeProductsToPlans } from "@/lib/utils/stripe-to-plans";
 export function PlansPageContent() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
-    "monthly",
-  );
 
   const { data: stripeProductsData, isLoading, error } = useGetStripeProducts();
 
   const { formatCurrency } = useCurrencyFormatter();
 
-  // Converter produtos do Stripe para planos usando useMemo para evitar re-renders
   const plans: Plan[] = useMemo(() => {
     if (!stripeProductsData?.success || !stripeProductsData.data) {
       return [];
@@ -134,36 +130,25 @@ export function PlansPageContent() {
       console.log('Produto encontrado no Stripe:', stripeProduct);
       
       if (stripeProduct) {
-        if (billingCycle === "monthly") {
-          // Buscar o preço mensal do Stripe
-          const monthlyPrice = stripeProduct.prices.find(price => 
-            price.recurring?.interval === "month" && price.active
-          );
-          if (monthlyPrice) {
-            priceId = monthlyPrice.id;
-            console.log('Preço mensal encontrado:', monthlyPrice);
-          }
-        } else if (billingCycle === "yearly") {
-          // Buscar o preço anual do Stripe
-          const yearlyPrice = stripeProduct.prices.find(price => 
-            price.recurring?.interval === "year" && price.active
-          );
-          if (yearlyPrice) {
-            priceId = yearlyPrice.id;
-            console.log('Preço anual encontrado:', yearlyPrice);
-          }
+        // Buscar o preço mensal do Stripe
+        const monthlyPrice = stripeProduct.prices.find(price => 
+          price.recurring?.interval === "month" && price.active
+        );
+        if (monthlyPrice) {
+          priceId = monthlyPrice.id;
+          console.log('Preço mensal encontrado:', monthlyPrice);
         }
       }
     }
 
     console.log('ID do preço final:', priceId);
-    console.log('Ciclo de cobrança:', billingCycle);
+    console.log('Ciclo de cobrança:', "monthly"); // Simplificado para "monthly"
 
     // Redirecionar para checkout com o ID do preço correto
     router.push(
-      `/checkout?planId=${priceId}&planName=${plan.name}&price=${billingCycle === "monthly" ? plan.price?.monthly || plan.amount : plan.price?.yearly || plan.amount * 12 * 0.8}&billingCycle=${billingCycle}`,
+      `/checkout?planId=${priceId}&planName=${plan.name}&price=${plan.price?.monthly || plan.amount}&billingCycle=monthly`,
     );
-  }, [stripeProductsData, billingCycle, router]);
+  }, [stripeProductsData, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -181,55 +166,18 @@ export function PlansPageContent() {
               {t("plans.subtitle")}
             </p>
 
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <span
-                className={`text-lg ${billingCycle === "monthly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}
-              >
-                {t("plans.monthly")}
-              </span>
-              <button
-                onClick={() =>
-                  setBillingCycle(
-                    billingCycle === "monthly" ? "yearly" : "monthly",
-                  )
-                }
-                className={`relative w-16 h-8 rounded-full transition-colors ${
-                  billingCycle === "yearly"
-                    ? "bg-[#ff7518]"
-                    : "bg-gray-300 dark:bg-gray-700"
-                }`}
-              >
-                <div
-                  className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                    billingCycle === "yearly"
-                      ? "translate-x-9"
-                      : "translate-x-1"
-                  }`}
-                />
-              </button>
-              <span
-                className={`text-lg ${billingCycle === "yearly" ? "text-gray-800 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}
-              >
-                {t("plans.yearly")}
-              </span>
-              {billingCycle === "yearly" && (
-                <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
-                  {t("plans.save")}
-                </Badge>
-              )}
-            </div>
-
-            {/* Botão de Teste Stripe */}
-            <div className="mt-6">
-              <Link href="/stripe-test">
-                <Button
-                  variant="outline"
-                  className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300"
-                >
-                  🧪 Testar Pagamento Stripe
-                </Button>
-              </Link>
+            {/* Mensagem Informativa sobre Substituição de Planos */}
+            <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <div className="flex-shrink-0">
+                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <span className="font-medium">ℹ️ Informação:</span> Ao assinar um novo plano, o atual será substituído automaticamente. Tome cuidado ao escolher, pois não é possível manter múltiplos planos ativos simultaneamente.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -283,21 +231,13 @@ export function PlansPageContent() {
 
                       <div className="py-6">
                         <div className="text-4xl font-bold text-gray-800 dark:text-white">
-                          {billingCycle === "monthly"
-                            ? formatCurrency(plan.price?.monthly || plan.amount)
-                            : formatCurrency(plan.price?.yearly || plan.amount * 12 * 0.8)}
+                          {formatCurrency(plan.price?.monthly || plan.amount)}
                           {plan.amount > 0 && (
                             <span className="text-lg text-gray-500 dark:text-gray-400">
                               /mês
                             </span>
                           )}
                         </div>
-                        {billingCycle === "yearly" && plan.amount > 0 && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            ou {formatCurrency(plan.price?.yearly || plan.amount * 12 * 0.8)} por ano
-                            (20% off)
-                          </p>
-                        )}
                       </div>
                     </CardHeader>
 
