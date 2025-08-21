@@ -16,6 +16,7 @@ import {
   postLogout, 
   postRegister, 
   postForgotPassword, 
+  postConfirmForgotPassword,
   postSendResetPassword, 
   postConfirmCodeResetPassword,
   putUpdateProfile,
@@ -86,6 +87,23 @@ export function useForgotPassword() {
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao enviar email de recuperação")
       console.error("Error sending forgot password email:", error)
+    },
+  })
+
+  return mutate
+}
+
+export function useConfirmForgotPassword() {
+  const mutate = useMutation({
+    mutationFn: async (data: { code: string; newPassword: string }) => {
+      return await postConfirmForgotPassword(data)
+    },
+    onSuccess: (data) => {
+      toast.success("Senha alterada com sucesso!")
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Código inválido ou expirado")
+      console.error("Error confirming forgot password:", error)
     },
   })
 

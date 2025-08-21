@@ -247,12 +247,7 @@ function LoginPageContent() {
           </CardContent>
         </Card>
 
-        {/* Back to Dashboard */}
-        <div className="text-center mt-6">
-          <Link href="/dashboard" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
-            ← Ir para o Dashboard
-          </Link>
-        </div>
+
       </div>
     </div>
   )

@@ -1,85 +1,69 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { translateDynamicData } from "@/lib/config/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Clock, Users, Star, Eye, ThumbsUp } from "lucide-react";
+import { Heart, Clock, Users, Star, Eye, ThumbsUp, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Recipe } from "@/types/recipe";
-import { useAddToFavorites, useRemoveFromFavorites } from "@/network/hooks";
+import { useRemoveFromFavorites } from "@/network/hooks/recipes/useRecipes";
 import { useLikeRecipe } from "@/network/hooks/recipes/useRecipes";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 
-interface RecipeCardProps {
+interface FavoriteRecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
-  isFavorite?: boolean;
 }
 
-export function RecipeCard({
+export function FavoriteRecipeCard({
   recipe,
   onClick,
-  isFavorite: initialIsFavorite = false,
-}: RecipeCardProps) {
+}: FavoriteRecipeCardProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(recipe.likes_count || 0);
 
-  const addToFavoritesMutation = useAddToFavorites();
   const removeFromFavoritesMutation = useRemoveFromFavorites();
   const likeRecipeMutation = useLikeRecipe();
 
-  useEffect(() => {
-    if (user && recipe.user_is_liked) {
-      const userHasLiked = recipe.user_is_liked.includes(Number(user.id));
-      setIsLiked(userHasLiked);
+  const getDifficultyText = (level?: number | string) => {
+    if (!level) return t("recipe.card.difficulty.not.specified");
+    return translateDynamicData.difficulty(level, i18n.language);
+  };
+
+  const getDifficultyColor = (level?: number) => {
+    if (!level)
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+    switch (level) {
+      case 1:
+      case 2:
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case 3:
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300";
+      case 4:
+      case 5:
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
-  }, [user, recipe.user_is_liked]);
+  };
 
-  useEffect(() => {
-    setLikesCount(recipe.likes_count || 0);
-  }, [recipe.likes_count]);
-
-  const handleToggleFavorite = async () => {
+  const handleRemoveFromFavorites = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
-      if (isFavorite) {
-        await removeFromFavoritesMutation.mutateAsync(recipe.id);
-        setIsFavorite(false);
-        queryClient.invalidateQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        queryClient.refetchQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-      } else {
-        await addToFavoritesMutation.mutateAsync(recipe.id);
-        setIsFavorite(true);
-        // Invalidar queries de favoritos diretamente no componente
-        console.log("Invalidating favorites queries from component...");
-        queryClient.invalidateQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        queryClient.refetchQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        console.log("Favorites queries invalidated and refetched!");
-      }
+      await removeFromFavoritesMutation.mutateAsync(recipe.id);
+      toast.success("Receita removida dos favoritos!");
     } catch (error) {
-      toast.error("Erro ao alterar favoritos");
+      toast.error("Erro ao remover dos favoritos");
     }
   };
 
@@ -108,31 +92,9 @@ export function RecipeCard({
     }
   };
 
-  const getDifficultyText = (level?: number | string) => {
-    if (!level) return t("recipe.card.difficulty.not.specified");
-    return translateDynamicData.difficulty(level, i18n.language);
-  };
-
-  const getDifficultyColor = (level?: number) => {
-    if (!level)
-      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    switch (level) {
-      case 1:
-      case 2:
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-      case 3:
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300";
-      case 4:
-      case 5:
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
-  };
-
   return (
     <Card
-      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer min-h-[480px] w-full max-w-md mx-auto"
+      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer min-h-[480px] w-full max-w-md mx-auto relative"
       onClick={onClick}
     >
       {/* Recipe Image */}
@@ -150,20 +112,21 @@ export function RecipeCard({
           </div>
         )}
 
-        {/* Favorite Button - Moved to left side */}
+        {/* Remove from Favorites Button */}
         <Button
           size="icon"
           variant="ghost"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleToggleFavorite();
-          }}
-          className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
+          onClick={handleRemoveFromFavorites}
+          className="absolute top-2 right-2 bg-red-500/90 hover:bg-red-600 text-white rounded-full w-8 h-8 z-10"
+          disabled={removeFromFavoritesMutation.isPending}
         >
-          <Heart
-            className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-400"}`}
-          />
+          <Trash2 className="w-4 h-4" />
         </Button>
+
+        {/* Favorite Icon (Always filled since it's in favorites) */}
+        <div className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 rounded-full w-8 h-8 flex items-center justify-center">
+          <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+        </div>
       </div>
 
       <CardContent className="p-4 flex-1 flex flex-col">

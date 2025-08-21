@@ -104,7 +104,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password'
+  const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/auth/reset-password'
 
   // Captura o token da URL em qualquer página
   useTokenCapture()

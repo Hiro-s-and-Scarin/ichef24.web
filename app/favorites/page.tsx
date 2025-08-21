@@ -1,15 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { RecipeCard } from "@/components/common/recipe-card"
-import { Pagination } from "@/components/common/pagination"
+import { FavoriteRecipeCard, Pagination } from "@/components/common"
 import { useFavoriteRecipes } from "@/network/hooks"
 import { RecipeParams } from "@/types/recipe"
 
 export default function Favorites() {
   const [filters, setFilters] = useState<RecipeParams>({
     page: 1,
-    limit: 12
+    limit: 10
   })
 
   const { data: recipesData, isLoading } = useFavoriteRecipes(filters)
@@ -32,7 +31,6 @@ export default function Favorites() {
   }
 
   const recipes = recipesData?.data || []
-  const pagination = recipesData?.pagination
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -50,9 +48,9 @@ export default function Favorites() {
 
           {/* Recipes Grid */}
           {recipes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {recipes.map((recipe: any) => (
-                <RecipeCard key={recipe.id} recipe={recipe.recipe} />
+                <FavoriteRecipeCard key={recipe.id} recipe={recipe.recipe} />
               ))}
             </div>
           ) : (
@@ -76,11 +74,11 @@ export default function Favorites() {
           )}
 
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
+          {recipesData && recipesData.pagination && recipesData.pagination.totalPages > 1 && (
             <div className="flex justify-center">
               <Pagination
                 currentPage={filters.page || 1}
-                totalPages={pagination.totalPages}
+                totalPages={recipesData.pagination.totalPages}
                 onPageChange={handlePageChange}
               />
             </div>

@@ -53,7 +53,7 @@ export function HistoryPageContent() {
   const { data: recipesData, isLoading } = useUserRecipes({
     title: searchTerm || undefined,
     page: currentPage,
-    limit: 12,
+    limit: 4,
   });
 
   const recipes = recipesData?.data || [];
@@ -107,6 +107,13 @@ export function HistoryPageContent() {
   });
 
   const currentRecipes = recipes || [];
+
+  // Calcular estatísticas baseadas nas receitas reais
+  const totalRecipes = currentRecipes.length;
+  const totalLikes = currentRecipes.reduce((acc, recipe) => acc + (recipe.likes_count || 0), 0);
+  const averageTime = currentRecipes.length > 0
+    ? Math.round(currentRecipes.reduce((acc, recipe) => acc + (recipe.cooking_time || 0), 0) / currentRecipes.length)
+    : 0;
 
   const openEditModal = (recipe: RecipeType) => {
     setModalState((prev) => ({
@@ -208,31 +215,25 @@ export function HistoryPageContent() {
           {/* Stats Card */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
             <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-500">
-                    {currentRecipes.length}
+                    {totalRecipes}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     {t("history.stats.created")}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-500">4.9</div>
+                  <div className="text-2xl font-bold text-green-500">{totalLikes}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.rating")}
+                    Total de Curtidas
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500">35min</div>
+                  <div className="text-2xl font-bold text-blue-500">{averageTime}min</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     {t("history.stats.time")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-500">267</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.views")}
                   </div>
                 </div>
               </div>
@@ -368,9 +369,6 @@ export function HistoryPageContent() {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                                  <span>
-                                    {t("history.views")} {recipe.views_count}
-                                  </span>
                                   <span>
                                     {t("history.likes")} {recipe.likes_count}
                                   </span>
@@ -521,11 +519,11 @@ export function HistoryPageContent() {
       /> */}
 
       {/* Paginação */}
-      {recipesData?.pagination && recipesData.pagination.totalPages > 1 && (
-        <div className="mt-8">
+      {recipesData && recipesData.totalPages > 1 && (
+        <div className="mt-8 flex justify-center">
           <Pagination
             currentPage={currentPage}
-            totalPages={recipesData.pagination.totalPages}
+            totalPages={recipesData.totalPages}
             onPageChange={setCurrentPage}
           />
         </div>

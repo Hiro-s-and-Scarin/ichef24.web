@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import dynamic from "next/dynamic"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,49 +22,44 @@ import {
   X
 } from "lucide-react"
 import { useCommunityPosts, useCreateCommunityPost, usePostComments, useCreatePostComment, useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
-import { useRecipes, useTopRecipes } from "@/network/hooks/recipes/useRecipes"
+import { useRecipes } from "@/network/hooks/recipes/useRecipes"
 import { useUsers } from "@/network/hooks/users/useUsers"
-import { getTopChefs } from "@/network/actions/users/actionUsers"
-import { useQueryClient } from "@tanstack/react-query"
 import { CreateCommunityPostData, CommunityPost } from "@/types/community"
 import { Recipe } from "@/types/recipe"
 import { toast } from "sonner"
-
-const CreatePostModal = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.CreatePostModal })), { ssr: false })
-const PostCardCompact = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.PostCardCompact })), { ssr: false })
-const TopChefCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopChefCard })), { ssr: false })
-const TopRecipeCard = dynamic(() => import("@/components/feature/community").then(mod => ({ default: mod.TopRecipeCard })), { ssr: false })
+import { CreatePostModal, PostCardCompact, TopChefCard, TopRecipeCard } from "@/components/feature/community"
+import { Pagination } from "@/components/common/pagination"
 
 type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 
 export default function Community() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
+  const [isCreatingPost, setIsCreatingPost] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
   
-  const [state, setState] = useState({
-    isCreatingPost: false,
-    topChefs: [] as any[],
-    isLoadingTopChefs: false
+  // Hooks para dados
+  const { data: postsData, isLoading: postsLoading } = useCommunityPosts({ 
+    page: currentPage, 
+    limit: 6 
   })
-  
-  const { data: postsData, isLoading: postsLoading } = useCommunityPosts()
-  const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 50 })
-  const { data: topRecipesData, isLoading: topRecipesLoading } = useTopRecipes()
+  const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 4 })
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
+  
 
-  const queryClient = useQueryClient()
+  
+  // Hooks para mutações
   const createPostMutation = useCreateCommunityPost()
   const createCommentMutation = useCreatePostComment()
   const likePostMutation = useLikeCommunityPost()
 
   const posts = postsData?.data || []
   const recipes = recipesData?.data || []
-  const topRecipes = topRecipesData?.data || []
   const users = usersData?.data || []
 
-
-
+  // Filtrar posts por pesquisa
   const filteredPosts = posts.filter(post => {
     if (!searchQuery.trim()) return true
     const query = searchQuery.toLowerCase()
@@ -76,10 +70,30 @@ export default function Community() {
     )
   })
 
-  const topRecipesSorted = topRecipes
-    .sort((a: Recipe, b: Recipe) => b.likes_count - a.likes_count)
-    .slice(0, 3)
+  // Calcular top chefs baseado nas receitas mais curtidas
+  const topChefs = users
+    .map(user => {
+      const userRecipes = recipes.filter(recipe => recipe.user_id === parseInt(user.id))
+      const totalLikes = userRecipes.reduce((acc, recipe) => acc + recipe.likes_count, 0)
+      const totalViews = userRecipes.reduce((acc, recipe) => acc + recipe.views_count, 0)
+      return {
+        ...user,
+        id: parseInt(user.id),
+        totalLikes,
+        totalViews,
+        recipeCount: userRecipes.length
+      }
+    })
+    .filter(user => user.recipeCount > 0)
+    .sort((a, b) => b.totalLikes - a.totalLikes)
+    .slice(0, 10)
 
+  // Top receitas ordenadas por likes
+  const topRecipes = recipes
+    .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
+    .slice(0, 10)
+
+  // Atualizar URL quando mudar seção ou pesquisa
   useEffect(() => {
     const params = new URLSearchParams()
     if (activeSection !== 'posts') params.set('section', activeSection)
@@ -89,47 +103,25 @@ export default function Community() {
     router.replace(`/community${newUrl}`, { scroll: false })
   }, [activeSection, searchQuery, router])
 
+  // Ler parâmetros da URL ao carregar
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      const section = urlParams.get('section') as CommunitySection
-      const search = urlParams.get('search')
-      
-      if (section && ['posts', 'top-chefs', 'top-recipes'].includes(section)) {
-        setActiveSection(section)
-      }
-      
-      if (search) {
-        setSearchQuery(search)
-      }
+    const section = searchParams.get('section') as CommunitySection
+    const search = searchParams.get('search')
+    
+    if (section && ['posts', 'top-chefs', 'top-recipes'].includes(section)) {
+      setActiveSection(section)
     }
-  }, [])
-
-  useEffect(() => {
-    if (activeSection === 'top-chefs') {
-      setState(prev => ({ ...prev, isLoadingTopChefs: true }))
-      getTopChefs()
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-            setState(prev => ({ ...prev, topChefs: data }))
-          }
-        })
-        .catch((error) => {
-          toast.error('Erro ao carregar top chefs')
-        })
-        .finally(() => {
-          setState(prev => ({ ...prev, isLoadingTopChefs: false }))
-        })
+    if (search) {
+      setSearchQuery(search)
     }
-  }, [activeSection])
-
-
+  }, [searchParams])
 
   const handleCreatePost = async (data: CreateCommunityPostData) => {
     try {
       await createPostMutation.mutateAsync(data)
-      setState(prev => ({ ...prev, isCreatingPost: false }))
+      setIsCreatingPost(false)
     } catch (error) {
+      console.error("Error creating post:", error)
       toast.error("Erro ao criar post. Tente novamente.")
     }
   }
@@ -137,23 +129,22 @@ export default function Community() {
   const handleCreateComment = async (postId: number, content: string) => {
     try {
       await createCommentMutation.mutateAsync({ postId, content })
-
     } catch (error) {
-      toast.error("Erro ao criar comentário")
+      console.error("Error creating comment:", error)
     }
   }
 
-  const handleLikePost = async (postId: number) => {
+  const handleLikePost = async (postId: number, isLiked: boolean) => {
     try {
       await likePostMutation.mutateAsync(postId)
-
     } catch (error) {
-      toast.error("Erro ao curtir post")
+      console.error("Error liking post:", error)
     }
   }
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)
+    setCurrentPage(1) // Resetar para primeira página quando pesquisar
   }
 
   const clearSearch = () => {
@@ -165,7 +156,7 @@ export default function Community() {
       case 'posts':
         return (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                   Posts da Comunidade
@@ -175,8 +166,8 @@ export default function Community() {
                 </p>
               </div>
               
-              <div className="flex gap-3 w-full sm:w-auto">
-                <div className="relative flex-1 sm:flex-none">
+              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                <div className="relative flex-1 sm:flex-none sm:min-w-[300px]">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     value={searchQuery}
@@ -197,7 +188,7 @@ export default function Community() {
                 </div>
                 
                 <Button 
-                  onClick={() => setState(prev => ({ ...prev, isCreatingPost: true }))}
+                  onClick={() => setIsCreatingPost(true)}
                   className="bg-orange-500 hover:bg-orange-600 whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -228,14 +219,27 @@ export default function Community() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPosts.map((post) => (
-                  <PostCardCompact
-                    key={post.id}
-                    post={post}
-                    onLikePost={handleLikePost}
-                  />
-                ))}
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {filteredPosts.map((post) => (
+                    <PostCardCompact
+                      key={post.id}
+                      post={post}
+                      onLikePost={handleLikePost}
+                    />
+                  ))}
+                </div>
+                
+                {/* Paginação para posts */}
+                {postsData && postsData.totalPages > 1 && (
+                  <div className="mt-8 flex justify-center">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={postsData.totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -253,12 +257,12 @@ export default function Community() {
               </p>
             </div>
             
-            {state.isLoadingTopChefs ? (
+            {usersLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando chefs...</p>
               </div>
-            ) : state.topChefs.length === 0 ? (
+            ) : topChefs.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -271,18 +275,11 @@ export default function Community() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {state.topChefs.map((chef, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {topChefs.map((chef, index) => (
                   <TopChefCard
-                    key={chef.user_id}
-                    chef={{
-                      id: chef.user_id,
-                      name: chef.name || 'Chef',
-                      email: chef.email,
-                      avatar_url: chef.avatar_url,
-                      totalLikes: parseInt(chef.totallikes) || 0,
-                      recipeCount: parseInt(chef.recipecount) || 0
-                    }}
+                    key={chef.id}
+                    chef={chef}
                     rank={index + 1}
                   />
                 ))}
@@ -303,12 +300,12 @@ export default function Community() {
               </p>
             </div>
             
-            {topRecipesLoading ? (
+            {recipesLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando receitas...</p>
               </div>
-            ) : topRecipesSorted.length === 0 ? (
+            ) : topRecipes.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -321,8 +318,8 @@ export default function Community() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {topRecipesSorted.map((recipe, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {topRecipes.map((recipe, index) => (
                   <TopRecipeCard
                     key={recipe.id}
                     recipe={recipe}
@@ -341,67 +338,63 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
-      {(
-        <>
-          <div className="container mx-auto px-4 py-8">
-            <div className="max-w-7xl mx-auto space-y-8">
-              {/* Header */}
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-                  Comunidade iChef24
-                </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                  Conecte-se com outros chefs, compartilhe experiências e descubra as melhores receitas da comunidade
-                </p>
-              </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+              Comunidade iChef24
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Conecte-se com outros chefs, compartilhe experiências e descubra as melhores receitas da comunidade
+            </p>
+          </div>
 
-              {/* Navegação das Seções */}
-              <div className="flex justify-center">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 border border-gray-200 dark:border-gray-700">
-                  <div className="flex space-x-2">
-                    <Button
-                      variant={activeSection === 'posts' ? 'default' : 'ghost'}
-                      onClick={() => setActiveSection('posts')}
-                      className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Posts
-                    </Button>
-                    <Button
-                      variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
-                      onClick={() => setActiveSection('top-chefs')}
-                      className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      Top Chefs
-                    </Button>
-                    <Button
-                      variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
-                      onClick={() => setActiveSection('top-recipes')}
-                      className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-                    >
-                      <ChefHat className="w-4 h-4 mr-2" />
-                      Top Receitas
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Conteúdo da Seção */}
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                {renderSectionContent()}
+          {/* Navegação das Seções */}
+          <div className="flex justify-center">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+              <div className="flex space-x-2">
+                <Button
+                  variant={activeSection === 'posts' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('posts')}
+                  className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Posts
+                </Button>
+                <Button
+                  variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('top-chefs')}
+                  className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Top Chefs
+                </Button>
+                <Button
+                  variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('top-recipes')}
+                  className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                >
+                  <ChefHat className="w-4 h-4 mr-2" />
+                  Top Receitas
+                </Button>
               </div>
             </div>
           </div>
 
-          {/* Modal de Criação de Post */}
-          <CreatePostModal
-            isOpen={state.isCreatingPost}
-            onClose={() => setState(prev => ({ ...prev, isCreatingPost: false }))}
-            onSubmit={handleCreatePost}
-          />
-        </>
-      )}
+          {/* Conteúdo da Seção */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            {renderSectionContent()}
+          </div>
+        </div>
+      </div>
+
+      {/* Modal de Criação de Post */}
+      <CreatePostModal
+        isOpen={isCreatingPost}
+        onClose={() => setIsCreatingPost(false)}
+        onSubmit={handleCreatePost}
+      />
     </div>
   )
 }

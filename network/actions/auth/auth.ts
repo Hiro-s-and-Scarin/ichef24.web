@@ -42,6 +42,11 @@ export const postForgotPassword = async (email: string) => {
   return response.data
 }
 
+export const postConfirmForgotPassword = async (data: { code: string; newPassword: string }) => {
+  const response = await api.post("/auth/confirm-forgot-password", data)
+  return response.data
+}
+
 export const postSendResetPassword = async (body: ResetPasswordFormData) => {
   const response = await api.post("/auth/send-reset-password", body)
   return response.data

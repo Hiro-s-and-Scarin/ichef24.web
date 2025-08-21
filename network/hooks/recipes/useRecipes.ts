@@ -130,7 +130,11 @@ export function useAddToFavorites() {
       return await postFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      // Invalidar todas as queries de favoritos (incluindo com parâmetros)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.favorites,
+        exact: false 
+      })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
@@ -155,7 +159,11 @@ export function useRemoveFromFavorites() {
       return await deleteFavoriteRecipe(recipeId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      // Invalidar todas as queries de favoritos (incluindo com parâmetros)
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.favorites,
+        exact: false 
+      })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })

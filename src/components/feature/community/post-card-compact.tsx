@@ -138,14 +138,14 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
       <CardContent className="space-y-3">
         {/* Título */}
         {post.title && (
-          <h4 className="font-semibold text-gray-800 dark:text-white text-base group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-            {post.title}
+          <h4 className="font-semibold text-gray-800 dark:text-white text-base group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2 break-words">
+            {truncateText(post.title, 50)}
           </h4>
         )}
 
         {/* Conteúdo truncado */}
-        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-          {truncateText(post.content, 120)}
+        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3 break-words overflow-hidden text-ellipsis max-w-full">
+          {truncateText(post.content, 80)}
         </p>
 
         {/* Imagem do Post (se houver) */}
@@ -164,7 +164,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
           <div className="flex flex-wrap gap-1">
             {post.recipe_tags.slice(0, 3).map((tag, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
-                {tag}
+                {truncateText(tag, 15)}
               </Badge>
             ))}
             {post.recipe_tags.length > 3 && (
@@ -181,11 +181,11 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
             <ChefHat className="w-4 h-4 text-green-600 dark:text-green-400" />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-green-800 dark:text-green-200 truncate">
-                Receita: {post.recipe.title}
+                Receita: {truncateText(post.recipe.title, 60)}
               </div>
               {post.recipe.description && (
                 <div className="text-xs text-green-600 dark:text-green-400 truncate">
-                  {post.recipe.description}
+                  {truncateText(post.recipe.description, 80)}
                 </div>
               )}
             </div>
