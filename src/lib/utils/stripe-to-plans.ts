@@ -103,7 +103,6 @@ function getPlanFeatures(planType: string): string[] {
         "Planejamento de refeições",
         "Lista de compras inteligente",
         "Receitas exclusivas",
-        "Suporte VIP 24/7",
       ];
     case "enterprise":
       return [

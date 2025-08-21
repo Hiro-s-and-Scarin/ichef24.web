@@ -109,7 +109,7 @@ const resources = {
       "plans.free.name": "Plano Aprendiz",
       "plans.free.description":
         "Ideal para testar o app e entender como ele facilita sua vida na cozinha.",
-      "plans.free.features.recipes": "Até 5 receitas salvas",
+      "plans.free.features.recipes": "Até 5 receitas favoritadas",
       "plans.free.features.generation": "Geração básica de receitas",
       "plans.free.features.access": "Acesso a receitas populares",
       "plans.free.features.support": "Suporte por email",
@@ -121,8 +121,8 @@ const resources = {
       "plans.pro.subtitle": "Mais Popular",
       "plans.pro.description":
         "Para quem cozinha com frequência e quer organizar melhor suas preferidas.",
-      "plans.pro.features.recipes": "10 receitas salvas",
-      "plans.pro.features.generation": "Geração ilimitada de receitas",
+      "plans.pro.features.recipes": "10 receitas favoritadas",
+      "plans.pro.features.generation": "Geração de 5 receitas por dia",
       "plans.pro.features.personalized": "Receitas personalizadas avançadas",
       "plans.pro.features.history": "Histórico completo",
       "plans.pro.features.filters": "Filtros avançados",
@@ -139,7 +139,6 @@ const resources = {
       "plans.premium.features.shopping": "Lista de compras automática",
       "plans.premium.features.nutrition": "Análise nutricional detalhada",
       "plans.premium.features.exclusive": "Receitas exclusivas de chefs",
-      "plans.premium.features.support": "Suporte 24/7",
       "plans.premium.features.access": "Acesso antecipado a novos recursos",
       "plans.premium.features.community": "Comunidade exclusiva",
       "plans.premium.cta": "Escolher Master Chef",
@@ -159,7 +158,6 @@ const resources = {
       "plans.features.community.title": "Comunidade",
       "plans.features.community.description":
         "Conecte-se com outros apaixonados por culinária",
-      "plans.features.support.title": "Suporte 24/7",
       "plans.features.support.description":
         "Ajuda sempre que você precisar, a qualquer hora",
       "plans.faq.title": "Perguntas Frequentes",
@@ -545,7 +543,6 @@ const resources = {
       "plans.premium.features.shopping": "Automatic shopping list",
       "plans.premium.features.nutrition": "Detailed nutritional analysis",
       "plans.premium.features.exclusive": "Exclusive chef recipes",
-      "plans.premium.features.support": "24/7 support",
       "plans.premium.features.access": "Early access to new features",
       "plans.premium.features.community": "Exclusive community",
       "plans.premium.cta": "Choose Master Chef",
@@ -565,7 +562,6 @@ const resources = {
       "plans.features.community.title": "Community",
       "plans.features.community.description":
         "Connect with other cooking enthusiasts",
-      "plans.features.support.title": "24/7 Support",
       "plans.features.support.description":
         "Help whenever you need it, anytime",
       "plans.faq.title": "Frequently Asked Questions",

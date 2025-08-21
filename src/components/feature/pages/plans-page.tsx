@@ -82,6 +82,7 @@ export function PlansPageContent() {
           t("plans.free.features.recipes"),
           t("plans.free.features.generation"),
           t("plans.free.features.access"),
+          "2 receitas salvas no histórico",
           t("plans.free.features.support"),
         ];
       case "basic":
@@ -90,7 +91,7 @@ export function PlansPageContent() {
           t("plans.pro.features.recipes"),
           t("plans.pro.features.generation"),
           t("plans.pro.features.personalized"),
-          t("plans.pro.features.history"),
+          "10 receitas salvas no histórico",
           t("plans.pro.features.filters"),
           t("plans.pro.features.support"),
         ];

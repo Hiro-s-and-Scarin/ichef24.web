@@ -121,16 +121,7 @@ function HomePageContent() {
           </Card>
         </div>
 
-        {/* CTA Section */}
-        <div className="text-center mt-12">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 font-medium"
-          >
-            {t('home.cta')}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+
       </div>
 
       {/* Modal AI */}
