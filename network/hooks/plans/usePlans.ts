@@ -2,9 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { 
-  getPlans, 
-  getPlanById, 
+import {
+  getPlans,
+  getPlanById,
   postSubscribeToPlan,
   putChangeSubscription,
   postCancelSubscription,
@@ -13,6 +13,7 @@ import {
   createPlan,
   createFreePlan
 } from "@/network/actions/plans/actionPlans"
+import { getFreePlanStatus } from "@/network/actions/plans"
 import { CreatePlanRequest } from "@/src/types"
 import { queryKeys } from "@/lib/config/query-keys"
 
@@ -161,4 +162,12 @@ export function useCreateFreePlan() {
   })
 
   return mutate
+}
+
+export function useGetFreePlanStatus() {
+  return useQuery({
+    queryKey: ['plans', 'free-status'],
+    queryFn: getFreePlanStatus,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
 }

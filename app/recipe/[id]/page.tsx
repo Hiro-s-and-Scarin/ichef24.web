@@ -10,6 +10,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { translateDynamicData } from "@/lib/config/i18n"
+import { useRecipe } from "@/network/hooks/recipes/useRecipe"
 
 interface RecipePageState {
   isFavorite: boolean
@@ -29,6 +30,7 @@ export default function RecipePage() {
   })
 
   const { isFavorite, rating, userRating, mounted } = recipeState
+  const { data: recipe, isLoading, error } = useRecipe(params.id as string)
 
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
@@ -38,63 +40,11 @@ export default function RecipePage() {
     updateRecipeState({ mounted: true })
   }, [])
 
-
-  const recipe = {
-    id: params.id,
-    title: "Risotto de Frango com Limão e Ervas",
-    description: "Um risotto cremoso e aromático com frango suculento, finalizado com limão fresco e ervas do jardim.",
-    image: "/placeholder.svg?height=400&width=600&text=Risotto+de+Frango",
-    time: "35 minutos",
-    difficulty: "Médio",
-    servings: "4 pessoas",
-    tags: ["Italiano", "Cremoso", "Proteína", "Cítrico"],
-    rating: 4.8,
-    reviews: 127,
-    ingredients: [
-      "400g de arroz arbóreo",
-      "500g de peito de frango em cubos",
-      "1 litro de caldo de galinha",
-      "1 cebola média picada",
-      "2 dentes de alho picados",
-      "1/2 xícara de vinho branco",
-      "Suco de 1 limão",
-      "Raspas de 1 limão",
-      "50g de parmesão ralado",
-      "2 colheres de sopa de manteiga",
-      "Salsinha e tomilho frescos",
-      "Sal e pimenta a gosto",
-    ],
-    instructions: [
-      "Aqueça o caldo de galinha em uma panela e mantenha em fogo baixo.",
-      "Em uma panela grande, refogue a cebola e o alho na manteiga até ficarem dourados.",
-      "Adicione o frango e cozinhe até dourar por todos os lados.",
-      "Acrescente o arroz e mexa por 2 minutos até os grãos ficarem nacarados.",
-      "Adicione o vinho branco e mexa até evaporar.",
-      "Adicione o caldo quente, uma concha por vez, mexendo sempre até ser absorvido.",
-      "Continue o processo por cerca de 18-20 minutos até o arroz ficar cremoso.",
-      "Finalize com parmesão, suco e raspas de limão, ervas frescas.",
-      "Tempere com sal e pimenta. Sirva imediatamente.",
-    ],
-    nutrition: {
-      calories: 420,
-      protein: "28g",
-      carbs: "45g",
-      fat: "12g",
-      fiber: "2g",
-    },
-    tips: [
-      "Use caldo caseiro para um sabor mais rico",
-      "Não pare de mexer o risotto para obter a cremosidade perfeita",
-      "Adicione o limão apenas no final para preservar o sabor cítrico",
-      "Sirva imediatamente para melhor textura",
-    ],
-  }
-
   const handleRating = (newRating: number) => {
     updateRecipeState({ userRating: newRating })
   }
 
-  if (!mounted) {
+  if (!mounted || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -102,6 +52,22 @@ export default function RecipePage() {
             <ChefHat className="w-8 h-8 text-white" />
           </div>
           <p className="text-gray-600 dark:text-gray-300">{t('common.loading')} receita...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !recipe) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ChefHat className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-300">Erro ao carregar receita</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            {error instanceof Error ? error.message : 'Receita não encontrada'}
+          </p>
         </div>
       </div>
     )
@@ -127,7 +93,7 @@ export default function RecipePage() {
           <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm overflow-hidden">
             <div className="relative h-80 bg-gradient-to-r from-[#f54703] to-[#ff7518]">
               <Image
-                src={recipe.image || "/placeholder.svg"}
+                src={recipe.image_url || "/placeholder.svg"}
                 alt={recipe.title}
                 fill
                 className="object-cover mix-blend-overlay"
@@ -139,7 +105,7 @@ export default function RecipePage() {
                     <h1 className="text-4xl font-bold text-white mb-3">{recipe.title}</h1>
                     <p className="text-white/90 text-lg mb-4">{recipe.description}</p>
                     <div className="flex flex-wrap gap-2">
-                      {recipe.tags.map((tag, index) => (
+                      {recipe.tags?.map((tag: string, index: number) => (
                         <Badge key={index} className="bg-white/20 text-white border-white/30">
                           {translateDynamicData.recipeTag(tag, i18n.language)}
                         </Badge>
@@ -171,27 +137,27 @@ export default function RecipePage() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <div className="text-center">
                   <Clock className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.time}</div>
+                  <div className="text-white font-medium">{recipe.cooking_time || 'N/A'} min</div>
                   <div className="text-gray-400 text-sm">{t('form.time')}</div>
                 </div>
                 <div className="text-center">
                   <Users className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.servings}</div>
+                  <div className="text-white font-medium">{recipe.servings || 'N/A'}</div>
                   <div className="text-gray-400 text-sm">{t('form.servings')}</div>
                 </div>
                 <div className="text-center">
                   <Utensils className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{translateDynamicData.difficulty(recipe.difficulty, i18n.language)}</div>
+                  <div className="text-white font-medium">{recipe.difficulty_level || 'N/A'}</div>
                   <div className="text-gray-400 text-sm">{t('form.difficulty')}</div>
                 </div>
                 <div className="text-center">
                   <Star className="w-6 h-6 text-[#ff7518] mx-auto mb-2 fill-current" />
-                  <div className="text-white font-medium">{recipe.rating}</div>
+                  <div className="text-white font-medium">{recipe.likes_count || 0}</div>
                   <div className="text-gray-400 text-sm">{t('recipe.rating')}</div>
                 </div>
                 <div className="text-center">
                   <MessageCircle className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.reviews}</div>
+                  <div className="text-white font-medium">{recipe.views_count || 0}</div>
                   <div className="text-gray-400 text-sm">{t('recipe.reviews')}</div>
                 </div>
               </div>
@@ -209,12 +175,16 @@ export default function RecipePage() {
                     {t('form.ingredients')}
                   </h3>
                   <ul className="space-y-4">
-                    {recipe.ingredients.map((ingredient, index) => (
+                    {Array.isArray(recipe.ingredients) ? recipe.ingredients.map((ingredient: any, index: number) => (
                       <li key={index} className="flex items-start gap-3 text-gray-300">
                         <div className="w-2 h-2 bg-[#ff7518] rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-lg">{ingredient}</span>
+                        <span className="text-lg">
+                          {ingredient.name ? `${ingredient.amount} ${ingredient.name}` : ingredient}
+                        </span>
                       </li>
-                    ))}
+                    )) : (
+                      <li className="text-gray-400">Ingredientes não disponíveis</li>
+                    )}
                   </ul>
                 </CardContent>
               </Card>
@@ -227,14 +197,18 @@ export default function RecipePage() {
                     {t('recipe.instructions')}
                   </h3>
                   <ol className="space-y-6">
-                    {recipe.instructions.map((instruction, index) => (
+                    {Array.isArray(recipe.steps) ? recipe.steps.map((step: any, index: number) => (
                       <li key={index} className="flex gap-4">
                         <div className="w-10 h-10 bg-gradient-to-r from-[#f54703] to-[#ff7518] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                           {index + 1}
                         </div>
-                        <span className="text-gray-300 leading-relaxed text-lg pt-2">{instruction}</span>
+                        <span className="text-gray-300 leading-relaxed text-lg pt-2">
+                          {step.description || step}
+                        </span>
                       </li>
-                    ))}
+                    )) : (
+                      <li className="text-gray-400">Instruções não disponíveis</li>
+                    )}
                   </ol>
                 </CardContent>
               </Card>
@@ -242,47 +216,24 @@ export default function RecipePage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Nutrition Info */}
+              {/* Recipe Info */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.nutrition')}</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">Informações da Receita</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-300">{t('recipe.calories')}</span>
-                      <span className="text-white font-medium">{recipe.nutrition.calories}</span>
+                      <span className="text-gray-300">Tipo de Cozinha</span>
+                      <span className="text-white font-medium">{recipe.cuisine_type || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">{t('recipe.protein')}</span>
-                      <span className="text-white font-medium">{recipe.nutrition.protein}</span>
+                      <span className="text-gray-300">Gerada por IA</span>
+                      <span className="text-white font-medium">{recipe.is_ai_generated ? 'Sim' : 'Não'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">{t('recipe.carbs')}</span>
-                      <span className="text-white font-medium">{recipe.nutrition.carbs}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">{t('recipe.fat')}</span>
-                      <span className="text-white font-medium">{recipe.nutrition.fat}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">{t('recipe.fiber')}</span>
-                      <span className="text-white font-medium">{recipe.nutrition.fiber}</span>
+                      <span className="text-gray-300">Pública</span>
+                      <span className="text-white font-medium">{recipe.is_public ? 'Sim' : 'Não'}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Tips */}
-              <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.chef.tips')}</h3>
-                  <ul className="space-y-3">
-                    {recipe.tips.map((tip, index) => (
-                      <li key={index} className="flex items-start gap-3 text-gray-300">
-                        <div className="w-2 h-2 bg-[#ff7518] rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-sm">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </CardContent>
               </Card>
 

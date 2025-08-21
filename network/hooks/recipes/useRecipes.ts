@@ -216,7 +216,14 @@ export function useGenerateRecipeWithAI() {
       toast.success("Receita gerada com IA com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao gerar receita com IA")
+      // Tratar erros específicos de limite de plano
+      if (error.response?.status === 403) {
+        toast.error(error.response.data?.message || "Limite de receitas atingido. Atualize seu plano para continuar.");
+      } else if (error.response?.status === 402) {
+        toast.error(error.response.data?.message || "Seu plano expirou. Renove para continuar usando o serviço.");
+      } else {
+        toast.error(error.response?.data?.message || "Erro ao gerar receita com IA");
+      }
     },
   })
 }

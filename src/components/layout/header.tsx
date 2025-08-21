@@ -61,30 +61,26 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          {user && (
-            <>
-              <Link href="/profile">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-600 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-400 text-sm"
-                >
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  console.log('🔐 Header: Botão de logout clicado');
-                  logout();
-                }}
-                className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 text-sm"
-              >
-                Sair
-              </Button>
-            </>
-          )}
+          <Link href="/profile">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-400 text-sm"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log('🔐 Header: Botão de logout clicado');
+              logout();
+            }}
+            className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 text-sm"
+          >
+            Sair
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -143,52 +139,48 @@ export function Header() {
                 </Link>
               ))}
               
-              {/* Profile Link */}
-              {user && (
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-4 px-4 py-4 rounded-xl text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-900/20 dark:hover:to-yellow-900/20 transition-all duration-300 group"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className="w-3 h-3 bg-orange-500 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
-                  <span className="font-medium">Perfil</span>
-                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <Settings className="w-4 h-4 text-orange-500" />
-                  </div>
-                </Link>
-              )}
+              {/* Profile Link - Sempre visível */}
+              <Link
+                href="/profile"
+                className="flex items-center gap-4 px-4 py-4 rounded-xl text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-900/20 dark:hover:to-yellow-900/20 transition-all duration-300 group"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <div className="w-3 h-3 bg-orange-500 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
+                <span className="font-medium">Perfil</span>
+                <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <Settings className="w-4 h-4 text-orange-500" />
+                </div>
+              </Link>
             </div>
 
-            {/* User Section */}
+            {/* User Section - Sempre visível */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-              {user ? (
-                <div className="flex items-center justify-between px-4 py-4 rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                      <ChefHat className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        Olá, {user.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Chef iChef24
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between px-4 py-4 rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                    <ChefHat className="w-6 h-6 text-white" />
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors p-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                      {user ? `Olá, ${user.name}` : 'Bem-vindo ao iChef24'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {user ? 'Chef iChef24' : 'Faça login para continuar'}
+                    </p>
+                  </div>
                 </div>
-              ) : null}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    logout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors p-2"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>

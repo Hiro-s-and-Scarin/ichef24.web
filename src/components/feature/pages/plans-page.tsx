@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 import { useGetStripeProducts } from "@/network/hooks/stripe";
-import { useCreateFreePlan } from "@/network/hooks/plans";
+import { useCreateFreePlan, useGetFreePlanStatus } from "@/network/hooks/plans";
 import { useCurrencyFormatter } from "@/lib/utils/currency";
 import { Plan } from "@/src/types";
 import { convertStripeProductsToPlans } from "@/lib/utils/stripe-to-plans";
@@ -23,6 +23,7 @@ export function PlansPageContent() {
 
   const { data: stripeProductsData, isLoading: isLoadingProducts, error } = useGetStripeProducts();
   const createFreePlanMutation = useCreateFreePlan();
+  const { data: freePlanStatus } = useGetFreePlanStatus();
 
   const { formatCurrency } = useCurrencyFormatter();
 
@@ -134,7 +135,10 @@ export function PlansPageContent() {
         });
 
         toast.success("Plano gratuito ativado com sucesso! Bem-vindo ao iChef!");
-        router.push('/dashboard');
+        
+        // Destruir o cookie do token e redirecionar para login
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        router.push('/');
       } catch (error: any) {
         console.error('Erro ao criar plano gratuito:', error);
         const errorMessage = error?.response?.data?.message || "Erro ao ativar plano gratuito";
@@ -296,17 +300,19 @@ export function PlansPageContent() {
                                               <Button
                         className={`w-full py-6 text-lg font-medium ${
                           plan.plan_type === "basic"
-                            ? "bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#f54703] text-white border-0"
+                            ? "bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#ff7518] text-white border-0"
                             : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
                         }`}
                         variant={
                           plan.plan_type === "basic" ? "default" : "outline"
                         }
                         onClick={() => handleSubscribe(plan)}
-                        disabled={isLoading}
+                        disabled={isLoading || (plan.plan_type === "free" && freePlanStatus?.data?.hasUsedFreePlan)}
                       >
                         {isLoading ? (
                           "Processando..."
+                        ) : plan.plan_type === "free" && freePlanStatus?.data?.hasUsedFreePlan ? (
+                          "Plano Gratuito Já Utilizado"
                         ) : (
                           plan.amount === 0
                             ? t("plans.start.free")

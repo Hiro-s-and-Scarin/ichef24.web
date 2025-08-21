@@ -6,7 +6,7 @@ import { ThemeProvider } from "next-themes"
 import { QueryProvider } from "@/providers/query-provider"
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
-import { Toaster } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
 import { usePathname, useRouter } from "next/navigation"
 import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { parseCookies } from 'nookies'
@@ -117,7 +117,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <QueryProvider>
           <I18nProvider>
             <ThemeProvider
@@ -129,8 +129,11 @@ export default function RootLayout({
               <AuthProvider>
                 <RouteProtector isAuthPage={isAuthPage}>
                   {children}
+                  <Toaster 
+                    position="top-right"
+                    duration={4000}
+                  />
                 </RouteProtector>
-                <Toaster position="top-right" />
               </AuthProvider>
             </ThemeProvider>
           </I18nProvider>
