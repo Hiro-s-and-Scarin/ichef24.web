@@ -107,21 +107,50 @@ export function useLogout() {
 
   const mutate = useMutation({
     mutationFn: async () => {
-      return await postLogout()
+      console.log('🔐 useLogout: Chamando endpoint de logout...');
+      const result = await postLogout()
+      console.log('🔐 useLogout: Resposta do endpoint:', result);
+      return result;
     },
     onSuccess: () => {
+      // Limpar todos os cookies relacionados à autenticação
       destroyCookie(null, 'jwt')
+      destroyCookie(null, 'user')
+      
+      // Limpar localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("user")
+        localStorage.clear()
+      }
+      
+      // Limpar cache do React Query
       queryClient.clear()
+      
       toast.success("Logout realizado com sucesso!")
-      router.push("/")
+      
+      // Redirecionar para a página inicial
+      setTimeout(() => {
+        router.push("/")
+        router.refresh()
+      }, 100)
     },
     onError: (error: any) => {
+      // Mesmo em caso de erro, limpar tudo
       destroyCookie(null, 'jwt')
-      localStorage.removeItem("user")
+      destroyCookie(null, 'user')
+      
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("user")
+        localStorage.clear()
+      }
       
       queryClient.clear()
       toast.error(error.response?.data?.message || "Erro ao fazer logout")
-      router.push("/")
+      
+      setTimeout(() => {
+        router.push("/")
+        router.refresh()
+      }, 100)
     },
   })
 

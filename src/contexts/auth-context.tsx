@@ -60,8 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(isUserLoading);
   }, [userData, isUserLoading]);
 
-  // Conectar websocket quando usuário estiver logado
-  console.log('🔌 AuthProvider: Tentando conectar WebSocket com email:', user?.email);
   useWebSocket(user?.email);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -69,7 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await loginMutation.mutateAsync({ email, password });
       return true;
     } catch (error) {
-      // Error already handled by mutation
       return false;
     }
   };
@@ -89,14 +86,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return true;
     } catch (error) {
-      // Error already handled by mutation
       return false;
     }
   };
 
   const logout = () => {
-    logoutMutation.mutate();
+    console.log('🔐 AuthContext: Executando logout...');
+    
+    // Limpar estado local imediatamente
     setUser(null);
+    
+    // Executar logout no backend e limpar cookies
+    logoutMutation.mutate();
+    
+    console.log('🔐 AuthContext: Logout executado');
   };
 
   return (

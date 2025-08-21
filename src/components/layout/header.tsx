@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChefHat, Menu, X, Heart, Clock, Users } from "lucide-react";
+import { ChefHat, Menu, X, Heart, Clock, Users, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useAuth } from "@/contexts/auth-context";
@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -61,6 +61,30 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
+          {user && (
+            <>
+              <Link href="/profile">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-400 text-sm"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  console.log('🔐 Header: Botão de logout clicado');
+                  logout();
+                }}
+                className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 text-sm"
+              >
+                Sair
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -118,6 +142,21 @@ export function Header() {
                   </div>
                 </Link>
               ))}
+              
+              {/* Profile Link */}
+              {user && (
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-4 px-4 py-4 rounded-xl text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-900/20 dark:hover:to-yellow-900/20 transition-all duration-300 group"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <div className="w-3 h-3 bg-orange-500 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
+                  <span className="font-medium">Perfil</span>
+                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <Settings className="w-4 h-4 text-orange-500" />
+                  </div>
+                </Link>
+              )}
             </div>
 
             {/* User Section */}
@@ -141,7 +180,7 @@ export function Header() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      /* logout logic */
+                      logout();
                       setIsMobileMenuOpen(false);
                     }}
                     className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors p-2"
