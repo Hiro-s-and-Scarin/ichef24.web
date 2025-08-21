@@ -3,29 +3,21 @@
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Card, CardContent } from "@/components/ui/card"
+
 import { Input } from "@/components/ui/input"
 import { 
   MessageSquare, 
   Users, 
   ChefHat, 
-  Heart, 
-  Share2, 
-  Eye,
   Plus,
-  Send,
-  Calendar,
-  Star,
   Search,
   X
 } from "lucide-react"
-import { useCommunityPosts, useCreateCommunityPost, usePostComments, useCreatePostComment, useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
+import { useCommunityPosts, useCreateCommunityPost, useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
 import { useRecipes } from "@/network/hooks/recipes/useRecipes"
 import { useUsers } from "@/network/hooks/users/useUsers"
-import { CreateCommunityPostData, CommunityPost } from "@/types/community"
-import { Recipe } from "@/types/recipe"
+import { CreateCommunityPostData } from "@/types/community"
 import { toast } from "sonner"
 import { CreatePostModal, PostCardCompact, TopChefCard, TopRecipeCard } from "@/components/feature/community"
 import { Pagination } from "@/components/common/pagination"
@@ -52,7 +44,7 @@ export default function Community() {
   
   // Hooks para mutações
   const createPostMutation = useCreateCommunityPost()
-  const createCommentMutation = useCreatePostComment()
+
   const likePostMutation = useLikeCommunityPost()
 
   const posts = postsData?.data || []
@@ -126,15 +118,9 @@ export default function Community() {
     }
   }
 
-  const handleCreateComment = async (postId: number, content: string) => {
-    try {
-      await createCommentMutation.mutateAsync({ postId, content })
-    } catch (error) {
-      console.error("Error creating comment:", error)
-    }
-  }
 
-  const handleLikePost = async (postId: number, isLiked: boolean) => {
+
+  const handleLikePost = async (postId: number) => {
     try {
       await likePostMutation.mutateAsync(postId)
     } catch (error) {
@@ -231,11 +217,11 @@ export default function Community() {
                 </div>
                 
                 {/* Paginação para posts */}
-                {postsData && postsData.totalPages > 1 && (
+                {postsData && postsData.pagination && postsData.pagination.totalPages > 1 && (
                   <div className="mt-8 flex justify-center">
                     <Pagination
-                      currentPage={currentPage}
-                      totalPages={postsData.totalPages}
+                                              currentPage={currentPage}
+                        totalPages={postsData.pagination.totalPages}
                       onPageChange={setCurrentPage}
                     />
                   </div>

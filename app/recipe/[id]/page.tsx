@@ -175,7 +175,7 @@ export default function RecipePage() {
                     {t('form.ingredients')}
                   </h3>
                   <ul className="space-y-4">
-                    {Array.isArray(recipe.ingredients) ? recipe.ingredients.map((ingredient: any, index: number) => (
+                    {Array.isArray(recipe.ingredients) ? recipe.ingredients.map((ingredient, index: number) => (
                       <li key={index} className="flex items-start gap-3 text-gray-300">
                         <div className="w-2 h-2 bg-[#ff7518] rounded-full mt-2 flex-shrink-0"></div>
                         <span className="text-lg">
@@ -197,7 +197,7 @@ export default function RecipePage() {
                     {t('recipe.instructions')}
                   </h3>
                   <ol className="space-y-6">
-                    {Array.isArray(recipe.steps) ? recipe.steps.map((step: any, index: number) => (
+                    {Array.isArray(recipe.steps) ? recipe.steps.map((step, index: number) => (
                       <li key={index} className="flex gap-4">
                         <div className="w-10 h-10 bg-gradient-to-r from-[#f54703] to-[#ff7518] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                           {index + 1}

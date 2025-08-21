@@ -71,7 +71,7 @@ interface ChatMessage {
   message: string;
   timestamp: string;
   suggestions?: string[];
-  new_recipe?: any;
+  new_recipe?: Recipe;
 }
 
 interface EditRecipeModalProps {

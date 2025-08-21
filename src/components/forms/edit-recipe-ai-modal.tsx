@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Recipe } from "@/types/recipe";
 import {
   Dialog,
   DialogContent,
@@ -29,8 +30,8 @@ import {
 interface EditRecipeAIModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (recipe: any) => void;
-  recipe: any;
+  onSave: (recipe: Recipe) => void;
+  recipe: Recipe;
 }
 
 interface ChatMessage {

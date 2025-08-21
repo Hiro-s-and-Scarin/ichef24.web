@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import { initReactI18next, useTranslation } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 const resources = {
@@ -80,9 +80,6 @@ const resources = {
       "community.subtitle":
         "Conecte-se com outros apaixonados por culinária, compartilhe receitas e aprenda juntos",
       "community.search.placeholder": "Buscar na comunidade...",
-      "community.tabs.feed": "Feed",
-      "community.tabs.top.chefs": "Top Chefs",
-      "community.tabs.trending": "Em Alta",
       "community.tabs.feed": "Feed",
       "community.tabs.topChefs": "Top Chefs",
       "community.tabs.trending": "Em Alta",
@@ -282,7 +279,6 @@ const resources = {
       "ai.create.gourmet": "Criar Receita Gourmet",
       "ai.creating.recipe": "Criando receita...",
       "ai.save.recipe": "Salvar Receita",
-      "ai.preferences": "Preferências",
       "ai.recipe.type": "Tipo de Receita",
       "ai.recipe.type.placeholder": "Ex: Massa, Carne...",
       "ai.prep.time": "Tempo de Preparo",
@@ -642,7 +638,6 @@ const resources = {
       "filter.categories.occasion": "Occasion",
 
       // AI Components
-      "ai.preferences": "Preferences",
       "ai.recipe.type": "Recipe Type",
       "ai.recipe.type.placeholder": "Ex: italian, vegetarian, quick...",
       "ai.prep.time": "Prep Time",
@@ -668,7 +663,6 @@ const resources = {
         "I loved your idea! I'll develop a special recipe that combines tradition and innovation. Get ready for an incredible culinary experience!",
 
       // Filter Modal
-      "filter.title": "Filters",
       "filter.search.placeholder": "Type the recipe name...",
       "filter.difficulty.label": "Difficulty Level",
       "filter.difficulty.very.easy": "Very Easy",
@@ -684,8 +678,6 @@ const resources = {
       "filter.time.60": "Up to 1 hour",
       "filter.time.120": "Up to 2 hours",
       "filter.tags.label": "Tags",
-      "filter.apply": "Apply Filters",
-      "filter.reset": "Clear Filters",
       "filter.search.label": "Search recipes",
 
       // Recipe Card
@@ -710,47 +702,7 @@ const resources = {
       "recipe.modal.fat": "Fat",
       "recipe.modal.rate": "Rate this recipe",
 
-      // Pagination
-      "pagination.previous": "Previous",
-      "pagination.next": "Next",
 
-      // Form Labels
-      "form.title": "Title",
-      "form.content": "Content",
-      "form.description": "Description",
-      "form.difficulty": "Difficulty Level",
-      "form.time": "Time",
-      "form.servings": "Servings",
-      "form.ingredients": "Ingredients",
-      "form.instructions": "Instructions",
-      "form.tags": "Tags",
-      "form.optional": "optional",
-      "form.required": "required",
-
-      // Recipe
-      "recipe.rating": "Rating",
-      "recipe.nutrition": "Nutritional Information",
-      "recipe.calories": "Calories",
-      "recipe.protein": "Protein",
-      "recipe.carbs": "Carbohydrates",
-      "recipe.fat": "Fat",
-      "recipe.rate": "Rate this recipe",
-      "recipe.rating.excellent": "Excellent!",
-      "recipe.rating.very.good": "Very good!",
-      "recipe.rating.good": "Good!",
-      "recipe.rating.regular": "Regular",
-      "recipe.rating.can.improve": "Can improve",
-      "recipe.rating.thank.you": "Thank you for your {rating} {stars} rating!",
-      "recipe.rating.star": "star",
-      "recipe.rating.stars": "stars",
-      "recipe.reviews": "Reviews",
-      "recipe.instructions": "Instructions",
-      "recipe.fiber": "Fiber",
-      "recipe.chef.tips": "Chef Tips",
-      "recipe.servings": "servings",
-      "recipe.view": "View Recipe",
-      "common.you": "You",
-      "common.your.recipe": "your recipe",
 
       // Examples
       "example.dynamic.translation": "Dynamic Translation Example",
@@ -1035,7 +987,14 @@ export const translateDynamicData = {
         very_hard: "Very Hard",
       },
     };
-    return difficulties[lang as keyof typeof difficulties]?.[level] || level;
+    const langDifficulties = difficulties[lang as keyof typeof difficulties];
+    if (langDifficulties && typeof level === 'string') {
+      return langDifficulties[level as keyof typeof langDifficulties] || level;
+    }
+    if (langDifficulties && typeof level === 'number') {
+      return langDifficulties[level as keyof typeof langDifficulties] || level;
+    }
+    return level;
   },
 
   // Traduzir tipos de cozinha

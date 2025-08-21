@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { FavoriteRecipeCard, Pagination } from "@/components/common"
 import { useFavoriteRecipes } from "@/network/hooks"
 import { RecipeParams } from "@/types/recipe"
@@ -49,8 +50,8 @@ export default function Favorites() {
           {/* Recipes Grid */}
           {recipes.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-              {recipes.map((recipe: any) => (
-                <FavoriteRecipeCard key={recipe.id} recipe={recipe.recipe} />
+              {recipes.map((recipe) => (
+                <FavoriteRecipeCard key={recipe.id} recipe={recipe} />
               ))}
             </div>
           ) : (
@@ -64,12 +65,12 @@ export default function Favorites() {
               <p className="text-gray-500 dark:text-gray-400 mb-4">
                 Comece a explorar receitas e salve suas favoritas para acessar facilmente depois
               </p>
-              <a
+              <Link
                 href="/"
                 className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
               >
                 Explorar Receitas
-              </a>
+              </Link>
             </div>
           )}
 

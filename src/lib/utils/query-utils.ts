@@ -60,7 +60,7 @@ export class QueryUtils {
     });
   }
 
-  setRecipeData(id: string, data: any) {
+  setRecipeData(id: string, data: unknown) {
     this.queryClient.setQueryData(queryKeys.recipes.detail(id), data);
   }
 
@@ -68,7 +68,7 @@ export class QueryUtils {
     return this.queryClient.getQueryData(queryKeys.recipes.detail(id));
   }
 
-  removeQueries(queryKey: any[]) {
+  removeQueries(queryKey: readonly unknown[]) {
     this.queryClient.removeQueries({ queryKey });
   }
 

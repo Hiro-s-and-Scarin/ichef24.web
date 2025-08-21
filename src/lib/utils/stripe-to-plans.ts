@@ -49,11 +49,14 @@ export function convertStripeProductsToPlans(stripeProducts: StripeProduct[]): P
   });
 }
 
-function determinePlanType(name: string, metadata: Record<string, any>): "free" | "basic" | "premium" | "enterprise" {
+function determinePlanType(name: string, metadata: Record<string, unknown>): "free" | "basic" | "premium" | "enterprise" {
   const nameLower = name.toLowerCase();
   
-  if (metadata?.plan_type) {
-    return metadata.plan_type;
+  if (metadata?.plan_type && typeof metadata.plan_type === 'string') {
+    const planType = metadata.plan_type as "free" | "basic" | "premium" | "enterprise";
+    if (['free', 'basic', 'premium', 'enterprise'].includes(planType)) {
+      return planType;
+    }
   }
   
   if (nameLower.includes("free") || nameLower.includes("gratuito") || nameLower.includes("aprendiz") || nameLower.includes("trial")) {

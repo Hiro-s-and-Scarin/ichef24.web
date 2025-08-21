@@ -24,7 +24,7 @@ export interface ChatMessage {
   content: string;
   tokens_used: number;
   recipe_generated_id?: string | number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: string;
   user?: {
     id: string | number;
@@ -48,5 +48,5 @@ export interface CreateChatMessageData {
   content: string;
   tokens_used?: number;
   recipe_generated_id?: string | number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }

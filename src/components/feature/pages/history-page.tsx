@@ -110,9 +110,9 @@ export function HistoryPageContent() {
 
   // Calcular estatísticas baseadas nas receitas reais
   const totalRecipes = currentRecipes.length;
-  const totalLikes = currentRecipes.reduce((acc, recipe) => acc + (recipe.likes_count || 0), 0);
+  const totalLikes = currentRecipes.reduce((acc: number, recipe: RecipeType) => acc + (recipe.likes_count || 0), 0);
   const averageTime = currentRecipes.length > 0
-    ? Math.round(currentRecipes.reduce((acc, recipe) => acc + (recipe.cooking_time || 0), 0) / currentRecipes.length)
+    ? Math.round(currentRecipes.reduce((acc: number, recipe: RecipeType) => acc + (recipe.cooking_time || 0), 0) / currentRecipes.length)
     : 0;
 
   const openEditModal = (recipe: RecipeType) => {
@@ -501,14 +501,16 @@ export function HistoryPageContent() {
       />
 
       {/* Edit Recipe with AI Modal */}
-      <EditRecipeAIModal
-        isOpen={modalState.isEditAIModalOpen}
-        onClose={() =>
-          setModalState((prev) => ({ ...prev, isEditAIModalOpen: false }))
-        }
-        onSave={handleAIRecipeEdit}
-        recipe={modalState.recipeToEditWithAI}
-      />
+      {modalState.recipeToEditWithAI && (
+        <EditRecipeAIModal
+          isOpen={modalState.isEditAIModalOpen}
+          onClose={() =>
+            setModalState((prev) => ({ ...prev, isEditAIModalOpen: false }))
+          }
+          onSave={handleAIRecipeEdit}
+          recipe={modalState.recipeToEditWithAI}
+        />
+      )}
 
       {/* Filter Modal - removido para evitar problemas de validação */}
       {/* <FilterModal

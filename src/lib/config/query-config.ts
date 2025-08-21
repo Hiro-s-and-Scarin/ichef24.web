@@ -4,8 +4,8 @@ export const queryConfig = {
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: (failureCount: number, error: any) => {
-      if (error?.response?.status === 404) return false;
+    retry: (failureCount: number, error: unknown) => {
+      if ((error as { response?: { status?: number } })?.response?.status === 404) return false;
       return failureCount < 1;
     },
   },

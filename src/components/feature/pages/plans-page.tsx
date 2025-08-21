@@ -3,10 +3,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 import { useGetStripeProducts } from "@/network/hooks/stripe";
@@ -21,7 +19,7 @@ export function PlansPageContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: stripeProductsData, isLoading: isLoadingProducts, error } = useGetStripeProducts();
+  const { data: stripeProductsData, isLoading: isLoadingProducts } = useGetStripeProducts();
   const createFreePlanMutation = useCreateFreePlan();
   const { data: freePlanStatus } = useGetFreePlanStatus();
 
@@ -139,9 +137,9 @@ export function PlansPageContent() {
         // Destruir o cookie do token e redirecionar para login
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         router.push('/');
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Erro ao criar plano gratuito:', error);
-        const errorMessage = error?.response?.data?.message || "Erro ao ativar plano gratuito";
+        const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Erro ao ativar plano gratuito";
         
         if (errorMessage.includes('já está vinculado')) {
           toast.info("Você já possui um plano ativo!");

@@ -65,7 +65,7 @@ export interface PostComment {
   is_recipe_related: boolean;
   recipe_generated_id?: number;
   tokens_used: number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: string;
   user?: {
     id: number;
@@ -82,5 +82,5 @@ export interface CreatePostCommentData {
   is_recipe_related?: boolean;
   recipe_generated_id?: number;
   tokens_used?: number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }

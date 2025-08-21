@@ -2,18 +2,40 @@ interface FormatRecipeOptions {
   isFirstMessage?: boolean;
 }
 
+interface Recipe {
+  data?: Recipe;
+  ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
+  title: string;
+  description: string;
+  cooking_time: number;
+  servings: number;
+  difficulty_level: number;
+  cuisine_type: string;
+}
+
+interface RecipeIngredient {
+  amount: string;
+  name: string;
+}
+
+interface RecipeStep {
+  step: number;
+  description: string;
+}
+
 export const formatRecipe = (
-  recipe: any,
+  recipe: { data?: Recipe; ingredients: RecipeIngredient[]; steps: RecipeStep[]; title: string; description: string; cooking_time: number; servings: number; difficulty_level: number; cuisine_type: string } | { data: Recipe },
   options: FormatRecipeOptions = {},
 ) => {
   // Verifica se a receita está dentro de data ou não
   const recipeData = recipe.data || recipe;
 
   const ingredients = recipeData.ingredients
-    .map((ing: any) => `• ${ing.amount} de ${ing.name}`)
+    .map((ing: RecipeIngredient) => `• ${ing.amount} de ${ing.name}`)
     .join("\n");
   const steps = recipeData.steps
-    .map((step: any) => `${step.step}. ${step.description}`)
+    .map((step: RecipeStep) => `${step.step}. ${step.description}`)
     .join("\n");
 
   const intro = options.isFirstMessage

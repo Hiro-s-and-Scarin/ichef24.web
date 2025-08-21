@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, CreditCard, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { ArrowLeft, CreditCard, Loader2, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -20,7 +20,11 @@ function CheckoutForm() {
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
-  const [paymentResult, setPaymentResult] = useState<any>(null)
+  const [paymentResult, setPaymentResult] = useState<{
+    status: string;
+    paymentMethod: string;
+    backendResponse: unknown;
+  } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

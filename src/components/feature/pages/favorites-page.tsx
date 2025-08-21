@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Search,
   Heart,
@@ -12,13 +11,12 @@ import {
   Clock,
   Users,
   Star,
-  Trash2,
   Filter,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { RecipeModal } from "@/components/common/recipe-modal";
-import { useAuth } from "@/contexts/auth-context";
+
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
 import { FilterModal } from "@/components/forms/filter-modal";
@@ -28,10 +26,12 @@ import {
 } from "@/network/hooks/recipes/useRecipes";
 import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useTranslation } from "react-i18next";
+
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
+import { Recipe, FavoriteRecipe } from "@/types/recipe";
 
 export function FavoritesPageContent() {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export function FavoritesPageContent() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const [modalState, setModalState] = useState({
-    selectedRecipe: null as any,
+    selectedRecipe: null as Recipe | null,
     isRecipeModalOpen: false,
     isFilterModalOpen: false,
     isCreateAIModalOpen: false,
@@ -52,7 +52,6 @@ export function FavoritesPageContent() {
   const {
     data: favorites,
     isLoading,
-    error,
   } = useFavoriteRecipes({
     page: currentPage,
     limit: 12,
@@ -61,7 +60,7 @@ export function FavoritesPageContent() {
   });
   const removeFromFavoritesMutation = useRemoveFromFavorites();
 
-  const { data: currentUser } = useCurrentUser();
+
 
   const removeFavorite = async (id: string | number) => {
     try {
@@ -71,7 +70,7 @@ export function FavoritesPageContent() {
     }
   };
 
-  const openRecipeModal = (recipe: any) => {
+  const openRecipeModal = (recipe: Recipe) => {
     setModalState((prev) => ({
       ...prev,
       selectedRecipe: recipe,
@@ -207,7 +206,7 @@ export function FavoritesPageContent() {
               {/* Favorites Grid/List */}
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentFavorites.map((favorite: any) => {
+                  {currentFavorites.map((favorite: FavoriteRecipe) => {
                     // Verificar se a receita existe antes de renderizar
                     if (!favorite.recipe) {
                       return null;
@@ -250,7 +249,7 @@ export function FavoritesPageContent() {
                 </div>
               ) : (
                 <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentFavorites.map((favorite: any) => (
+                  {currentFavorites.map((favorite: FavoriteRecipe) => (
                     <Card
                       key={favorite.id}
                       className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden"
@@ -385,7 +384,7 @@ export function FavoritesPageContent() {
           setModalState((prev) => ({ ...prev, isFilterModalOpen: false }))
         }
         filters={{ tags: selectedFilters }}
-        onFiltersChange={(newFilters: any) =>
+        onFiltersChange={(newFilters: { tags?: string[] }) =>
           handleApplyFilters(newFilters.tags || [])
         }
       />

@@ -10,15 +10,14 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ChefHat, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { useLogin } from "@/network/hooks/auth/useAuth"
 import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
+
 
 import { LoginFormData } from "@/types/forms"
 import { loginSchema } from "@/schemas/forms"
@@ -26,11 +25,11 @@ import { loginSchema } from "@/schemas/forms"
 function LoginPageContent() {
   const [error, setError] = useState("")
 
-  const { isLoading } = useAuth()
+
   const loginMutation = useLogin()
   const { handleGoogleAuth } = useGoogleAuth()
   const { handleFacebookAuth } = useFacebookAuth()
-  const router = useRouter()
+
 
 
 
@@ -62,8 +61,13 @@ function LoginPageContent() {
         email: data.email,
         password: data.password
       })
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Email ou senha inválidos. Tente novamente.")
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err && 
+        err.response && typeof err.response === 'object' && 'data' in err.response &&
+        err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data
+        ? String(err.response.data.message)
+        : "Email ou senha inválidos. Tente novamente."
+      setError(errorMessage)
     }
   }
 

@@ -35,7 +35,7 @@ import { toast } from "sonner";
 interface CreateRecipeAIModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (recipe: any) => void;
+  onSave: (recipe: Recipe) => void;
 }
 
 interface ChatMessage {
@@ -75,7 +75,7 @@ interface CreateRecipeAIModalState {
   showPreferences: boolean;
   recipeType: string;
   cookingTime: string;
-  lastGeneratedRecipe: any | null;
+  lastGeneratedRecipe: Recipe | null;
 }
 
 export function CreateRecipeAIModal({

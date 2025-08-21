@@ -10,7 +10,20 @@ import { ChefHat, Send, Sparkles, MessageCircle, Mic } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AIRecipeChatProps {
-  onRecipeGenerated?: (recipe: any) => void;
+  onRecipeGenerated?: (recipe: {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+    time: string;
+    servings: string;
+    difficulty: string;
+    tags: string[];
+    date: string;
+    rating: number;
+    ingredients: string[];
+    instructions: string[];
+  }) => void;
 }
 
 export function AIRecipeChat({ onRecipeGenerated }: AIRecipeChatProps) {

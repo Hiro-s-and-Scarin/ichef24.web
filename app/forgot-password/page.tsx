@@ -71,8 +71,13 @@ export default function ForgotPasswordPage() {
       setEmail(data.email)
       setStep("code")
       toast.success("Código enviado para seu email!")
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Erro ao enviar código")
+    } catch (error: unknown) {
+      const errorMessage = error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : "Erro ao enviar código"
+      toast.error(errorMessage)
     }
   }
 
@@ -84,8 +89,13 @@ export default function ForgotPasswordPage() {
       })
       toast.success("Senha alterada com sucesso!")
       router.push("/")
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Código inválido ou expirado")
+    } catch (error: unknown) {
+      const errorMessage = error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : "Código inválido ou expirado"
+      toast.error(errorMessage)
     }
   }
 

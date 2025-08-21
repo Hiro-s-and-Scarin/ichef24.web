@@ -204,7 +204,7 @@ export function FilterModal({
               onValueChange={(value) =>
                 setLocalFilters((prev) => ({
                   ...prev,
-                  sortBy: (value as any) || undefined,
+                  sortBy: (value as string) || undefined,
                 }))
               }
             >

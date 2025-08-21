@@ -42,11 +42,12 @@ export const queryKeys = {
   },
   ai: {
     suggestions: (prompt: string) => ["ai", "suggestions", prompt] as const,
-    generate: (type: string, params?: any) =>
+    generate: (type: string, params?: Record<string, unknown>) =>
       ["ai", "generate", type, params] as const,
   },
 } as const;
 
 export type QueryKeys = typeof queryKeys;
+
 
 

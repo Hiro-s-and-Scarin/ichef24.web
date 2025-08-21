@@ -40,7 +40,7 @@ export function ForgotPasswordPageContent() {
       await forgotPasswordMutation.mutateAsync(data.email)
       setIsSubmitted(true)
       toast.success("Email de recuperação enviado com sucesso!")
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error(error?.response?.data?.message || "Erro ao enviar email de recuperação")
     }
   }
@@ -147,3 +147,4 @@ export function ForgotPasswordPageContent() {
     </div>
   )
 }
+

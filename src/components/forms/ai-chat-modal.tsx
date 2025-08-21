@@ -28,7 +28,16 @@ interface AIChatModalProps {
   title: string;
   placeholder?: string;
   initialMessage?: string;
-  onRecipeGenerated?: (recipe: any) => void;
+  onRecipeGenerated?: (recipe: {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+    time: string;
+    servings: string;
+    difficulty: string;
+    tags: string[];
+  }) => void;
 }
 
 export function AIChatModal({
