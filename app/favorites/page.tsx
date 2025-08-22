@@ -18,6 +18,9 @@ export default function Favorites() {
     setFilters(prev => ({ ...prev, page }))
   }
 
+  // Extrair as receitas dos favoritos
+  const recipes = recipesData?.data?.map(favorite => favorite.recipe) || []
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -31,7 +34,7 @@ export default function Favorites() {
     )
   }
 
-  const recipes = recipesData?.data || []
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">

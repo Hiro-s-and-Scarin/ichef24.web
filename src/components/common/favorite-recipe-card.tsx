@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { translateDynamicData } from "@/lib/config/i18n";
@@ -29,11 +29,23 @@ export function FavoriteRecipeCard({
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  
+  // Estados para curtidas (igual ao detalhe do post)
   const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(recipe.likes_count || 0);
+  const [likesCount, setLikesCount] = useState(0);
 
   const removeFromFavoritesMutation = useRemoveFromFavorites();
   const likeRecipeMutation = useLikeRecipe();
+
+  // useEffect para inicializar curtidas (igual ao detalhe do post)
+  useEffect(() => {
+    if (recipe) {
+      setLikesCount(recipe.likes_count || 0)
+      if (user && recipe.user_is_liked) {
+        setIsLiked(recipe.user_is_liked.includes(Number(user.id)))
+      }
+    }
+  }, [recipe, user])
 
   const getDifficultyText = (level?: number | string) => {
     if (!level) return t("recipe.card.difficulty.not.specified");
@@ -67,11 +79,17 @@ export function FavoriteRecipeCard({
     }
   };
 
+  // Função de curtir igual ao detalhe do post
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
     if (!user) {
       toast.error("Você precisa estar logado para curtir receitas");
+      return;
+    }
+
+    if (!recipe?.id) {
+      toast.error("Receita não encontrada");
       return;
     }
 
@@ -82,10 +100,12 @@ export function FavoriteRecipeCard({
 
     try {
       const result = await likeRecipeMutation.mutateAsync(recipe.id);
-
+      
       if (result) {
-        setIsLiked(true);
+        // Atualizar estado local
         setLikesCount(result.likes_count || likesCount + 1);
+        setIsLiked(true);
+        toast.success("Receita curtida com sucesso!");
       }
     } catch (error) {
       toast.error("Erro ao curtir receita");
@@ -197,8 +217,12 @@ export function FavoriteRecipeCard({
               size="sm"
               variant="outline"
               onClick={handleLike}
-              disabled={isLiked}
-              className={`text-xs px-3 py-1.5 h-8 ${isLiked ? "bg-blue-100 text-blue-700 border-blue-300" : "hover:bg-blue-50"}`}
+              disabled={likeRecipeMutation.isPending || isLiked}
+              className={`text-xs px-3 py-1.5 h-8 ${
+                isLiked 
+                  ? 'bg-orange-200 text-orange-800 border-orange-400 cursor-not-allowed' 
+                  : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border-orange-300'
+              }`}
             >
               <ThumbsUp
                 className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-current" : ""}`}
@@ -220,4 +244,5 @@ export function FavoriteRecipeCard({
     </Card>
   );
 }
+
 

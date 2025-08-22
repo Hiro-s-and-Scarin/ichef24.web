@@ -11,38 +11,109 @@ import { useParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { translateDynamicData } from "@/lib/config/i18n"
 import { useRecipe } from "@/network/hooks/recipes/useRecipe"
+import { useAddToFavorites, useRemoveFromFavorites, useLikeRecipe, useIsFavorite } from "@/network/hooks/recipes/useRecipes"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 interface RecipePageState {
   isFavorite: boolean
-  rating: number
-  userRating: number
   mounted: boolean
 }
 
 export default function RecipePage() {
   const { t, i18n } = useTranslation()
   const params = useParams()
+  const { user } = useAuth()
   const [recipeState, setRecipeState] = useState<RecipePageState>({
     isFavorite: false,
-    rating: 0,
-    userRating: 0,
     mounted: false,
   })
 
-  const { isFavorite, rating, userRating, mounted } = recipeState
+  // Estados para curtidas (igual ao detalhe do post)
+  const [recipeLikesCount, setRecipeLikesCount] = useState(0)
+  const [isRecipeLiked, setIsRecipeLiked] = useState(false)
+
+  const { mounted } = recipeState
   const { data: recipe, isLoading, error } = useRecipe(params.id as string)
+  
+  // Hooks para favoritos e curtidas
+  const { data: isFavorite } = useIsFavorite(params.id as string)
+  const addToFavoritesMutation = useAddToFavorites()
+  const removeFromFavoritesMutation = useRemoveFromFavorites()
+  const likeRecipeMutation = useLikeRecipe()
 
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
   }
 
+  const handleFavoriteToggle = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para favoritar receitas")
+      return
+    }
+
+    if (!recipe?.id) {
+      toast.error("Receita não encontrada")
+      return
+    }
+
+    try {
+      if (isFavorite) {
+        await removeFromFavoritesMutation.mutateAsync(recipe.id)
+      } else {
+        await addToFavoritesMutation.mutateAsync(recipe.id)
+      }
+    } catch (error) {
+      toast.error("Erro ao alterar favoritos")
+    }
+  }
+
+  // Função de curtir igual ao detalhe do post
+  const handleLikeRecipe = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para curtir receitas")
+      return
+    }
+
+    if (!recipe?.id) {
+      toast.error("Receita não encontrada")
+      return
+    }
+
+    if (isRecipeLiked) {
+      toast.info("Você já curtiu esta receita")
+      return
+    }
+
+    try {
+      const result = await likeRecipeMutation.mutateAsync(recipe.id)
+      
+      if (result) {
+        // Atualizar estado local
+        setRecipeLikesCount(result.likes_count || recipeLikesCount + 1)
+        setIsRecipeLiked(true)
+        toast.success("Receita curtida com sucesso!")
+      }
+    } catch (error) {
+      toast.error("Erro ao curtir receita")
+    }
+  }
+
+  // useEffect para inicializar curtidas (igual ao detalhe do post)
+  useEffect(() => {
+    if (recipe) {
+      setRecipeLikesCount(recipe.likes_count || 0)
+      if (user && recipe.user_is_liked) {
+        setIsRecipeLiked(recipe.user_is_liked.includes(Number(user.id)))
+      }
+    }
+  }, [recipe, user])
+
   useEffect(() => {
     updateRecipeState({ mounted: true })
   }, [])
 
-  const handleRating = (newRating: number) => {
-    updateRecipeState({ userRating: newRating })
-  }
+
 
   if (!mounted || isLoading) {
     return (
@@ -91,12 +162,12 @@ export default function RecipePage() {
 
           {/* Recipe Header */}
           <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm overflow-hidden">
-            <div className="relative h-80 bg-gradient-to-r from-[#f54703] to-[#ff7518]">
+            <div className="relative h-80">
               <Image
                 src={recipe.image_url || "/placeholder.svg"}
                 alt={recipe.title}
                 fill
-                className="object-cover mix-blend-overlay"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
@@ -147,13 +218,15 @@ export default function RecipePage() {
                 </div>
                 <div className="text-center">
                   <Utensils className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.difficulty_level || 'N/A'}</div>
+                  <div className="text-white font-medium">
+                    {recipe.difficulty_level ? translateDynamicData.difficulty(recipe.difficulty_level, i18n.language) : 'N/A'}
+                  </div>
                   <div className="text-gray-400 text-sm">{t('form.difficulty')}</div>
                 </div>
                 <div className="text-center">
                   <Star className="w-6 h-6 text-[#ff7518] mx-auto mb-2 fill-current" />
-                  <div className="text-white font-medium">{recipe.likes_count || 0}</div>
-                  <div className="text-gray-400 text-sm">{t('recipe.rating')}</div>
+                  <div className="text-white font-medium">{recipeLikesCount}</div>
+                  <div className="text-gray-400 text-sm">Curtidas</div>
                 </div>
                 <div className="text-center">
                   <MessageCircle className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
@@ -237,28 +310,35 @@ export default function RecipePage() {
                 </CardContent>
               </Card>
 
-              {/* Rating */}
+              {/* Curtir Receita */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('recipe.rate')}</h3>
-                  <div className="flex gap-2 mb-4">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button key={star} onClick={() => handleRating(star)} className="transition-colors">
-                        <Star
-                          className={`w-8 h-8 ${
-                            star <= userRating ? "fill-[#ff7518] text-[#ff7518]" : "text-gray-600 hover:text-[#ff7518]"
-                          }`}
-                        />
-                      </button>
-                    ))}
+                  <h3 className="text-xl font-semibold text-white mb-4">Curtir Receita</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-white">
+                      <Star className="w-5 h-5 text-[#ff7518]" />
+                      <span>{recipeLikesCount} curtidas</span>
+                    </div>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleLikeRecipe}
+                      disabled={likeRecipeMutation.isPending || isRecipeLiked}
+                      className={`text-xs px-3 py-1.5 h-8 ${
+                        isRecipeLiked 
+                          ? 'bg-[#ff7518] text-white border-[#ff7518] cursor-not-allowed' 
+                          : 'bg-transparent hover:bg-[#ff7518] text-white border-[#ff7518] hover:text-white'
+                      }`}
+                    >
+                      <Star className={`w-3.5 h-3.5 mr-1.5 ${isRecipeLiked ? 'fill-current' : ''}`} />
+                      {isRecipeLiked ? 'Curtido' : 'Curtir'}
+                    </Button>
                   </div>
-                  {userRating > 0 && (
-                    <p className="text-sm text-gray-300">
-                      {t('recipe.rating.thank.you', { rating: userRating, stars: userRating > 1 ? t('recipe.rating.stars') : t('recipe.rating.star') })}
-                    </p>
-                  )}
                 </CardContent>
               </Card>
+
+
             </div>
           </div>
         </div>

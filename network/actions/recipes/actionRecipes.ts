@@ -26,7 +26,20 @@ export async function deleteRecipe(id: string | number): Promise<{ message: stri
   return data
 }
 
-export async function getFavoriteRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
+export async function getFavoriteRecipes(params: RecipeParams = {}): Promise<{
+  data: Array<{
+    id: number;
+    user_id: number;
+    recipe_id: number;
+    recipe: Recipe;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}> {
   const { data } = await api.get("/favorites", { params })
   return data
 }

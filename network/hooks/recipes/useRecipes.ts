@@ -289,3 +289,17 @@ export function useLikeRecipe() {
     },
   })
 }
+
+export function useIsFavorite(recipeId: string | number) {
+  const { data: favorites } = useFavoriteRecipes()
+  
+  return useQuery({
+    queryKey: [...queryKeys.recipes.favorites, 'isFavorite', recipeId],
+    queryFn: async () => {
+      if (!favorites?.data) return false
+      return favorites.data.some(favorite => favorite.recipe.id === Number(recipeId))
+    },
+    enabled: !!favorites?.data,
+    staleTime: 1000 * 60 * 5,
+  })
+}
