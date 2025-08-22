@@ -153,6 +153,19 @@ export function Header() {
               </Link>
             </div>
 
+            {/* Theme and Language Toggles */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+              <div className="flex items-center justify-between px-4 py-4">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Configurações
+                </span>
+                <div className="flex items-center gap-3">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                </div>
+              </div>
+            </div>
+
             {/* User Section - Sempre visível */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
               <div className="flex items-center justify-between px-4 py-4 rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
