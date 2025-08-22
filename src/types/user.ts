@@ -5,8 +5,17 @@ export interface User {
   avatar_url?: string;
   is_active: boolean;
   email_verified: boolean;
+  daily_recipe_counter?: number;
+  last_recipe_reset_date?: string;
   createdAt: string;
   updatedAt: string;
+  plan?: {
+    max_generate_recipe_per_day: number;
+    max_manual_recipe_per_day: number;
+    max_favorite_recipe: number;
+    max_history_recipe: number;
+    plan_type: string;
+  };
 }
 
 export interface UpdateUserData {

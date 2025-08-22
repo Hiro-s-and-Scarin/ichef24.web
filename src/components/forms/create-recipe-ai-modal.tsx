@@ -28,6 +28,7 @@ import {
   Users,
 } from "lucide-react";
 import { useGenerateRecipeWithAI } from "@/network/hooks";
+import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
@@ -84,6 +85,7 @@ export function CreateRecipeAIModal({
   onSave,
 }: CreateRecipeAIModalProps) {
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
 
   const [modalState, setModalState] = useState<CreateRecipeAIModalState>({
     isGenerating: false,
@@ -309,18 +311,18 @@ export function CreateRecipeAIModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[85vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
-        <DialogHeader className="pb-4">
-          <div className="text-center space-y-2">
+      <DialogContent className="max-w-4xl h-[85vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl p-3 pt-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
+        <DialogHeader className="pb-0 mb-0">
+          <div className="text-center my-6">
             <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl animate-pulse">
-                <Crown className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl animate-pulse">
+                <Crown className="w-5 h-5 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-700 bg-clip-text text-transparent">
+                <DialogTitle className="text-xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-700 bg-clip-text text-transparent">
                   iChef24 AI
                 </DialogTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-xs text-gray-600 dark:text-gray-300">
                   Crie receitas gourmet com IA
                 </p>
               </div>
@@ -328,7 +330,19 @@ export function CreateRecipeAIModal({
           </div>
         </DialogHeader>
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full -mt-4">
+          {/* Contador de receitas diárias */}
+          {currentUser && (
+            <div className="mb-2 mt-1 p-2 rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-900/20">
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <Timer className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="font-medium text-blue-700 dark:text-blue-300">
+                  Receitas geradas hoje: {currentUser.daily_recipe_counter || 0}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Chat Container - Full Height */}
           <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-orange-200/50 dark:border-gray-500/50 shadow-xl flex-1 flex flex-col">
             <CardContent className="p-6 flex flex-col h-full">
@@ -338,7 +352,7 @@ export function CreateRecipeAIModal({
                   <div className="w-10 h-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
-                  <div>
+                  <div className="my-8">
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white">
                       iChef24 AI
                     </h4>
@@ -470,68 +484,7 @@ export function CreateRecipeAIModal({
             </CardContent>
           </Card>
 
-          {/* Preferences - Conditional */}
-          {showPreferences && (
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-700 shadow-xl mt-4">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <ChefHat className="w-4 h-4 text-blue-500" />
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                    Preferências
-                  </h4>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                      Tipo de Receita
-                    </label>
-                    <Input
-                      value={recipeType}
-                      onChange={(e) =>
-                        updateModalState({ recipeType: e.target.value })
-                      }
-                      placeholder="Ex: Italiana, Brasileira, Japonesa..."
-                      className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                      Tempo de Preparo
-                    </label>
-                    <Input
-                      value={cookingTime}
-                      onChange={(e) =>
-                        updateModalState({ cookingTime: e.target.value })
-                      }
-                      placeholder="Ex: 30 minutos"
-                      className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
-          {/* Generate Button */}
-          <Button
-            onClick={generateWithAI}
-            disabled={isGenerating}
-            className="w-full h-14 bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 hover:from-emerald-500 hover:via-green-500 hover:to-emerald-600 text-white border-0 font-bold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group mt-4"
-          >
-            {isGenerating ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 bg-white rounded-full animate-spin">
-                  <div className="w-3 h-3 bg-green-500 rounded-full m-1"></div>
-                </div>
-                <span className="font-semibold">Criando receita...</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
-                <span className="font-semibold">Criar Receita Gourmet</span>
-              </div>
-            )}
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
