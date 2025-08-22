@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import {
   Calendar,
   Image as ImageIcon,
   User,
+  ChefHat,
 } from "lucide-react";
 import * as yup from "yup";
 import { CommunityPost, PostComment } from "@/types/community";
@@ -38,6 +40,7 @@ interface PostCardProps {
 export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [showComments, setShowComments] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -102,6 +105,12 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
       }
     } catch (error) {
       toast.error("Erro ao curtir post");
+    }
+  };
+
+  const handleRecipeClick = () => {
+    if (post.recipe?.id) {
+      router.push(`/recipe/${post.recipe.id}`);
     }
   };
 
@@ -177,6 +186,49 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
               alt={post.title || "Imagem do post"}
               className="w-full h-64 object-cover"
             />
+          </div>
+        )}
+
+        {/* Receita Vinculada */}
+        {post.recipe && (
+          <div 
+            onClick={handleRecipeClick}
+            className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <ChefHat className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
+                  Receita Vinculada
+                </h3>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                <Heart className="w-4 h-4" />
+                <span>{post.recipe.likes_count || 0}</span>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              {post.recipe.image_url && (
+                <img 
+                  src={post.recipe.image_url} 
+                  alt={post.recipe.title}
+                  className="w-20 h-20 rounded-lg object-cover"
+                />
+              )}
+              
+              <div className="flex-1">
+                <h4 className="font-semibold text-green-800 dark:text-green-200 text-lg mb-2">
+                  {post.recipe.title}
+                </h4>
+                {post.recipe.description && (
+                  <p className="text-green-600 dark:text-green-400 text-sm leading-relaxed">
+                    {post.recipe.description}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

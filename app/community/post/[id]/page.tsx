@@ -232,7 +232,10 @@ export default function PostDetailPage() {
 
               {/* Receita Vinculada */}
               {post.recipe && (
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div 
+                  onClick={() => router.push(`/recipe/${post.recipe.id}`)}
+                  className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <ChefHat className="w-6 h-6 text-green-600 dark:text-green-400" />
