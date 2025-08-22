@@ -22,14 +22,17 @@ export function ThemeToggle() {
 
     setIsAnimating(true);
 
+    // Prevenir scrollbar horizontal durante a animação
+    document.body.style.overflowX = 'hidden';
+
     // Get button position
     const button = buttonRef.current;
     const eclipse = eclipseRef.current;
 
     if (button && eclipse) {
       const rect = button.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const centerX = Math.min(Math.max(rect.left + rect.width / 2, 0), window.innerWidth);
+      const centerY = Math.min(Math.max(rect.top + rect.height / 2, 0), window.innerHeight);
 
       // Position eclipse at button center
       eclipse.style.left = `${centerX}px`;
@@ -60,6 +63,9 @@ export function ThemeToggle() {
         eclipse.style.opacity = "0";
         eclipse.style.transform = "translate(-50%, -50%) scale(0)";
         setIsAnimating(false);
+        
+        // Restaurar overflow após a animação
+        document.body.style.overflowX = '';
       }, 600);
     }
   };
@@ -85,6 +91,9 @@ export function ThemeToggle() {
         className="fixed w-8 h-8 rounded-full pointer-events-none z-50 opacity-0"
         style={{
           transform: "translate(-50%, -50%) scale(0)",
+          maxWidth: "100vw",
+          maxHeight: "100vh",
+          overflow: "hidden",
         }}
       />
 
