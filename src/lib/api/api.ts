@@ -3,7 +3,7 @@ import { parseCookies } from "nookies";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
-  timeout: 10000,
+  timeout: 60000, // 60 segundos para dar tempo da IA gerar receita + imagem
   headers: {
     "Content-Type": "application/json",
   },

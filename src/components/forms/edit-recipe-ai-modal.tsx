@@ -192,7 +192,7 @@ export function EditRecipeAIModal({
         rating: 5,
         date: t("common.now"),
       };
-      onSave(recipe);
+      onSave(recipe as any);
       onClose();
     }
   };

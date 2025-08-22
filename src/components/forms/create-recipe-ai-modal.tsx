@@ -186,7 +186,7 @@ export function CreateRecipeAIModal({
         });
       }
 
-      const aiResponse = formatRecipe(recipe, {
+      const aiResponse = formatRecipe(recipe as any, {
         isFirstMessage: !modalState.lastGeneratedRecipe,
       });
 
@@ -220,20 +220,44 @@ export function CreateRecipeAIModal({
         },
       });
 
-      // Invalidar todas as queries relacionadas às receitas para atualizar o histórico e favoritos
+      // Invalidar queries APÓS a receita ser criada com sucesso
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites });
-    } catch (error) {
-      toast.error("Erro ao gerar receita");
+
+    } catch (error: unknown) {
+      console.error("Erro detalhado ao gerar receita:", error);
+      
+      let errorMessage = "Erro ao gerar receita. Tente novamente.";
+      
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response?: { status?: number; data?: { message?: string } } };
+        
+        if (apiError.response?.status === 408) {
+          errorMessage = "Tempo limite excedido. A geração de receita pode levar alguns minutos.";
+        } else if (apiError.response?.status === 403) {
+          errorMessage = "Limite de receitas atingido. Atualize seu plano para continuar.";
+        } else if (apiError.response?.status === 402) {
+          errorMessage = "Seu plano expirou. Renove para continuar usando o serviço.";
+        } else if (apiError.response?.data?.message) {
+          errorMessage = apiError.response.data.message;
+        }
+      } else if (error && typeof error === 'object' && 'code' in error) {
+        const networkError = error as { code?: string };
+        if (networkError.code === 'ECONNABORTED') {
+          errorMessage = "Tempo limite excedido. A geração de receita pode levar alguns minutos.";
+        }
+      }
+      
+      toast.error(errorMessage);
       updateModalState({
         isGenerating: false,
         chatMessages: [
           ...chatMessages,
           {
             type: "ai",
-            message: "Erro ao gerar receita. Tente novamente.",
+            message: errorMessage,
             timestamp: new Date().toLocaleTimeString("pt-BR", {
               hour: "2-digit",
               minute: "2-digit",

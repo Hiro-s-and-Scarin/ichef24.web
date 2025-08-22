@@ -64,7 +64,7 @@ export async function postRecipeReview(recipeId: string, body: { rating: number;
 
 export async function postGenerateRecipeWithAI(body: AIRecipeRequest): Promise<Recipe> {
   const { data } = await api.post("/openai", body)
-  return data.data || data
+  return data.data
 }
 
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {
@@ -79,5 +79,5 @@ export async function getTopRecipes(): Promise<RecipeResponse> {
 
 export async function likeRecipe(id: string): Promise<Recipe> {
   const { data } = await api.post(`/recipes/${id}/like`)
-  return data.data || data
+  return data.data
 }

@@ -106,7 +106,7 @@ export function HistoryPageContent() {
     },
   });
 
-  const currentRecipes = recipes || [];
+  const currentRecipes = Array.isArray(recipes) ? recipes : [];
 
   // Calcular estatísticas baseadas nas receitas reais
   const totalRecipes = currentRecipes.length;

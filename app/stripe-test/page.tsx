@@ -223,7 +223,7 @@ export default function StripeTestPage() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-green-700 dark:text-green-300">
               <p>1. Preencha os dados do cartão no campo acima</p>
-              <p>2. Clique em "Pagar com Cartão"</p>
+              <p>2. Clique em &quot;Pagar com Cartão&quot;</p>
               <p>3. O Stripe criará um PaymentMethod</p>
               <p>4. Os dados serão enviados para <code>/api/stripe/payment</code></p>
               <p>5. O backend receberá o paymentMethod.id seguindo o DTO</p>
