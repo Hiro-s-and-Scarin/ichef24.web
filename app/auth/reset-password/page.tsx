@@ -84,7 +84,7 @@ export default function ResetPasswordPage() {
 
   const handleBackToLogin = () => {
     clearResetData()
-    router.push("/auth/login")
+    router.push("/")
   }
 
   return (
@@ -206,7 +206,7 @@ export default function ResetPasswordPage() {
                 {/* Back to Login */}
                 <div className="text-center">
                   <Link 
-                    href="/auth/login" 
+                    href="/" 
                     className="text-sm text-orange-600 dark:text-orange-400 hover:underline"
                   >
                     Voltar para o login
