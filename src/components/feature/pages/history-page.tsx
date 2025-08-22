@@ -522,7 +522,7 @@ export function HistoryPageContent() {
 
       {/* Paginação */}
       {recipesData && recipesData.totalPages > 1 && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8  flex justify-center">
           <Pagination
             currentPage={currentPage}
             totalPages={recipesData.totalPages}

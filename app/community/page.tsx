@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,6 +21,9 @@ import { CreateCommunityPostData } from "@/types/community"
 import { toast } from "sonner"
 import { CreatePostModal, PostCardCompact, TopChefCard, TopRecipeCard } from "@/components/feature/community"
 import { Pagination } from "@/components/common/pagination"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/config/query-keys"
+import { getTopChefs } from "@/network/actions/users/actionUsers"
 
 type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 
@@ -39,6 +42,14 @@ export default function Community() {
   })
   const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 4 })
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
+  const { data: topChefsData, isLoading: topChefsLoading } = useQuery({
+    queryKey: queryKeys.community.topChefs,
+    queryFn: async () => {
+      const { getTopChefs } = await import("@/network/actions/users/actionUsers")
+      return await getTopChefs()
+    },
+    staleTime: 1000 * 60 * 5,
+  })
   
 
   
@@ -50,6 +61,7 @@ export default function Community() {
   const posts = postsData?.data || []
   const recipes = recipesData?.data || []
   const users = usersData?.data || []
+  const backendTopChefs = topChefsData || []
 
   // Filtrar posts por pesquisa
   const filteredPosts = posts.filter(post => {
@@ -62,23 +74,53 @@ export default function Community() {
     )
   })
 
-  // Calcular top chefs baseado nas receitas mais curtidas
-  const topChefs = users
-    .map(user => {
-      const userRecipes = recipes.filter(recipe => recipe.user_id === parseInt(user.id))
-      const totalLikes = userRecipes.reduce((acc, recipe) => acc + recipe.likes_count, 0)
-      const totalViews = userRecipes.reduce((acc, recipe) => acc + recipe.views_count, 0)
-      return {
-        ...user,
-        id: parseInt(user.id),
-        totalLikes,
-        totalViews,
-        recipeCount: userRecipes.length
+  // Processar dados do backend para top chefs
+  const topChefs = useMemo(() => {
+    if (!backendTopChefs || backendTopChefs.length === 0) return []
+    
+    // Agrupar receitas por usuário
+    const chefsMap = new Map()
+    
+    backendTopChefs.forEach((item: any) => {
+      const userId = item.user_id
+      
+      if (!chefsMap.has(userId)) {
+        chefsMap.set(userId, {
+          id: userId,
+          user_id: userId,
+          name: item.name,
+          email: item.email,
+          avatar_url: item.avatar_url,
+          recipes: [],
+          totalLikes: 0,
+          recipeCount: 0
+        })
+      }
+      
+      const chef = chefsMap.get(userId)
+      
+      // Adicionar receita se existir
+      if (item.recipe_id) {
+        chef.recipes.push({
+          id: item.recipe_id,
+          title: item.recipe_title,
+          image_url: item.recipe_image_url,
+          description: item.recipe_description,
+          likes_count: item.recipe_likes_count,
+          created_at: item.recipe_created_at
+        })
+        chef.totalLikes += parseInt(item.recipe_likes_count || 0)
       }
     })
-    .filter(user => user.recipeCount > 0)
-    .sort((a, b) => b.totalLikes - a.totalLikes)
-    .slice(0, 10)
+    
+    // Converter para array e ordenar por total de curtidas
+    const chefsArray = Array.from(chefsMap.values()).map(chef => ({
+      ...chef,
+      recipeCount: chef.recipes.length
+    }))
+    
+    return chefsArray.sort((a, b) => b.totalLikes - a.totalLikes).slice(0, 3)
+  }, [backendTopChefs])
 
   // Top receitas ordenadas por likes
   const topRecipes = recipes
@@ -216,12 +258,12 @@ export default function Community() {
                   ))}
                 </div>
                 
-                {/* Paginação para posts */}
-                {postsData && postsData.pagination && postsData.pagination.totalPages > 1 && (
+                                {/* Paginação para posts */}
+                {postsData && postsData.totalPages && postsData.totalPages > 1 && (
                   <div className="mt-8 flex justify-center">
                     <Pagination
-                                              currentPage={currentPage}
-                        totalPages={postsData.pagination.totalPages}
+                      currentPage={currentPage}
+                      totalPages={postsData.totalPages}
                       onPageChange={setCurrentPage}
                     />
                   </div>
@@ -243,7 +285,7 @@ export default function Community() {
               </p>
             </div>
             
-            {usersLoading ? (
+            {topChefsLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando chefs...</p>
@@ -262,9 +304,9 @@ export default function Community() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {topChefs.map((chef, index) => (
+                {topChefs.map((chef: any, index: number) => (
                   <TopChefCard
-                    key={chef.id}
+                    key={chef.user_id || chef.id}
                     chef={chef}
                     rank={index + 1}
                   />

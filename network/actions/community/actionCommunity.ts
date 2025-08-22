@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/api"
 import { CommunityPost, CreateCommunityPostData, UpdateCommunityPostData } from "@/types/community"
 
-export async function getCommunityPosts(params: { page?: number; limit?: number } = {}): Promise<{ data: CommunityPost[]; pagination: any }> {
+export async function getCommunityPosts(params: { page?: number; limit?: number } = {}): Promise<{ data: CommunityPost[]; totalPages: number; currentPage: number }> {
   const { data } = await api.get("/community-posts", { params })
   return data
 }
