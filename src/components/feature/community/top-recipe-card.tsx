@@ -15,6 +15,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { Recipe } from "@/types/recipe";
+import { getRecipeImageUrl, hasRecipeImage } from "@/lib/utils/recipe-image";
 
 interface TopRecipeCardProps {
   recipe: Recipe;
@@ -137,9 +138,9 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
       <CardContent className="space-y-4">
         {/* Recipe Image */}
         <div className="relative h-32 w-full rounded-lg overflow-hidden">
-          {recipe.image_url && recipe.image_url.trim() !== "" ? (
+          {hasRecipeImage(recipe) ? (
             <Image
-              src={recipe.image_url}
+              src={getRecipeImageUrl(recipe)!}
               alt={recipe.title || "Receita"}
               fill
               className="object-cover"
@@ -150,7 +151,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
 
           {/* Fallback sempre visível para quando não há imagem */}
           <div
-            className={`image-fallback w-full h-full bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 flex items-center justify-center ${recipe.image_url && recipe.image_url.trim() !== "" ? "hidden" : ""}`}
+            className={`image-fallback w-full h-full bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 flex items-center justify-center ${hasRecipeImage(recipe) ? "hidden" : ""}`}
           >
             <span className="text-3xl">🍳</span>
           </div>

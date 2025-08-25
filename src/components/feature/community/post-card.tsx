@@ -27,6 +27,7 @@ import { useLikeCommunityPost } from "@/network/hooks/community/useCommunity";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { getCommunityPostRecipeImageUrl, hasCommunityPostRecipeImage } from "@/lib/utils/recipe-image";
 
 import { CommentFormData } from "@/types/forms";
 import { commentSchema } from "@/schemas/forms";
@@ -210,9 +211,9 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
             </div>
             
             <div className="flex gap-4">
-              {post.recipe.image_url && (
+              {hasCommunityPostRecipeImage(post.recipe) && (
                 <img 
-                  src={post.recipe.image_url} 
+                  src={getCommunityPostRecipeImageUrl(post.recipe)!} 
                   alt={post.recipe.title}
                   className="w-20 h-20 rounded-lg object-cover"
                 />

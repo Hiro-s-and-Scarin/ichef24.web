@@ -11,6 +11,7 @@ export interface Recipe {
   cuisine_type?: string;
   tags?: string[];
   image_url?: string;
+  image_key?: string;
   is_ai_generated: boolean;
   ai_prompt?: string;
   ai_model_version?: string;
@@ -25,6 +26,10 @@ export interface Recipe {
     name: string;
     email?: string;
     avatar_url?: string;
+  };
+  recipeImage?: {
+    key: string;
+    url_signed: string;
   };
 }
 

@@ -25,9 +25,14 @@ export interface CommunityPost {
     id: number;
     title: string;
     image_url?: string;
+    image_key?: string;
     description?: string;
     likes_count?: number;
     user_is_liked?: number[];
+    recipeImage?: {
+      key: string;
+      url_signed: string;
+    };
   };
   is_liked?: boolean;
   user_is_liked?: number[];

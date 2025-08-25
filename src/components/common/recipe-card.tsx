@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
+import { getRecipeImageUrl, hasRecipeImage } from "@/lib/utils/recipe-image";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -137,9 +138,9 @@ export function RecipeCard({
     >
       {/* Recipe Image */}
       <div className="relative h-48 w-full">
-        {recipe.image_url ? (
+        {hasRecipeImage(recipe) ? (
           <Image
-            src={recipe.image_url}
+            src={getRecipeImageUrl(recipe)!}
             alt={recipe.title}
             fill
             className="object-cover"
