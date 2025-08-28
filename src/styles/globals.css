@@ -88,3 +88,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Scrollbar personalizada para o modal de IA */
+.ai-modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-track {
+  background: #fed7aa;
+  border-radius: 4px;
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: #fb923c;
+  border-radius: 4px;
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+.dark .ai-modal-scrollbar::-webkit-scrollbar-track {
+  background: #7c2d12;
+}
+
+.dark .ai-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: #ea580c;
+}
+
+.dark .ai-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #c2410c;
+}

@@ -1,31 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { formatRecipe } from "@/lib/utils/format-recipe";
 import { Recipe } from "@/types/recipe";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   X,
-  Save,
   ChefHat,
-  Mic,
   Send,
   Sparkles,
   Bot,
-  Crown,
-  Wand2,
-  Leaf,
   Timer,
-  Users,
 } from "lucide-react";
 import { useGenerateRecipeWithAI } from "@/network/hooks";
 import { useCurrentUser } from "@/network/hooks/users/useUsers";
@@ -311,110 +301,121 @@ export function CreateRecipeAIModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[85vh] overflow-y-auto bg-gradient-to-br from-white via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-gray-600 text-gray-900 dark:text-white shadow-2xl p-3 pt-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
-        <DialogHeader className="pb-0 mb-0">
-          <div className="text-center my-6">
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl animate-pulse">
-                <Crown className="w-5 h-5 text-white" />
+      <DialogContent className="max-w-6xl w-[60vw] h-[90vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+        {/* Background com gradiente e efeitos */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+          <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/80"></div>
+        </div>
+
+        {/* Container principal com glassmorphism */}
+        <div className="relative z-10 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
+          {/* Header elegante */}
+          <div className="relative p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
+            {/* Elementos decorativos de fundo */}
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 via-yellow-600/20 to-orange-600/20"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400/30 to-yellow-400/30 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-full blur-2xl"></div>
+            
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {/* Logo com efeito 3D */}
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <Bot className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl blur opacity-50"></div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
+                    iChef24 AI
+                  </h1>
+                  <p className="text-orange-100 dark:text-orange-200 text-sm font-medium tracking-wide">
+                    ASSISTENTE CULINÁRIO INTELIGENTE
+                  </p>
+                </div>
               </div>
-              <div>
-                <DialogTitle className="text-xl font-bold bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-700 bg-clip-text text-transparent">
-                  iChef24 AI
-                </DialogTitle>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  Crie receitas gourmet com IA
-                </p>
-              </div>
+
+              {/* Botão de fechar elegante */}
+              <button
+                onClick={onClose}
+                className="group relative w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+              >
+                <X className="w-5 h-5 text-white group-hover:text-orange-200 transition-colors" />
+              </button>
             </div>
+
+            {/* Contador de receitas com design moderno */}
+            {currentUser && (
+              <div className="relative z-10 mt-6 flex justify-center">
+                <div className="px-6 py-3 bg-white/10 border border-white/20 rounded-2xl backdrop-blur-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <Timer className="w-4 h-4 text-orange-200" />
+                    <span className="text-orange-100 font-medium text-sm">
+                      Receitas hoje: {currentUser.daily_recipe_counter || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </DialogHeader>
 
-        <div className="flex flex-col h-full -mt-4">
-          {/* Contador de receitas diárias */}
-          {currentUser && (
-            <div className="mb-2 mt-1 p-2 rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-900/20">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <Timer className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <span className="font-medium text-blue-700 dark:text-blue-300">
-                  Receitas geradas hoje: {currentUser.daily_recipe_counter || 0}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Chat Container - Full Height */}
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-orange-200/50 dark:border-gray-500/50 shadow-xl flex-1 flex flex-col">
-            <CardContent className="p-6 flex flex-col h-full">
-              {/* Chat Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-orange-200/30 dark:border-gray-600/30">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-                    <Bot className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="my-8">
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                      iChef24 AI
-                    </h4>
-                    <p className="text-sm text-orange-600 dark:text-orange-400">
-                      Crie receitas gourmet com IA
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-green-600 dark:text-green-400">
-                    Online
-                  </span>
-                </div>
-              </div>
-
-              {/* Messages - Scrollable Area */}
-              <div className="flex-1 overflow-y-auto space-y-4 pr-2 my-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-orange-100/50 [&::-webkit-scrollbar-track]:dark:bg-gray-700/50 [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-orange-400 [&::-webkit-scrollbar-thumb]:to-yellow-400 [&::-webkit-scrollbar-thumb]:dark:from-orange-500 [&::-webkit-scrollbar-thumb]:dark:to-yellow-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:from-orange-500 [&::-webkit-scrollbar-thumb]:hover:to-yellow-500 [&::-webkit-scrollbar-thumb]:dark:hover:from-orange-400 [&::-webkit-scrollbar-thumb]:dark:hover:to-yellow-400">
+          {/* Container do chat */}
+          <div className="flex">
+            {/* Área principal do chat */}
+            <div className="flex-1 flex flex-col">
+             
+              {/* Área de mensagens - com altura flexível */}
+              <div 
+                className="min-h-[400px] max-h-[600px] overflow-y-auto p-6 space-y-4 ai-modal-scrollbar" 
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#fb923c #fed7aa'
+                }}
+              >
                 {chatMessages.map((message, index) => (
                   <div
                     key={index}
                     className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[85%] relative ${
+                      className={`max-w-[80%] relative ${
                         message.type === "user"
-                          ? "bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white shadow-orange-500/30"
-                          : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-orange-200 dark:border-gray-500 shadow-lg"
-                      } rounded-2xl p-4 transform transition-all duration-300 hover:scale-105`}
+                          ? "bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 text-white shadow-xl"
+                          : "bg-white dark:bg-slate-800 text-orange-900 dark:text-white border border-orange-200 dark:border-slate-700 shadow-lg"
+                      } rounded-3xl p-4 transform transition-all duration-300 hover:scale-[1.02]`}
                     >
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-3 mb-4">
                         {message.type === "ai" && (
-                          <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
-                            <Sparkles className="w-3 h-3 text-white" />
+                          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-md">
+                            <Sparkles className="w-4 h-4 text-white" />
                           </div>
                         )}
                         <div className="flex-1">
-                          <span className="text-sm font-bold opacity-90">
+                          <span className="text-sm font-semibold opacity-90">
                             {message.type === "ai" ? "iChef24 AI" : "Você"}
                           </span>
-                          <span className="text-sm opacity-70 ml-2">
+                          <span className="text-sm opacity-70 ml-3 font-mono">
                             {message.timestamp}
                           </span>
                         </div>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         <div className="text-sm leading-relaxed whitespace-pre-line">
                           {message.message}
                         </div>
 
                         {message.suggestions && (
-                          <div className="flex flex-wrap gap-2 pt-3 border-t border-white/20 dark:border-gray-600/30">
+                          <div className="flex flex-wrap gap-2 pt-4 border-t border-white/20 dark:border-orange-600/30">
                             {message.suggestions.map((suggestion, i) => (
                               <Button
                                 key={i}
                                 size="sm"
                                 variant="outline"
-                                onClick={() =>
-                                  handleQuickSuggestion(suggestion)
-                                }
-                                className="text-xs border border-white/30 text-white hover:bg-white/20 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/20 rounded-full px-3 py-1 font-medium transition-all duration-300 hover:scale-105"
+                                onClick={() => handleQuickSuggestion(suggestion)}
+                                className="text-xs border border-white/30 text-white hover:bg-white/20 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/20 rounded-full px-4 py-2 font-medium transition-all duration-300 hover:scale-105"
                               >
                                 ✨ {suggestion}
                               </Button>
@@ -426,25 +427,26 @@ export function CreateRecipeAIModal({
                   </div>
                 ))}
 
+                {/* Indicador de geração */}
                 {isGenerating && (
                   <div className="flex justify-start">
-                    <div className="bg-white dark:bg-gray-700 border border-orange-200 dark:border-gray-500 rounded-2xl p-4 shadow-lg max-w-[85%]">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
-                          <Sparkles className="w-4 h-4 text-white animate-spin" />
+                    <div className="bg-white dark:bg-slate-800 border border-orange-200 dark:border-slate-700 rounded-3xl p-6 shadow-lg max-w-[80%]">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-full flex items-center justify-center shadow-md">
+                          <div className="w-5 h-5 bg-white rounded-full animate-pulse"></div>
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-bold text-gray-900 dark:text-white">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-bold text-orange-900 dark:text-white">
                               iChef24 AI
                             </span>
                             <div className="flex space-x-1">
-                              <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce"></div>
-                              <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-100"></div>
-                              <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-200"></div>
+                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce"></div>
+                              <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                          <p className="text-sm text-orange-600 dark:text-orange-300">
                             Criando sua receita especial...
                           </p>
                         </div>
@@ -454,26 +456,24 @@ export function CreateRecipeAIModal({
                 )}
               </div>
 
-              {/* Input */}
-              <div className="pt-4 border-t border-orange-200/30 dark:border-gray-600/30">
-                <form onSubmit={handleChatSubmit} className="space-y-3">
+              {/* Área de input moderna */}
+              <div className="p-4 border-t border-orange-200 dark:border-slate-700 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-800 dark:to-slate-700">
+                <form onSubmit={handleChatSubmit} className="space-y-0">
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
                     <Input
                       value={chatInput}
-                      onChange={(e) =>
-                        updateModalState({ chatInput: e.target.value })
-                      }
+                      onChange={(e) => updateModalState({ chatInput: e.target.value })}
                       placeholder="Descreva sua receita dos sonhos..."
-                      className="relative h-12 pr-24 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
+                      className="relative h-14 pr-20 bg-white dark:bg-slate-800 border-2 border-orange-300 dark:border-slate-600 text-orange-900 dark:text-white rounded-2xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                       disabled={isGenerating}
                     />
-                    <div className="absolute right-2 top-2 flex gap-2">
+                    <div className="absolute right-2 top-2">
                       <Button
                         type="submit"
-                        size="icon"
+                        size="sm"
                         disabled={!chatInput.trim() || isGenerating}
-                        className="h-8 w-8 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
+                        className="h-10 w-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-indigo-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                       >
                         <Send className="w-4 h-4" />
                       </Button>
@@ -481,10 +481,8 @@ export function CreateRecipeAIModal({
                   </div>
                 </form>
               </div>
-            </CardContent>
-          </Card>
-
-
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
