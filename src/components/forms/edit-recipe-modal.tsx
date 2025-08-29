@@ -42,6 +42,7 @@ import {
   EditRecipeFormData,
 } from "@/schemas/edit-recipe.schema";
 import { toast } from "sonner";
+import { api } from "@/lib/api/api";
 
 interface Recipe {
   id: number;
@@ -140,6 +141,7 @@ export function EditRecipeModal({
       cuisine_type: recipe?.cuisine_type || "",
       tags: recipe?.tags || [],
       image_url: recipe?.image_url || "",
+      image_file: undefined,
       is_ai_generated: recipe?.is_ai_generated || false,
       ai_prompt: recipe?.ai_prompt || "",
       ai_model_version: recipe?.ai_model_version || "",
@@ -192,6 +194,7 @@ export function EditRecipeModal({
         cuisine_type: recipe.cuisine_type || "",
         tags: recipe.tags || [],
         image_url: recipe.image_url || "",
+        image_file: undefined,
         is_ai_generated: recipe.is_ai_generated || false,
         ai_prompt: recipe.ai_prompt || "",
         ai_model_version: recipe.ai_model_version || "",
@@ -245,8 +248,7 @@ export function EditRecipeModal({
     });
 
     try {
-      // Preparar old_recipe com a receita atual do usuário
-      const oldRecipe = {
+          const oldRecipe = {
         id: recipe?.id,
         title: recipe?.title,
         description: recipe?.description,
@@ -338,6 +340,33 @@ export function EditRecipeModal({
     if (!recipe?.id) return;
 
     try {
+      let finalImageUrl = data.image_url;
+
+      // Se há um arquivo de imagem, fazer upload primeiro
+      if (data.image_file) {
+        try {
+          const formData = new FormData();
+          formData.append('file', data.image_file as File);
+          
+          const response = await api.post('/recipe-images/send-recipe', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          if (response.data.success) {
+            finalImageUrl = response.data.data.urlSigned;
+            toast.success("Imagem enviada com sucesso!");
+          } else {
+            toast.error("Erro ao enviar imagem: " + response.data.message);
+            return;
+          }
+        } catch (uploadError) {
+          toast.error("Erro ao fazer upload da imagem");
+          return;
+        }
+      }
+
       const recipeData = {
         title: data.title,
         description: data.description,
@@ -361,7 +390,7 @@ export function EditRecipeModal({
         cuisine_type: data.cuisine_type,
         tags:
           data.tags?.filter((tag): tag is string => tag !== undefined) || [],
-        image_url: data.image_url,
+        image_url: finalImageUrl,
         is_ai_generated: data.is_ai_generated,
         ai_prompt: data.ai_prompt,
         ai_model_version: data.ai_model_version,
@@ -537,24 +566,91 @@ export function EditRecipeModal({
             <div className="space-y-2">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <ChefHat className="w-4 h-4 text-orange-500" />
-                URL da Imagem
+                Imagem da Receita
               </Label>
-              <Controller
-                name="image_url"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    placeholder="https://example.com/image.jpg"
-                    className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
+              
+              {/* Preview da imagem atual */}
+              {watch("image_url") && (
+                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+                  <img
+                    src={watch("image_url")}
+                    alt="Imagem atual da receita"
+                    className="w-full h-full object-cover"
                   />
-                )}
-              />
-              {errors.image_url && (
-                <p className="text-red-500 text-sm">
-                  {errors.image_url.message}
-                </p>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setValue("image_url", "")}
+                    className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
               )}
+
+              {/* Campo de upload */}
+              <div className="space-y-2">
+                <Controller
+                  name="image_file"
+                  control={control}
+                  render={({ field: { onChange, value, ...field } }) => (
+                    <div className="space-y-2">
+                      <Input
+                        {...field}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            onChange(file);
+                            // Limpar a URL atual quando um novo arquivo for selecionado
+                            setValue("image_url", "");
+                          }
+                        }}
+                        className="h-12 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors file:mr-4 file:py-2.5 file:px-5 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-900/30 dark:file:text-orange-300"
+                      />
+                      {value && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <span>Arquivo selecionado: {(value as File).name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onChange(null)}
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                />
+              </div>
+
+              {/* Campo de URL (fallback) */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Ou insira uma URL da imagem:
+                </Label>
+                <Controller
+                  name="image_url"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      placeholder="https://example.com/image.jpg"
+                      className="h-10 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
+                    />
+                  )}
+                />
+                {errors.image_url && (
+                  <p className="text-red-500 text-sm">
+                    {errors.image_url.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 

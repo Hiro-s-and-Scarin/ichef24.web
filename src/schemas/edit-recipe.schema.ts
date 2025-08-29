@@ -28,6 +28,7 @@ export const editRecipeSchema = yup.object({
   cuisine_type: yup.string().optional(),
   tags: yup.array().of(yup.string()).optional(),
   image_url: yup.string().url("URL inválida").optional(),
+  image_file: yup.mixed().optional(), // Campo para arquivo de imagem
   is_ai_generated: yup.boolean().optional(),
   ai_prompt: yup.string().optional(),
   ai_model_version: yup.string().optional(),
