@@ -65,6 +65,40 @@
   background: #94a3b8;
 }
 
+/* Scrollbar personalizada para o modal de IA */
+.ai-modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #f97316, #eab308);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #ea580c, #ca8a04);
+}
+
+/* Dark mode para modal de IA */
+.dark .ai-modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.dark .ai-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #f97316, #eab308);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .ai-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #ea580c, #ca8a04);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

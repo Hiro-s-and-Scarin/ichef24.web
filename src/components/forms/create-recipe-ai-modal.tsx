@@ -6,6 +6,7 @@ import { Recipe } from "@/types/recipe";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean;
@@ -126,6 +128,33 @@ export function CreateRecipeAIModal({
   };
 
   const generateRecipeMutation = useGenerateRecipeWithAI();
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveRecipe = async () => {
+    if (!modalState.lastGeneratedRecipe) {
+      toast.error("Nenhuma receita para salvar");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const recipeDataString = JSON.stringify(modalState.lastGeneratedRecipe);
+      await api.post("/recipes/ai-recipe", { recipeData: recipeDataString });
+
+      // Invalidar queries após salvar
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+
+      toast.success("Receita salva com sucesso!");
+      onClose();
+    } catch (error) {
+      console.error("Erro ao salvar receita:", error);
+      toast.error("Erro ao salvar receita. Tente novamente.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -300,15 +329,16 @@ export function CreateRecipeAIModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+          <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+        <DialogTitle className="sr-only">iChef24 AI - Assistente Culinário Inteligente</DialogTitle>
         {/* Background com gradiente e efeitos */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
           <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/80"></div>
         </div>
 
         {/* Container principal com glassmorphism */}
-        <div className="relative z-10 h-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden flex flex-col">
+        <div className="relative z-10 min-h-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden flex flex-col">
           {/* Header elegante */}
           <div className="relative p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
             {/* Elementos decorativos de fundo */}
@@ -362,13 +392,13 @@ export function CreateRecipeAIModal({
           </div>
 
           {/* Container do chat */}
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-h-0">
             {/* Área principal do chat */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
              
               {/* Área de mensagens - com altura flexível */}
               <div 
-                className="flex-1 overflow-y-auto p-6 space-y-4 ai-modal-scrollbar" 
+                className="flex-1 overflow-y-auto p-6 space-y-4 ai-modal-scrollbar min-h-0" 
                 style={{
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#fb923c #fed7aa'
@@ -455,6 +485,31 @@ export function CreateRecipeAIModal({
                   </div>
                 )}
               </div>
+
+              {/* Botão de salvar receita */}
+              {modalState.lastGeneratedRecipe && (
+                <div className="p-4 border-t border-orange-200 dark:border-slate-700 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-700">
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={handleSaveRecipe}
+                      disabled={isSaving}
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    >
+                      {isSaving ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Salvando...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4" />
+                          Salvar Receita
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               {/* Área de input moderna */}
               <div className="p-4 border-t border-orange-200 dark:border-slate-700 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-800 dark:to-slate-700">
