@@ -301,14 +301,14 @@ export function CreateRecipeAIModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[60vw] h-[90vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+      <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
         {/* Background com gradiente e efeitos */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
           <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/80"></div>
         </div>
 
         {/* Container principal com glassmorphism */}
-        <div className="relative z-10 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
+        <div className="relative z-10 h-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden flex flex-col">
           {/* Header elegante */}
           <div className="relative p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
             {/* Elementos decorativos de fundo */}
@@ -362,13 +362,13 @@ export function CreateRecipeAIModal({
           </div>
 
           {/* Container do chat */}
-          <div className="flex">
+          <div className="flex flex-1">
             {/* Área principal do chat */}
             <div className="flex-1 flex flex-col">
              
               {/* Área de mensagens - com altura flexível */}
               <div 
-                className="min-h-[400px] max-h-[600px] overflow-y-auto p-6 space-y-4 ai-modal-scrollbar" 
+                className="flex-1 overflow-y-auto p-6 space-y-4 ai-modal-scrollbar" 
                 style={{
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#fb923c #fed7aa'
