@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { toast } from "sonner"
 import { useForgotPassword, useConfirmForgotPassword } from "@/network/hooks/auth/useAuth"
+import { useTranslation } from "react-i18next"
 
 // Schemas de validação
 const forgotPasswordSchema = yup.object({
@@ -38,6 +39,7 @@ type ConfirmCodeFormData = {
 }
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation()
   const [step, setStep] = useState<"email" | "code">("email")
   const [email, setEmail] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -70,13 +72,13 @@ export default function ForgotPasswordPage() {
       await forgotPasswordMutation.mutateAsync(data.email)
       setEmail(data.email)
       setStep("code")
-      toast.success("Código enviado para seu email!")
+      toast.success(t("forgot.password.code.sent"))
     } catch (error: unknown) {
       const errorMessage = error && typeof error === 'object' && 'response' in error && 
         error.response && typeof error.response === 'object' && 'data' in error.response &&
         error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
         ? String(error.response.data.message)
-        : "Erro ao enviar código"
+        : t("forgot.password.error.send.code")
       toast.error(errorMessage)
     }
   }
@@ -87,14 +89,14 @@ export default function ForgotPasswordPage() {
         code: data.code,
         newPassword: data.newPassword,
       })
-      toast.success("Senha alterada com sucesso!")
+      toast.success(t("forgot.password.password.changed"))
       router.push("/")
     } catch (error: unknown) {
       const errorMessage = error && typeof error === 'object' && 'response' in error && 
         error.response && typeof error.response === 'object' && 'data' in error.response &&
         error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
         ? String(error.response.data.message)
-        : "Código inválido ou expirado"
+        : t("forgot.password.error.invalid.code")
       toast.error(errorMessage)
     }
   }
@@ -127,12 +129,12 @@ export default function ForgotPasswordPage() {
               )}
             </div>
             <CardTitle className="text-2xl text-gray-800 dark:text-white">
-              {step === "email" ? "Esqueceu sua senha?" : "Confirme o código"}
+              {step === "email" ? t("forgot.password.title") : t("forgot.password.confirm.code")}
             </CardTitle>
             <p className="text-gray-600 dark:text-gray-300">
               {step === "email"
-                ? "Digite seu email e enviaremos um código para redefinir sua senha"
-                : `Digite o código que enviamos para ${email} e sua nova senha`
+                ? t("forgot.password.subtitle")
+                : t("forgot.password.confirm.subtitle", { email })
               }
             </p>
           </CardHeader>
@@ -143,14 +145,14 @@ export default function ForgotPasswordPage() {
               <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
-                    Email
+                    {t("forgot.password.email")}
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       id="email"
                       type="email"
-                      placeholder="seu@email.com"
+                      placeholder={t("forgot.password.email.placeholder")}
                       {...registerEmail("email")}
                       className="pl-10 border-gray-300 dark:border-gray-600 focus:border-orange-500 dark:focus:border-orange-400"
                     />
@@ -168,10 +170,10 @@ export default function ForgotPasswordPage() {
                   {forgotPasswordMutation.isPending ? (
                     <div className="flex items-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Enviando...</span>
+                      <span>{t("forgot.password.sending")}</span>
                     </div>
                   ) : (
-                    "Enviar código"
+                    t("forgot.password.send.code")
                   )}
                 </Button>
               </form>
@@ -182,14 +184,14 @@ export default function ForgotPasswordPage() {
               <form onSubmit={handleCodeSubmit(onCodeSubmit)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="code" className="text-gray-700 dark:text-gray-300">
-                    Código de verificação
+                    {t("forgot.password.code.verification")}
                   </Label>
                   <div className="relative">
                     <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       id="code"
                       type="text"
-                      placeholder="123456"
+                      placeholder={t("forgot.password.code.placeholder")}
                       maxLength={6}
                       {...registerCode("code")}
                       className="pl-10 border-gray-300 dark:border-gray-600 focus:border-orange-500 dark:focus:border-orange-400 text-center text-lg tracking-widest"
@@ -202,14 +204,14 @@ export default function ForgotPasswordPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="newPassword" className="text-gray-700 dark:text-gray-300">
-                    Nova senha
+                    {t("forgot.password.new.password")}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       id="newPassword"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Digite sua nova senha"
+                      placeholder={t("forgot.password.new.password.placeholder")}
                       {...registerCode("newPassword")}
                       className="pl-10 pr-10 border-gray-300 dark:border-gray-600 focus:border-orange-500 dark:focus:border-orange-400"
                     />
@@ -228,14 +230,14 @@ export default function ForgotPasswordPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-gray-300">
-                    Confirmar nova senha
+                    {t("forgot.password.confirm.new.password")}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirme sua nova senha"
+                      placeholder={t("forgot.password.confirm.new.password.placeholder")}
                       {...registerCode("confirmPassword")}
                       className="pl-10 pr-10 border-gray-300 dark:border-gray-600 focus:border-orange-500 dark:focus:border-orange-400"
                     />
@@ -261,22 +263,22 @@ export default function ForgotPasswordPage() {
                     {confirmForgotPasswordMutation.isPending ? (
                       <div className="flex items-center gap-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Alterando senha...</span>
+                        <span>{t("forgot.password.changing")}</span>
                       </div>
                     ) : (
-                      "Alterar senha"
+                      t("forgot.password.change.password")
                     )}
                   </Button>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleBackToEmail}
-                    className="w-full"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Voltar para email
-                  </Button>
+                                      <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleBackToEmail}
+                      className="w-full"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      {t("forgot.password.back.to.email")}
+                    </Button>
                 </div>
               </form>
             )}
@@ -284,7 +286,7 @@ export default function ForgotPasswordPage() {
             {/* Link para voltar ao login */}
             <div className="text-center">
               <Link href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">
-                ← Voltar ao login
+                {t("forgot.password.back.to.login")}
               </Link>
             </div>
           </CardContent>

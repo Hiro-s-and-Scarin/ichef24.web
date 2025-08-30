@@ -82,7 +82,7 @@ export default function RecipePage() {
   // Função de curtir igual ao detalhe do post
   const handleLikeRecipe = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado para curtir receitas")
+      toast.error(t("recipe.like.login.required"))
       return
     }
 
@@ -106,7 +106,7 @@ export default function RecipePage() {
         toast.success("Receita curtida com sucesso!")
       }
     } catch (error) {
-      toast.error("Erro ao curtir receita")
+      toast.error(t("recipe.like.error"))
     }
   }
 
@@ -222,7 +222,7 @@ export default function RecipePage() {
                    <div className="text-center">
                      <Star className="w-6 h-6 text-white dark:text-gray-200 mx-auto mb-2 fill-current" />
                      <div className="text-white dark:text-gray-200 font-medium">{recipeLikesCount}</div>
-                     <div className="text-white dark:text-gray-300 text-sm">Curtidas</div>
+                     <div className="text-white dark:text-gray-300 text-sm">{t("recipe.like.count")}</div>
                    </div>
                    <div className="text-center">
                      <MessageCircle className="w-6 h-6 text-white dark:text-gray-200 mx-auto mb-2" />
@@ -288,7 +288,7 @@ export default function RecipePage() {
                              {/* Recipe Info */}
                <Card className="bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:bg-gray-800/80 dark:bg-none border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                                     <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">Informações da Receita</h3>
+                                     <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">{t("recipe.info.title")}</h3>
                   <div className="space-y-3">
                                          <div className="flex justify-between">
                        <span className="text-white dark:text-gray-300">Tipo de Cozinha</span>
@@ -310,16 +310,16 @@ export default function RecipePage() {
                 {user && recipe.user_id === Number(user.id) && (
                   <Card className="bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:bg-gray-800/80 dark:bg-none border-gray-700/50 backdrop-blur-sm">
                   <CardContent className="p-6">
-                                         <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">Editar com IA</h3>
+                                         <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">{t("recipe.edit.ai")}</h3>
                      <p className="text-white dark:text-gray-300 text-sm mb-4">
-                       Use a inteligência artificial para aprimorar ou modificar esta receita
+                       {t("recipe.edit.ai.description")}
                      </p>
                     <Button
                       onClick={handleOpenAIModal}
                       className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 dark:from-gray-600 dark:via-gray-700 dark:to-gray-800 dark:hover:from-gray-700 dark:hover:via-gray-800 dark:hover:to-gray-900 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Editar com IA
+                      {t("recipe.edit.ai")}
                     </Button>
                   </CardContent>
                 </Card>
@@ -328,11 +328,11 @@ export default function RecipePage() {
                                             {/* Curtir Receita */}
                 <Card className="bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:bg-gray-800/80 dark:bg-none border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
-                                     <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">Curtir Receita</h3>
+                                     <h3 className="text-xl font-semibold text-white dark:text-gray-200 mb-4">{t("recipe.like.title")}</h3>
                   <div className="flex items-center justify-between mb-4">
                                          <div className="flex items-center gap-2 text-white dark:text-gray-200">
                        <Star className="w-5 h-5 text-white dark:text-gray-200" />
-                       <span>{recipeLikesCount} curtidas</span>
+                       <span>{recipeLikesCount} {t("recipe.like.count")}</span>
                      </div>
                     
                     <Button
@@ -347,7 +347,7 @@ export default function RecipePage() {
                        }`}
                     >
                       <Star className={`w-3.5 h-3.5 mr-1.5 ${isRecipeLiked ? 'fill-current' : ''}`} />
-                      {isRecipeLiked ? 'Curtido' : 'Curtir'}
+                      {isRecipeLiked ? t("recipe.like.liked") : t("recipe.like.like")}
                     </Button>
                   </div>
                   
@@ -360,7 +360,7 @@ export default function RecipePage() {
                     title="Copiar link da receita"
                   >
                     <Copy className="w-3.5 h-3.5 mr-1.5" />
-                    Copiar Link
+                    {t("community.post.copy.link")}
                   </Button>
                 </CardContent>
               </Card>

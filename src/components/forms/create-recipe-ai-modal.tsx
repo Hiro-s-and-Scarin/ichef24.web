@@ -24,6 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean;
@@ -82,6 +83,7 @@ export function CreateRecipeAIModal({
 }: CreateRecipeAIModalProps) {
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
+  const { t } = useTranslation();
 
   const [modalState, setModalState] = useState<CreateRecipeAIModalState>({
     isGenerating: false,
@@ -101,7 +103,7 @@ export function CreateRecipeAIModal({
         chatMessages: [
           {
             type: "ai",
-            message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
+            message: existingRecipe ? t("ai.improve.message", { title: existingRecipe.title }) : t("ai.welcome.message"),
             timestamp: new Date().toLocaleTimeString("pt-BR", {
               hour: "2-digit",
               minute: "2-digit",
@@ -123,7 +125,7 @@ export function CreateRecipeAIModal({
             chatMessages: [
               {
                 type: "ai",
-                message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
+                message: existingRecipe ? t("ai.improve.message", { title: existingRecipe.title }) : t("ai.welcome.message"),
                 timestamp: new Date().toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -154,7 +156,7 @@ export function CreateRecipeAIModal({
               chatMessages: [
                 {
                   type: "ai",
-                  message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
+                  message: existingRecipe ? t("ai.improve.message", { title: existingRecipe.title }) : t("ai.welcome.message"),
                   timestamp: new Date().toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -210,7 +212,7 @@ export function CreateRecipeAIModal({
             }
           }).catch((error) => {
             console.error("Erro ao gerar receita:", error);
-            toast.error("Erro ao gerar receita. Tente novamente.");
+            toast.error(t("error.generate.recipe"));
             updateModalState({
               isGenerating: false,
             });
@@ -242,7 +244,7 @@ export function CreateRecipeAIModal({
 
   const handleSaveRecipe = async () => {
     if (!modalState.lastGeneratedRecipe) {
-      toast.error("Nenhuma receita para salvar");
+              toast.error(t("error.no.recipe.to.save"));
       return;
     }
 
@@ -263,7 +265,7 @@ export function CreateRecipeAIModal({
       onClose();
     } catch (error) {
       console.error("Erro ao salvar receita:", error);
-      toast.error("Erro ao salvar receita. Tente novamente.");
+              toast.error(t("error.save.recipe"));
     } finally {
       setIsSaving(false);
     }
@@ -369,7 +371,7 @@ export function CreateRecipeAIModal({
     } catch (error: unknown) {
       console.error("Erro detalhado ao gerar receita:", error);
       
-      let errorMessage = "Erro ao gerar receita. Tente novamente.";
+              let errorMessage = t("error.generate.recipe");
       
       if (error && typeof error === 'object' && 'response' in error) {
         const apiError = error as { response?: { status?: number; data?: { message?: string } } };
@@ -377,9 +379,9 @@ export function CreateRecipeAIModal({
         if (apiError.response?.status === 408) {
           errorMessage = "Tempo limite excedido. A geração de receita pode levar alguns minutos.";
         } else if (apiError.response?.status === 403) {
-          errorMessage = "Limite de receitas atingido. Atualize seu plano para continuar.";
+          errorMessage = t("error.recipe.limit.reached");
         } else if (apiError.response?.status === 402) {
-          errorMessage = "Seu plano expirou. Renove para continuar usando o serviço.";
+                      errorMessage = t("error.plan.expired");
         } else if (apiError.response?.data?.message) {
           errorMessage = apiError.response.data.message;
         }
@@ -417,26 +419,25 @@ export function CreateRecipeAIModal({
 
     setTimeout(() => {
       const newGeneratedRecipe: GeneratedRecipe = {
-        title: "Receita Gourmet por IA",
-        description:
-          "Uma receita criada pela nossa IA gourmet, com ingredientes selecionados e técnicas culinárias avançadas.",
-        time: "45 minutos",
-        servings: "4 pessoas",
-        difficulty: "Médio",
-        ingredients: [
-          "400g de ingrediente principal",
-          "200ml de caldo",
-          "2 colheres de sopa de azeite",
-          "Temperos a gosto",
-          "Ervas frescas para finalizar",
-        ],
-        instructions: [
-          "Prepare os ingredientes",
-          "Aqueça o azeite em fogo médio",
-          "Adicione os ingredientes principais e refogue",
-          "Aplique as técnicas de preparo",
-          "Finalize com toque final",
-        ],
+        title: t("ai.improved.recipe"),
+                  description: t("ai.improved.description"),
+                  time: t("ai.improved.time"),
+          servings: t("ai.improved.servings"),
+          difficulty: t("form.difficulty.medium"),
+                  ingredients: [
+            t("ai.improved.ingredients.main"),
+            t("ai.improved.ingredients.broth"),
+            t("ai.improved.ingredients.oil"),
+            t("ai.improved.ingredients.seasoning"),
+            t("ai.improved.ingredients.herbs"),
+          ],
+                  instructions: [
+            t("ai.improved.instructions.prepare"),
+            t("ai.improved.instructions.heat"),
+            t("ai.improved.instructions.add"),
+            t("ai.improved.instructions.apply"),
+            t("ai.improved.instructions.finish"),
+          ],
         image: "/placeholder.jpg",
       };
 
@@ -543,7 +544,7 @@ export function CreateRecipeAIModal({
                         )}
                         <div className="flex-1">
                           <span className="text-sm font-semibold opacity-90">
-                            {message.type === "ai" ? "iChef24 AI" : "Você"}
+                            {message.type === "ai" ? t("ai.title") : t("common.you")}
                           </span>
                           <span className="text-sm opacity-70 ml-3 font-mono">
                             {message.timestamp}

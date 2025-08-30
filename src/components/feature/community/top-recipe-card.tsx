@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Trophy,
   ChefHat,
@@ -26,6 +27,8 @@ interface TopRecipeCardProps {
 }
 
 export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
+  const { t } = useTranslation();
+
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
@@ -72,28 +75,28 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
   const getDifficultyText = (difficulty: number) => {
     switch (difficulty) {
       case 1:
-        return "Muito Fácil";
+        return t("filter.difficulty.very.easy");
       case 2:
-        return "Fácil";
+        return t("filter.difficulty.easy");
       case 3:
-        return "Médio";
+        return t("filter.difficulty.intermediate");
       case 4:
-        return "Difícil";
+        return t("filter.difficulty.hard");
       case 5:
-        return "Muito Difícil";
+        return t("filter.difficulty.very.hard");
       default:
-        return "Não definido";
+        return t("recipe.card.difficulty.not.specified");
     }
   };
 
   const formatTime = (minutes: number | undefined) => {
-    if (!minutes) return "N/A";
+    if (!minutes) return t("recipe.card.difficulty.not.specified");
     if (minutes < 60) {
-      return `${minutes}min`;
+      return `${minutes} ${t("recipe.time")}`;
     }
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+    return mins > 0 ? `${hours}h ${mins} ${t("recipe.time")}` : `${hours}h`;
   };
 
   const handleCopyUrl = async (e: React.MouseEvent) => {
@@ -103,9 +106,9 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
     
     try {
       await navigator.clipboard.writeText(recipeUrl);
-      toast.success("Link da receita copiado para a área de transferência!");
+      toast.success(t("community.post.link.copied"));
     } catch (error) {
-      toast.error("Erro ao copiar link");
+      toast.error(t("community.post.copy.error"));
     }
   };
 
@@ -144,7 +147,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {recipe.user?.name || "Chef"}
+                {recipe.user?.name || t("community.post.user")}
               </span>
             </div>
           </div>
@@ -157,7 +160,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
           {hasRecipeImage(recipe) ? (
             <Image
               src={getRecipeImageUrl(recipe)!}
-              alt={recipe.title || "Receita"}
+              alt={recipe.title || t("community.post.recipe")}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -181,7 +184,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
               <p className="text-sm font-medium text-gray-800 dark:text-white">
                 {formatTime(recipe.cooking_time)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Tempo</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t("filter.time.label")}</p>
             </div>
           </div>
 
@@ -189,10 +192,10 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
             <Users className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-white">
-                {recipe.servings || "N/A"}
+                {recipe.servings || t("recipe.card.difficulty.not.specified")}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Porções
+                {t("form.servings")}
               </p>
             </div>
           </div>
@@ -204,7 +207,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
                 {getDifficultyText(recipe.difficulty_level || 0)}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Dificuldade
+                {t("recipe.difficulty")}
               </p>
             </div>
           </div>
@@ -229,13 +232,13 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
         {/* Badges de Conquistas */}
         <div className="flex flex-wrap gap-2">
           {rank === 1 && (
-            <Badge className="bg-yellow-500 text-white">🥇 Top Receita</Badge>
+            <Badge className="bg-yellow-500 text-white">{t("community.top.recipes.rank.1")}</Badge>
           )}
           {rank === 2 && (
-            <Badge className="bg-gray-400 text-white">🥈 2ª Melhor</Badge>
+            <Badge className="bg-gray-400 text-white">{t("community.top.recipes.rank.2")}</Badge>
           )}
           {rank === 3 && (
-            <Badge className="bg-orange-600 text-white">🥉 3ª Melhor</Badge>
+            <Badge className="bg-orange-600 text-white">{t("community.top.recipes.rank.3")}</Badge>
           )}
 
           {recipe.is_ai_generated && (
@@ -244,7 +247,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
               className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
             >
               <TrendingUp className="w-3 h-3 mr-1" />
-              IA Gerada
+              {t("ai.tag")}
             </Badge>
           )}
 
@@ -254,7 +257,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
               className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
             >
               <Heart className="w-3 h-3 mr-1" />
-              Popular
+              {t("plans.most.popular")}
             </Badge>
           )}
 
@@ -264,7 +267,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
               className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
             >
               <Eye className="w-3 h-3 mr-1" />
-              Viral
+              {t("community.top.recipes.viral")}
             </Badge>
           )}
         </div>
@@ -273,11 +276,11 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">
-              Performance:
+              {t("community.top.recipes.performance")}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-orange-500 font-medium">
-                {recipe.likes_count} curtidas
+                {recipe.likes_count} {t("community.post.likes")}
               </span>
             </div>
           </div>
@@ -298,7 +301,7 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
               variant="outline"
               onClick={handleCopyUrl}
               className="text-xs px-2 py-1.5 h-8 hover:bg-gray-50 dark:hover:bg-gray-700"
-              title="Copiar link da receita"
+              title={t("community.post.copy.link")}
             >
               <Copy className="w-3.5 h-3.5" />
             </Button>

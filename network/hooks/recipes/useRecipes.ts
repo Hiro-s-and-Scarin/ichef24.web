@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { 
   getRecipes, 
   getRecipeById, 
@@ -42,6 +43,7 @@ export function useRecipe(id: string | number) {
 
 export function useCreateRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (body: CreateRecipeData) => {
@@ -57,16 +59,27 @@ export function useCreateRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita criada com sucesso!")
+      toast.success(t("success.recipe.created"))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao criar receita")
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || t("error.recipe.limit.manual");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
+      } else {
+        toast.error(error.response?.data?.message || t("error.create.recipe"));
+      }
     },
   })
 }
 
 export function useUpdateRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async ({ id, ...data }: { id: string | number } & Partial<CreateRecipeData>) => {
@@ -83,16 +96,27 @@ export function useUpdateRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita atualizada com sucesso!")
+      toast.success(t("success.recipe.updated"))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao atualizar receita")
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || t("error.recipe.limit.manual");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
+      } else {
+        toast.error(error.response?.data?.message || t("error.update.recipe"));
+      }
     },
   })
 }
 
 export function useDeleteRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (id: string | number) => {
@@ -108,10 +132,10 @@ export function useDeleteRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita deletada com sucesso!")
+      toast.success(t("success.recipe.deleted"))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao deletar receita")
+      toast.error(error.response?.data?.message || t("error.delete.recipe"))
     },
   })
 }
@@ -126,6 +150,7 @@ export function useFavoriteRecipes(params: RecipeParams = {}) {
 
 export function useAddToFavorites() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (recipeId: string | number) => {
@@ -145,16 +170,27 @@ export function useAddToFavorites() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita adicionada aos favoritos!")
+      toast.success(t("success.recipe.favorited"))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao adicionar aos favoritos")
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || t("error.plan.no.permission");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
+      } else {
+        toast.error(error.response?.data?.message || t("error.add.favorite"));
+      }
     },
   })
 }
 
 export function useRemoveFromFavorites() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (recipeId: string | number) => {
@@ -174,10 +210,20 @@ export function useRemoveFromFavorites() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita removida dos favoritos!")
+      toast.success(t("success.recipe.unfavorited"))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao remover dos favoritos")
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || t("error.plan.no.permission");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
+      } else {
+        toast.error(error.response?.data?.message || t("error.remove.favorite"));
+      }
     },
   })
 }
@@ -208,6 +254,7 @@ export function useRecipeCategories() {
 
 export function useGenerateRecipeWithAI() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (body: AIRecipeRequest) => {
@@ -223,16 +270,20 @@ export function useGenerateRecipeWithAI() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita gerada com IA com sucesso!")
+      toast.success(t("success.recipe.generated.ai"))
     },
     onError: (error: any) => {
       // Tratar erros específicos de limite de plano
       if (error.response?.status === 403) {
-        toast.error(error.response.data?.message || "Limite de receitas atingido. Atualize seu plano para continuar.");
+        const message = error.response.data?.message || t("error.recipe.limit.ai");
+        toast.error(message);
       } else if (error.response?.status === 402) {
-        toast.error(error.response.data?.message || "Seu plano expirou. Renove para continuar usando o serviço.");
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
       } else {
-        toast.error(error.response?.data?.message || "Erro ao gerar receita com IA");
+        toast.error(error.response?.data?.message || t("error.generate.recipe.ai"));
       }
     },
   })
@@ -240,6 +291,7 @@ export function useGenerateRecipeWithAI() {
 
 export function useSaveAIRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (recipeData: string) => {
@@ -255,15 +307,19 @@ export function useSaveAIRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita salva com sucesso!")
+      toast.success(t("success.recipe.saved"))
     },
     onError: (error: any) => {
       if (error.response?.status === 403) {
-        toast.error(error.response.data?.message || "Limite de receitas atingido. Atualize seu plano para continuar.");
+        const message = error.response.data?.message || t("error.recipe.limit.ai");
+        toast.error(message);
       } else if (error.response?.status === 402) {
-        toast.error(error.response.data?.message || "Seu plano expirou. Renove para continuar usando o serviço.");
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
       } else {
-        toast.error(error.response?.data?.message || "Erro ao salvar receita");
+        toast.error(error.response?.data?.message || t("error.save.recipe"));
       }
     },
   })
@@ -271,6 +327,7 @@ export function useSaveAIRecipe() {
 
 export function useUpdateAIRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async ({ id, recipeData }: { id: string | number, recipeData: string }) => {
@@ -287,15 +344,21 @@ export function useUpdateAIRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
-      toast.success("Receita atualizada com IA com sucesso!")
+      toast.success(t("success.recipe.updated.ai"))
     },
     onError: (error: any) => {
       if (error.response?.status === 403) {
-        toast.error(error.response.data?.message || "Você não tem permissão para editar esta receita ou limite atingido.");
+        const message = error.response.data?.message || t("error.recipe.limit.ai");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
       } else if (error.response?.status === 404) {
-        toast.error("Receita não encontrada.");
+        toast.error(t("error.recipe.not.found"));
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
       } else {
-        toast.error(error.response?.data?.message || "Erro ao atualizar receita com IA");
+        toast.error(error.response?.data?.message || t("error.update.recipe.ai"));
       }
     },
   })
@@ -311,6 +374,7 @@ export function useTopRecipes() {
 
 export function useLikeRecipe() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (recipeId: string | number) => {
@@ -347,10 +411,20 @@ export function useLikeRecipe() {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
       queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
       
-      toast.success("Receita curtida com sucesso!")
+      toast.success(t("success.recipe.liked"))
     },
     onError: (error: any) => {
-      toast.error("Erro ao curtir receita")
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || t("error.plan.no.permission");
+        toast.error(message);
+      } else if (error.response?.status === 402) {
+        const message = error.response.data?.message || t("error.plan.expired");
+        toast.error(message);
+      } else if (error.response?.status === 429) {
+        toast.error(t("error.rate.limit"));
+      } else {
+        toast.error(error.response?.data?.message || t("error.like.recipe"));
+      }
     },
   })
 }

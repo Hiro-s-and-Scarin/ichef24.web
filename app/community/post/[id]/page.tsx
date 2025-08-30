@@ -23,8 +23,10 @@ import { useLikeRecipe } from "@/network/hooks/recipes/useRecipes"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
 
 export default function PostDetailPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const router = useRouter()
   const postId = params.id as string
@@ -68,17 +70,17 @@ export default function PostDetailPage() {
 
   const handleLikeRecipe = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado para curtir receitas")
+              toast.error(t("recipe.like.login.required"))
       return
     }
 
     if (!post?.recipe?.id) {
-      toast.error("Receita não encontrada")
+      toast.error(t("community.post.recipe.not.found"))
       return
     }
 
     if (isRecipeLiked) {
-      toast.info("Você já curtiu esta receita")
+      toast.info(t("community.post.recipe.already.liked"))
       return
     }
 
@@ -89,12 +91,12 @@ export default function PostDetailPage() {
         // Atualizar estado local
         setRecipeLikesCount(result.likes_count || recipeLikesCount + 1)
         setIsRecipeLiked(true)
-        toast.success("Receita curtida com sucesso!")
+        toast.success(t("community.post.recipe.liked.success"))
         
 
       }
     } catch (error) {
-      toast.error("Erro ao curtir receita")
+              toast.error(t("recipe.like.error"))
     }
   }
 
@@ -116,11 +118,11 @@ export default function PostDetailPage() {
     try {
       await createCommentMutation.mutateAsync({ postId: postId, content: commentContent })
       setCommentContent("")
-      toast.success("Comentário adicionado com sucesso!")
+      toast.success(t("community.post.comment.added.success"))
       
 
     } catch (error) {
-      toast.error("Erro ao criar comentário")
+      toast.error(t("community.post.comment.error"))
     } finally {
       setIsSubmittingComment(false)
     }
@@ -132,7 +134,7 @@ export default function PostDetailPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="mt-2 text-gray-500">Carregando post...</p>
+            <p className="mt-2 text-gray-500">{t("common.loading")}</p>
           </div>
         </div>
       </div>
@@ -144,9 +146,9 @@ export default function PostDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Post não encontrado</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{t("community.post.not.found")}</h1>
             <Button onClick={handleGoBack} className="bg-orange-500 hover:bg-orange-600">
-              Voltar para Comunidade
+              {t("community.post.back.to.community")}
             </Button>
           </div>
         </div>
@@ -168,7 +170,7 @@ export default function PostDetailPage() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Post da Comunidade
+              {t("community.post.title")}
             </h1>
           </div>
 
@@ -188,12 +190,12 @@ export default function PostDetailPage() {
                     
                     <div>
                       <h3 className="font-semibold text-gray-800 dark:text-white text-lg">
-                        {post.user?.name || 'Usuário'}
+                        {post.user?.name || t("community.post.user.default")}
                       </h3>
                       
                       <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                         <Calendar className="w-4 h-4" />
-                        <span>{post?.createdAt ? formatDate(post.createdAt) : 'Data não disponível'}</span>
+                        <span>{post?.createdAt ? formatDate(post.createdAt) : t("community.post.date.not.available")}</span>
                       </div>
                       
                       {post.difficulty_level && (
@@ -224,7 +226,7 @@ export default function PostDetailPage() {
                 <div className="rounded-lg overflow-hidden">
                   <img 
                     src={post.image_url} 
-                    alt={post.title || 'Imagem do post'}
+                    alt={post.title || t("community.post.image.alt")}
                     className="w-full max-h-96 object-cover"
                   />
                 </div>
@@ -240,7 +242,7 @@ export default function PostDetailPage() {
                     <div className="flex items-center gap-3">
                       <ChefHat className="w-6 h-6 text-green-600 dark:text-green-400" />
                       <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
-                        Receita Vinculada
+                        {t("community.post.recipe.linked")}
                       </h3>
                     </div>
                     
@@ -263,7 +265,7 @@ export default function PostDetailPage() {
                         }`}
                       >
                         <ThumbsUp className={`w-3.5 h-3.5 mr-1.5 ${isRecipeLiked ? 'fill-current' : ''}`} />
-                        {isRecipeLiked ? 'Curtido' : 'Curtir Receita'}
+                        {isRecipeLiked ? t("recipe.like.liked") : t("recipe.like.like.recipe")}
                       </Button>
                     </div>
                   </div>
@@ -308,21 +310,21 @@ export default function PostDetailPage() {
                   <div className="flex items-center gap-2">
                     <Eye className="w-5 h-5 text-gray-500" />
                     <span className="text-gray-600 dark:text-gray-400">
-                      {post.views_count || 0} visualizações
+                      {post.views_count || 0} {t("community.post.views")}
                     </span>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <MessageSquare className="w-5 h-5 text-gray-500" />
                     <span className="text-gray-600 dark:text-gray-400">
-                      {post.comments_count || 0} comentários
+                      {post.comments_count || 0} {t("community.post.comments")}
                     </span>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <Share2 className="w-5 h-5 text-gray-500" />
                     <span className="text-gray-600 dark:text-gray-400">
-                      {post.shares_count || 0} compartilhamentos
+                      {post.shares_count || 0} {t("community.post.shares")}
                     </span>
                   </div>
                 </div>
@@ -334,7 +336,7 @@ export default function PostDetailPage() {
           <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             <CardHeader>
               <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                Comentários ({comments.length})
+                {t("community.post.comments.title", { count: comments.length })}
               </h3>
             </CardHeader>
             
@@ -344,7 +346,7 @@ export default function PostDetailPage() {
                 <Input
                   value={commentContent}
                   onChange={(e) => setCommentContent(e.target.value)}
-                  placeholder="Adicione um comentário..."
+                  placeholder={t("community.post.add.comment.placeholder")}
                   className="flex-1"
                   disabled={isSubmittingComment}
                 />
@@ -366,10 +368,10 @@ export default function PostDetailPage() {
                 <div className="text-center py-8">
                   <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h4 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                    Nenhum comentário ainda
+                    {t("community.post.no.comments")}
                   </h4>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Seja o primeiro a comentar neste post!
+                    {t("community.post.no.comments.desc")}
                   </p>
                 </div>
               ) : (
@@ -386,7 +388,7 @@ export default function PostDetailPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="font-medium text-gray-800 dark:text-white">
-                            {comment.user?.name || 'Usuário'}
+                            {comment.user?.name || t("community.post.user.default")}
                           </span>
                           <span className="text-sm text-gray-500 dark:text-gray-400">
                             {formatDate(comment.createdAt)}

@@ -9,12 +9,14 @@ import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import { PlanDetails } from "@/types/forms"
 import { useCreateStripeCheckout } from "@/network/hooks/stripe"
+import { useCurrencyFormatter } from "@/lib/utils/currency"
 import { PaymentStatus } from "@/src/components/ui/payment-status"
 import { useAuth } from "@/src/contexts/auth-context"
 
 function CheckoutContent() {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const { formatCurrencyWithName } = useCurrencyFormatter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | 'processing'>('pending')
@@ -117,7 +119,7 @@ function CheckoutContent() {
                 {planDetails.name}
               </h2>
               <div className="text-4xl font-bold text-orange-600">
-                R$ {planDetails.price.toFixed(2).replace(".", ",")}
+                {formatCurrencyWithName(planDetails.price)}
                 <span className="text-lg text-gray-500 dark:text-gray-400">
                   /{planDetails.billing_cycle === "monthly" ? "mês" : "ano"}
                 </span>

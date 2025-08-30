@@ -89,7 +89,7 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
 
   const handleLike = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado para curtir posts");
+      toast.error(t("post.like.login.required"));
       return;
     }
 
@@ -106,7 +106,7 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
         setLikesCount(result.likes_count || likesCount + 1);
       }
     } catch (error) {
-      toast.error("Erro ao curtir post");
+      toast.error(t("post.like.error"));
     }
   };
 

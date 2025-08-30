@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { toast } from "sonner"
 import { useForgotPassword } from "@/network/hooks/auth/useAuth"
+import { useTranslation } from "react-i18next"
 
 const forgotPasswordSchema = yup.object({
   email: yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -23,6 +24,7 @@ type ForgotPasswordFormData = {
 }
 
 export function ForgotPasswordPageContent() {
+  const { t } = useTranslation()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const router = useRouter()
   const forgotPasswordMutation = useForgotPassword()
@@ -39,9 +41,9 @@ export function ForgotPasswordPageContent() {
     try {
       await forgotPasswordMutation.mutateAsync(data.email)
       setIsSubmitted(true)
-      toast.success("Email de recuperação enviado com sucesso!")
+      toast.success(t("notification.success"))
     } catch (error: unknown) {
-      toast.error(error?.response?.data?.message || "Erro ao enviar email de recuperação")
+      toast.error(error?.response?.data?.message || t("error.send.email"))
     }
   }
 
@@ -64,9 +66,9 @@ export function ForgotPasswordPageContent() {
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              <CardTitle className="text-2xl text-gray-800 dark:text-white">Email Enviado!</CardTitle>
+              <CardTitle className="text-2xl text-gray-800 dark:text-white">{t("forgot.password.success.title")}</CardTitle>
               <p className="text-gray-600 dark:text-gray-300">
-                Verifique sua caixa de entrada para instruções de recuperação de senha
+                {t("forgot.password.success.subtitle")}
               </p>
             </CardHeader>
 
@@ -75,7 +77,7 @@ export function ForgotPasswordPageContent() {
                 onClick={() => router.push("/")}
                 className="w-full bg-orange-500 hover:bg-orange-600"
               >
-                Voltar ao Login
+                {t("forgot.password.success.back")}
               </Button>
             </CardContent>
           </Card>
@@ -99,9 +101,9 @@ export function ForgotPasswordPageContent() {
 
         <Card className="bg-white/95 dark:bg-gray-800/95 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
           <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl text-gray-800 dark:text-white">Esqueceu sua senha?</CardTitle>
+            <CardTitle className="text-2xl text-gray-800 dark:text-white">{t("forgot.password.title")}</CardTitle>
             <p className="text-gray-600 dark:text-gray-300">
-              Digite seu email e enviaremos instruções para redefinir sua senha
+              {t("forgot.password.subtitle")}
             </p>
           </CardHeader>
 
@@ -109,12 +111,12 @@ export function ForgotPasswordPageContent() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
-                  Email
+                  {t("forgot.password.email")}
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder={t("forgot.password.email.placeholder")}
                   {...register("email")}
                   className="border-gray-300 dark:border-gray-600 focus:border-orange-500 dark:focus:border-orange-400"
                 />
@@ -128,7 +130,7 @@ export function ForgotPasswordPageContent() {
                 className="w-full bg-orange-500 hover:bg-orange-600"
                 disabled={forgotPasswordMutation.isPending}
               >
-                {forgotPasswordMutation.isPending ? "Enviando..." : "Enviar Email de Recuperação"}
+                {forgotPasswordMutation.isPending ? t("forgot.password.submitting") : t("forgot.password.submit")}
               </Button>
             </form>
 
@@ -138,7 +140,7 @@ export function ForgotPasswordPageContent() {
                 className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Voltar ao Login
+                {t("forgot.password.back")}
               </Link>
             </div>
           </CardContent>

@@ -15,7 +15,7 @@ import {
   X
 } from "lucide-react"
 import { useCommunityPosts, useCreateCommunityPost, useLikeCommunityPost } from "@/network/hooks/community/useCommunity"
-import { useRecipes } from "@/network/hooks/recipes/useRecipes"
+import { useTopRecipes } from "@/network/hooks/recipes/useRecipes"
 import { useUsers } from "@/network/hooks/users/useUsers"
 import { CreateCommunityPostData } from "@/types/community"
 import { toast } from "sonner"
@@ -24,10 +24,12 @@ import { Pagination } from "@/components/common/pagination"
 import { useQuery } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/config/query-keys"
 import { getTopChefs } from "@/network/actions/users/actionUsers"
+import { useTranslation } from "react-i18next"
 
 type CommunitySection = 'posts' | 'top-chefs' | 'top-recipes'
 
 export default function Community() {
+  const { t } = useTranslation()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [activeSection, setActiveSection] = useState<CommunitySection>('posts')
@@ -40,7 +42,7 @@ export default function Community() {
     page: currentPage, 
     limit: 6 
   })
-  const { data: recipesData, isLoading: recipesLoading } = useRecipes({ sortBy: 'newest', limit: 4 })
+  const { data: recipesData, isLoading: recipesLoading } = useTopRecipes()
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 50 })
   const { data: topChefsData, isLoading: topChefsLoading } = useQuery({
     queryKey: queryKeys.community.topChefs,
@@ -123,9 +125,7 @@ export default function Community() {
   }, [backendTopChefs])
 
   // Top receitas ordenadas por likes
-  const topRecipes = recipes
-    .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
-    .slice(0, 10)
+  const topRecipes = recipes || []
 
   // Atualizar URL quando mudar seção ou pesquisa
   useEffect(() => {
@@ -156,7 +156,7 @@ export default function Community() {
       setIsCreatingPost(false)
     } catch (error) {
       console.error("Error creating post:", error)
-      toast.error("Erro ao criar post. Tente novamente.")
+      toast.error(t("error.create.post"))
     }
   }
 
@@ -167,6 +167,7 @@ export default function Community() {
       await likePostMutation.mutateAsync(postId)
     } catch (error) {
       console.error("Error liking post:", error)
+      toast.error(t("error.like.post"))
     }
   }
 
@@ -187,11 +188,14 @@ export default function Community() {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                  Posts da Comunidade
+                  {t("community.posts.title")}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {filteredPosts.length} de {posts.length} posts
-                </p>
+                                 <p className="text-gray-600 dark:text-gray-400">
+                   {searchQuery.trim() 
+                     ? `${filteredPosts.length} de ${postsData?.total || posts.length} posts`
+                     : `${postsData?.total || posts.length} posts`
+                   }
+                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
@@ -200,7 +204,7 @@ export default function Community() {
                   <Input
                     value={searchQuery}
                     onChange={(e) => handleSearchChange(e.target.value)}
-                    placeholder="Pesquisar posts..."
+                    placeholder={t("community.search.posts.placeholder")}
                     className="pl-10 pr-10"
                   />
                   {searchQuery && (
@@ -220,7 +224,7 @@ export default function Community() {
                   className="bg-orange-500 hover:bg-orange-600 whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Novo Post
+                  {t("community.new.post")}
                 </Button>
               </div>
             </div>
@@ -228,19 +232,19 @@ export default function Community() {
             {postsLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando posts...</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">{t("common.loading")}</p>
               </div>
             ) : filteredPosts.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                    {searchQuery ? 'Nenhum post encontrado' : 'Nenhum post ainda'}
+                    {searchQuery ? t("community.posts.no.posts.search") : t("community.posts.no.posts")}
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400 mb-4">
                     {searchQuery 
-                      ? `Nenhum post encontrado para "${searchQuery}". Tente uma busca diferente.`
-                      : 'Seja o primeiro a compartilhar algo com a comunidade!'
+                      ? t("community.posts.no.posts.search.desc", { query: searchQuery })
+                      : t("community.posts.no.posts.desc")
                     }
                   </p>
                  
@@ -278,27 +282,27 @@ export default function Community() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                Top Chefs da Comunidade
+                {t("community.topChefs.title")}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                Chefs com as receitas mais curtidas
+                {t("community.topChefs.subtitle")}
               </p>
             </div>
             
             {topChefsLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando chefs...</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">{t("common.loading")}</p>
               </div>
             ) : topChefs.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                    Nenhum chef encontrado
+                    {t("community.topChefs.no.chefs")}
                   </h3>
                   <p className="text-gray-500 dark:text-gray-500">
-                    Ainda não há chefs com receitas na comunidade.
+                    {t("community.topChefs.no.chefs.desc")}
                   </p>
                 </CardContent>
               </Card>
@@ -321,27 +325,27 @@ export default function Community() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                Top Receitas da Comunidade
+                {t("community.trending.title")}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                Receitas mais bem avaliadas e curtidas
+                {t("community.top.recipes.subtitle")}
               </p>
             </div>
             
             {recipesLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando receitas...</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">{t("common.loading")}</p>
               </div>
             ) : topRecipes.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <ChefHat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                    Nenhuma receita encontrada
+                    {t("community.top.recipes.no.recipes")}
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Ainda não há receitas na comunidade.
+                    {t("community.top.recipes.no.recipes.desc")}
                   </p>
                 </CardContent>
               </Card>
@@ -371,10 +375,10 @@ export default function Community() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              Comunidade iChef24
+              {t("community.title")}
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Conecte-se com outros chefs, compartilhe experiências e descubra as melhores receitas da comunidade
+              {t("community.subtitle")}
             </p>
           </div>
 
@@ -388,7 +392,7 @@ export default function Community() {
                   className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Posts
+                  {t("community.tabs.posts")}
                 </Button>
                 <Button
                   variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
@@ -396,7 +400,7 @@ export default function Community() {
                   className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
                 >
                   <Users className="w-4 h-4 mr-2" />
-                  Top Chefs
+                  {t("community.tabs.topChefs")}
                 </Button>
                 <Button
                   variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
@@ -404,7 +408,7 @@ export default function Community() {
                   className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
                 >
                   <ChefHat className="w-4 h-4 mr-2" />
-                  Top Receitas
+                  {t("community.tabs.topRecipes")}
                 </Button>
               </div>
             </div>

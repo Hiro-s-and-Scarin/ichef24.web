@@ -16,14 +16,12 @@ import { queryKeys } from "@/lib/config/query-keys"
 
 
 export default function HomePage() {
-  const { t } = useTranslation()
-  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">{t('dashboard.loading')}</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando...</p>
         </div>
       </div>
     }>
@@ -88,11 +86,10 @@ function HomePageContent() {
               </h1>
             </div>
             <h2 className="text-2xl md:text-3xl font-semibold text-gray-700 dark:text-gray-300">
-              Seu Assistente Culinário Inteligente
+              {t("home.subtitle")}
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              Crie receitas personalizadas com inteligência artificial, explore milhares de pratos
-              e transforme sua cozinha em um espaço de criatividade culinária.
+              {t("home.description")}
             </p>
           </div>
 
@@ -104,7 +101,7 @@ function HomePageContent() {
                 <Input
                   value={dashboardState.inputValue}
                   onChange={handleInputChange}
-                  placeholder="Que receita você quer criar hoje?"
+                  placeholder={t("ai.welcome.message")}
                   className="w-full h-16 px-8 text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
                 />
                 <Button
@@ -120,7 +117,7 @@ function HomePageContent() {
             {/* Sugestões */}
             <div className="mt-6">
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                Não sabe por onde começar? Experimente uma dessas:
+                {t("ai.suggestions")}
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 {[
@@ -155,9 +152,9 @@ function HomePageContent() {
               <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Geração com IA</h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t("dashboard.features.ai.title")}</h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Descreva o que quer cozinhar e nossa IA cria receitas personalizadas com ingredientes e modo de preparo detalhado
+                {t("dashboard.features.ai.desc")}
               </p>
             </CardContent>
           </Card>
@@ -167,9 +164,9 @@ function HomePageContent() {
               <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
                 <ChefHat className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Biblioteca de Receitas</h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t("dashboard.features.recipes.title")}</h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Salve suas criações, favorite receitas de outros usuários e organize sua coleção culinária pessoal
+                {t("dashboard.features.recipes.desc")}
               </p>
             </CardContent>
           </Card>
@@ -179,9 +176,9 @@ function HomePageContent() {
               <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-red-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
                 <User className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Comunidade Culinária</h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t("dashboard.features.community.title")}</h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Compartilhe suas receitas, descubra criações de outros chefs e participe de uma comunidade apaixonada por culinária
+                {t("dashboard.features.community.desc")}
               </p>
             </CardContent>
           </Card>

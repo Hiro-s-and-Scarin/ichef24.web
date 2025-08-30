@@ -32,7 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 
 export function HistoryPageContent() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,12 +63,12 @@ export function HistoryPageContent() {
   const handleDeleteRecipe = async (recipeId: string) => {
     try {
       await deleteRecipeMutation.mutateAsync(recipeId);
-      toast.success("Receita excluída com sucesso!");
+      toast.success(t("notification.deleted"));
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
     } catch (error) {
-      toast.error("Erro ao excluir receita");
+      toast.error(t("error.general"));
     }
   };
 
@@ -105,6 +105,17 @@ export function HistoryPageContent() {
       fat: "0g",
     },
   });
+
+  if (!ready || !t) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentRecipes = Array.isArray(recipes) ? recipes : [];
 
@@ -227,7 +238,7 @@ export function HistoryPageContent() {
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-500">{totalLikes}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Total de Curtidas
+                    {t("history.stats.rating")}
                   </div>
                 </div>
                 <div className="text-center">
@@ -356,11 +367,11 @@ export function HistoryPageContent() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-2">
                                 <div className="flex items-center space-x-1">
                                   <Clock className="w-4 h-4" />
-                                  <span>{recipe.cooking_time} min</span>
+                                  <span>{recipe.cooking_time} {t("recipe.time")}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Users className="w-4 h-4" />
-                                  <span>{recipe.servings} pessoas</span>
+                                  <span>{recipe.servings} {t("recipe.servings")}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Star className="w-4 h-4" />

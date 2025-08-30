@@ -79,7 +79,7 @@ export function Header() {
             }}
             className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 text-sm"
           >
-            Sair
+            {t("auth.logout")}
           </Button>
         </div>
 

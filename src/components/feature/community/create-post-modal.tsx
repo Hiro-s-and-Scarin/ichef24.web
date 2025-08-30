@@ -28,6 +28,7 @@ import { useMyRecipes } from "@/network/hooks/recipes/useRecipes";
 
 import { PostFormData } from "@/types/forms";
 import { postSchema } from "@/schemas/forms";
+import { useTranslation } from "react-i18next";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ export function CreatePostModal({
   onClose,
   onSubmit,
 }: CreatePostModalProps) {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recipeSearchTerm, setRecipeSearchTerm] = useState("");
   const [showRecipeSelect, setShowRecipeSelect] = useState(false);
@@ -71,7 +73,7 @@ export function CreatePostModal({
       reset();
       onClose();
     } catch (error) {
-      toast.error("Erro ao criar post. Tente novamente.");
+      toast.error(t("error.create.post"));
     } finally {
       setIsSubmitting(false);
     }
@@ -102,18 +104,18 @@ export function CreatePostModal({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-white">
-            Criar Novo Post
+            {t("community.new.post")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Título do Post
+              {t("form.title")}
             </label>
             <Input
               {...register("title")}
-              placeholder="Título do seu post da comunidade"
+              placeholder={t("form.title")}
               className="border-gray-300 dark:border-gray-600"
             />
             {errors.title && (
@@ -123,11 +125,11 @@ export function CreatePostModal({
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Conteúdo
+              {t("form.content")}
             </label>
             <Textarea
               {...register("content")}
-              placeholder="Compartilhe sua experiência, dica ou receita com a comunidade..."
+              placeholder={t("form.content")}
               rows={6}
               className="border-gray-300 dark:border-gray-600"
             />
@@ -139,7 +141,7 @@ export function CreatePostModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                URL da Imagem (opcional)
+                {t("form.image.url")} ({t("form.optional")})
               </label>
               <Input
                 {...register("image_url")}
@@ -155,7 +157,7 @@ export function CreatePostModal({
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nível de Dificuldade
+                {t("form.difficulty")}
               </label>
               <Select
                 onValueChange={(value) =>
@@ -167,12 +169,12 @@ export function CreatePostModal({
                 defaultValue="Fácil"
               >
                 <SelectTrigger className="border-gray-300 dark:border-gray-600">
-                  <SelectValue placeholder="Selecione o nível" />
+                  <SelectValue placeholder={t("filter.select.difficulty")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Fácil">Fácil</SelectItem>
-                  <SelectItem value="Intermediário">Intermediário</SelectItem>
-                  <SelectItem value="Avançado">Avançado</SelectItem>
+                  <SelectItem value="Fácil">{t("form.difficulty.easy")}</SelectItem>
+                  <SelectItem value="Intermediário">{t("form.difficulty.medium")}</SelectItem>
+                  <SelectItem value="Avançado">{t("form.difficulty.hard")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.difficulty_level && (
@@ -184,7 +186,7 @@ export function CreatePostModal({
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Vincular Receita (opcional)
+                {t("form.link.recipe")} ({t("form.optional")})
               </label>
               <div className="relative">
                 <Button
@@ -196,8 +198,8 @@ export function CreatePostModal({
                   <span className="flex items-center gap-2">
                     <ChefHat className="w-4 h-4" />
                     {watch("recipe_id")
-                      ? "Receita selecionada"
-                      : "Selecionar receita"}
+                      ? t("form.recipe.selected")
+                      : t("form.select.recipe")}
                   </span>
                   <Search className="w-4 h-4" />
                 </Button>
@@ -205,22 +207,22 @@ export function CreatePostModal({
                 {showRecipeSelect && (
                   <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
                     <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                      <Input
-                        placeholder="Pesquisar receitas..."
-                        value={recipeSearchTerm}
-                        onChange={(e) => setRecipeSearchTerm(e.target.value)}
-                        className="border-gray-300 dark:border-gray-600"
-                      />
+                                              <Input
+                          placeholder={t("form.search.recipes")}
+                          value={recipeSearchTerm}
+                          onChange={(e) => setRecipeSearchTerm(e.target.value)}
+                          className="border-gray-300 dark:border-gray-600"
+                        />
                     </div>
 
                     <div className="p-2">
                       {recipesLoading ? (
                         <div className="text-center py-4 text-gray-500">
-                          Carregando receitas...
+                          {t("common.loading")}
                         </div>
                       ) : userRecipes?.data?.length === 0 ? (
                         <div className="text-center py-4 text-gray-500">
-                          Nenhuma receita encontrada
+                          {t("form.no.recipes.found")}
                         </div>
                       ) : (
                         <div className="space-y-1">
@@ -232,7 +234,7 @@ export function CreatePostModal({
                             }}
                             className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-600 dark:text-gray-300"
                           >
-                            Sem receita
+                            {t("form.no.recipe")}
                           </button>
                           {userRecipes?.data
                             ?.filter(
@@ -275,7 +277,7 @@ export function CreatePostModal({
                                         {recipe.title}
                                       </div>
                                       <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                        {recipe.description || "Sem descrição"}
+                                        {recipe.description || t("form.no.description")}
                                       </div>
                                     </div>
                                   </div>
@@ -295,7 +297,7 @@ export function CreatePostModal({
                     variant="secondary"
                     className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                   >
-                    Receita vinculada
+                    {t("form.recipe.linked")}
                   </Badge>
                 </div>
               )}
@@ -305,7 +307,7 @@ export function CreatePostModal({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Tags de Receita
+                {t("form.tags")}
               </label>
               <Button
                 type="button"
@@ -314,7 +316,7 @@ export function CreatePostModal({
                 onClick={addTag}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Adicionar Tag
+                {t("form.add.tag")}
               </Button>
             </div>
 
@@ -323,7 +325,7 @@ export function CreatePostModal({
                 <div key={index} className="flex gap-2">
                   <Input
                     {...register(`recipe_tags.${index}`)}
-                    placeholder="Tag da receita"
+                    placeholder={t("form.recipe.tag")}
                     className="border-gray-300 dark:border-gray-600"
                   />
                   <Button
@@ -351,7 +353,7 @@ export function CreatePostModal({
               disabled={isSubmitting}
               className="bg-orange-500 hover:bg-orange-600 flex-1"
             >
-              {isSubmitting ? "Criando..." : "Criar Post"}
+              {isSubmitting ? t("notification.creating") : t("community.new.post")}
             </Button>
             <Button
               type="button"
@@ -359,7 +361,7 @@ export function CreatePostModal({
               onClick={handleClose}
               className="flex-1"
             >
-              Cancelar
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

@@ -24,10 +24,12 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import { ProfileFormData } from "@/types/forms";
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -52,7 +54,7 @@ export default function Profile() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">
-            Carregando perfil...
+            {t("common.loading")}
           </p>
         </div>
       </div>

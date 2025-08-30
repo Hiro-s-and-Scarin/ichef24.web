@@ -15,8 +15,10 @@ import {
   useGenerateRecipeWithAI,
 } from "@/network/hooks/recipes/useRecipes";
 import { CreateRecipeData, AIRecipeRequest } from "@/types/recipe";
+import { useTranslation } from "react-i18next";
 
 export function RecipePageExample() {
+  const { t } = useTranslation();
   const [selectedRecipeId, setSelectedRecipeId] = useState<string>("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAIForm, setShowAIForm] = useState(false);
@@ -203,7 +205,7 @@ export function RecipePageExample() {
         <div>
           <h2 className="text-2xl font-bold mb-4">Receitas Disponíveis</h2>
           {recipesLoading ? (
-            <div className="text-center py-8">Carregando receitas...</div>
+            <div className="text-center py-8">{t("common.loading")}</div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {recipes?.map((recipe) => (
@@ -266,7 +268,7 @@ export function RecipePageExample() {
                         size="sm"
                         className="w-full"
                       >
-                        Ver Detalhes
+                        {t("community.view.details")}
                       </Button>
                     </div>
                   </CardContent>
@@ -280,7 +282,7 @@ export function RecipePageExample() {
           <div>
             <h2 className="text-2xl font-bold mb-4">Detalhes da Receita</h2>
             {recipeLoading ? (
-              <div className="text-center py-8">Carregando detalhes...</div>
+              <div className="text-center py-8">{t("common.loading")}</div>
             ) : selectedRecipe ? (
               <Card>
                 <CardHeader>

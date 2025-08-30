@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 // Chave pública do Stripe hardcoded
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51RZcXaCD3Jr5oY2ganomuVgKLHiRjQn9SrwtK5Tvs1gsZGAMh5ykfEkYU98ecYeZ9AcA9aZeutDlBVA8ymo8IrXp00XeUzphvR"
@@ -17,6 +18,7 @@ const productId = "prod_SsYAU6WUTHFzlx"
 
 // Componente do formulário de checkout
 function CheckoutForm() {
+  const { t, ready } = useTranslation()
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
@@ -87,11 +89,20 @@ function CheckoutForm() {
     }
   }
 
+  if (!ready) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando...</p>
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Dados do Cartão
+          {t("stripe.test.card.data")}
         </label>
         <div className="border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700">
           <CardElement 
@@ -118,12 +129,12 @@ function CheckoutForm() {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            Processando...
+            {t("stripe.test.processing")}
           </>
         ) : (
           <>
             <CreditCard className="w-5 h-5 mr-2" />
-            Pagar com Cartão
+            {t("stripe.test.pay.with.card")}
           </>
         )}
       </Button>
@@ -134,7 +145,7 @@ function CheckoutForm() {
           <CardHeader>
             <CardTitle className="text-lg text-green-800 dark:text-green-200 flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
-              Pagamento Processado!
+              {t("stripe.test.payment.processed")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-green-700 dark:text-green-300">
@@ -148,6 +159,18 @@ function CheckoutForm() {
 }
 
 export default function StripeTestPage() {
+  const { t, ready } = useTranslation()
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -157,16 +180,16 @@ export default function StripeTestPage() {
           <Link href="/plans">
             <Button variant="outline" className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar aos Planos
+              {t("stripe.test.back.to.plans")}
             </Button>
           </Link>
           
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              Teste de Pagamento Stripe
+              {t("stripe.test.title")}
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              Teste usando Stripe Checkout oficial
+              {t("stripe.test.subtitle")}
             </p>
           </div>
         </div>
@@ -174,16 +197,16 @@ export default function StripeTestPage() {
         {/* Informações do Produto */}
         <Card className="max-w-md mx-auto mb-8 bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl text-center">Produto de Teste</CardTitle>
+            <CardTitle className="text-xl text-center">{t("stripe.test.product.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">ID do Produto:</span>
+              <span className="text-gray-600 dark:text-gray-300">{t("stripe.test.product.id")}</span>
               <span className="font-mono text-sm text-gray-500 dark:text-gray-400">{productId}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Tipo:</span>
-              <span className="font-semibold text-gray-800 dark:text-white">Pagamento com Cartão</span>
+              <span className="text-gray-600 dark:text-gray-300">{t("stripe.test.product.type")}</span>
+              <span className="font-semibold text-gray-800 dark:text-white">{t("stripe.test.product.payment.type")}</span>
             </div>
           </CardContent>
         </Card>
@@ -199,16 +222,16 @@ export default function StripeTestPage() {
         <div className="max-w-2xl mx-auto mt-8">
           <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50">
             <CardHeader>
-              <CardTitle className="text-lg text-blue-800 dark:text-blue-200">
-                💳 Cartões de Teste
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
-              <p><strong>Sucesso:</strong> 4242 4242 4242 4242</p>
-              <p><strong>Falha:</strong> 4000 0000 0000 0002</p>
-              <p><strong>3D Secure:</strong> 4000 0025 0000 3155</p>
-              <p><strong>CVV:</strong> Qualquer 3 dígitos</p>
-              <p><strong>Data:</strong> Qualquer data futura</p>
+                          <CardTitle className="text-lg text-blue-800 dark:text-blue-200">
+              {t("stripe.test.test.cards")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
+            <p><strong>{t("stripe.test.success")}</strong> 4242 4242 4242 4242</p>
+            <p><strong>{t("stripe.test.failure")}</strong> 4000 0000 0000 0002</p>
+            <p><strong>{t("stripe.test.3d.secure")}</strong> 4000 0025 0000 3155</p>
+            <p><strong>{t("stripe.test.cvv")}</strong> {t("stripe.test.cvv.description")}</p>
+            <p><strong>{t("stripe.test.date")}</strong> {t("stripe.test.date.description")}</p>
             </CardContent>
           </Card>
         </div>
@@ -217,16 +240,16 @@ export default function StripeTestPage() {
         <div className="max-w-2xl mx-auto mt-6">
           <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50">
             <CardHeader>
-              <CardTitle className="text-lg text-green-800 dark:text-green-200">
-                📋 Como funciona
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-green-700 dark:text-green-300">
-              <p>1. Preencha os dados do cartão no campo acima</p>
-              <p>2. Clique em &quot;Pagar com Cartão&quot;</p>
-              <p>3. O Stripe criará um PaymentMethod</p>
-              <p>4. Os dados serão enviados para <code>/api/stripe/payment</code></p>
-              <p>5. O backend receberá o paymentMethod.id seguindo o DTO</p>
+                          <CardTitle className="text-lg text-green-800 dark:text-green-200">
+              {t("stripe.test.how.it.works")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-green-700 dark:text-green-300">
+            <p>{t("stripe.test.step1")}</p>
+            <p>{t("stripe.test.step2")}</p>
+            <p>{t("stripe.test.step3")}</p>
+            <p>{t("stripe.test.step4")} <code>/api/stripe/payment</code></p>
+            <p>{t("stripe.test.step5")}</p>
             </CardContent>
           </Card>
         </div>

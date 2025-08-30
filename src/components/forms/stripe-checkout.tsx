@@ -150,7 +150,7 @@ export function StripeCheckout({
       <div className="text-center space-y-6">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
         <p className="text-gray-600 dark:text-gray-300">
-          Carregando dados do usuário...
+          {t("common.loading")}
         </p>
       </div>
     );

@@ -5,8 +5,10 @@ import Link from "next/link"
 import { FavoriteRecipeCard, Pagination } from "@/components/common"
 import { useFavoriteRecipes } from "@/network/hooks"
 import { RecipeParams } from "@/types/recipe"
+import { useTranslation } from "react-i18next"
 
 export default function Favorites() {
+  const { t } = useTranslation()
   const [filters, setFilters] = useState<RecipeParams>({
     page: 1,
     limit: 10
@@ -27,7 +29,7 @@ export default function Favorites() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando favoritos...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">{t("common.loading")}</p>
           </div>
         </div>
       </div>
@@ -43,10 +45,10 @@ export default function Favorites() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              Suas Receitas Favoritas
+              {t("favorites.page.title")}
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Acesse rapidamente todas as receitas que você salvou para fazer depois
+              {t("favorites.page.subtitle")}
             </p>
           </div>
 
@@ -63,16 +65,16 @@ export default function Favorites() {
                 <span className="text-4xl">❤️</span>
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                Nenhuma receita favoritada
+                {t("favorites.no.recipes")}
               </h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Comece a explorar receitas e salve suas favoritas para acessar facilmente depois
+                {t("favorites.explore.description")}
               </p>
               <Link
                 href="/"
                 className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
               >
-                Explorar Receitas
+                {t("favorites.explore.button")}
               </Link>
             </div>
           )}

@@ -3,6 +3,7 @@
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Badge } from './badge';
+import { useCurrencyFormatter } from '@/lib/utils/currency';
 
 interface PaymentStatusProps {
   status: 'pending' | 'success' | 'failed' | 'processing';
@@ -47,6 +48,7 @@ const statusConfig = {
 };
 
 export function PaymentStatus({ status, message, planName, amount }: PaymentStatusProps) {
+  const { formatCurrencyWithName } = useCurrencyFormatter();
   const config = statusConfig[status];
   const Icon = config.icon;
 
@@ -72,7 +74,7 @@ export function PaymentStatus({ status, message, planName, amount }: PaymentStat
           <div className="flex items-center justify-center gap-2">
             <span className="text-sm text-gray-600">Valor:</span>
             <Badge className={config.badgeColor}>
-              R$ {amount.toFixed(2).replace('.', ',')}
+              {formatCurrencyWithName(amount)}
             </Badge>
           </div>
         )}

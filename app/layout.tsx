@@ -12,6 +12,7 @@ import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { parseCookies } from 'nookies'
 import { useEffect } from "react"
 
+
 const Header = dynamic(() => import("@/components/layout/header").then(mod => ({ default: mod.Header })), { 
   ssr: false,
   loading: () => (
@@ -32,7 +33,7 @@ const I18nProvider = dynamic(() => import("@/components/layout/i18n-provider").t
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-2 text-gray-500">Carregando idioma...</p>
+          <p className="mt-2 text-gray-500">Carregando...</p>
         </div>
       </div>
     </div>
@@ -46,7 +47,7 @@ const AuthProvider = dynamic(() => import("@/contexts/auth-context").then(mod =>
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-2 text-gray-500">Carregando autenticação...</p>
+          <p className="mt-2 text-gray-500">Carregando...</p>
         </div>
       </div>
     </div>

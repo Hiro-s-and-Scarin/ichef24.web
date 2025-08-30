@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, ChefHat, ThumbsUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface TopChef {
   id: number;
@@ -20,6 +21,7 @@ interface TopChefCardProps {
 }
 
 export function TopChefCard({ chef, rank }: TopChefCardProps) {
+  const { t } = useTranslation();
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
@@ -72,7 +74,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
                   {chef.name}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  #{rank} Top Chef
+                  #{rank}
                 </p>
               </div>
             </div>
@@ -105,13 +107,13 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
         {/* Badges de Conquistas */}
         <div className="flex flex-wrap gap-2">
           {rank === 1 && (
-            <Badge className="bg-yellow-500 text-white">🥇 1º Lugar</Badge>
+            <Badge className="bg-yellow-500 text-white">{t("community.topChefs.rank.1")}</Badge>
           )}
           {rank === 2 && (
-            <Badge className="bg-gray-400 text-white">🥈 2º Lugar</Badge>
+            <Badge className="bg-gray-400 text-white">{t("community.topChefs.rank.2")}</Badge>
           )}
           {rank === 3 && (
-            <Badge className="bg-orange-600 text-white">🥉 3º Lugar</Badge>
+            <Badge className="bg-orange-600 text-white">{t("community.topChefs.rank.3")}</Badge>
           )}
 
           {chef.recipeCount >= 10 && (
@@ -120,7 +122,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
               className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
             >
               <ChefHat className="w-3 h-3 mr-1" />
-              Chef Experiente
+              {t("community.topChefs.experienced")}
             </Badge>
           )}
 
@@ -130,7 +132,7 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
               className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
             >
               <ThumbsUp className="w-3 h-3 mr-1" />
-              Receitas Populares
+              {t("community.topChefs.popular.recipes")}
             </Badge>
           )}
         </div>
@@ -139,15 +141,15 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">
-              Performance:
+              {t("community.topChefs.performance.label")}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-orange-500 font-medium">
-                {chef.totalLikes}
+                {chef.totalLikes} {t("community.topChefs.likes.count.short")}
               </span>
               <span className="text-gray-400">•</span>
               <span className="text-blue-500 font-medium">
-                {chef.recipeCount}
+                {chef.recipeCount} {t("community.topChefs.recipes.count.short")}
               </span>
             </div>
           </div>

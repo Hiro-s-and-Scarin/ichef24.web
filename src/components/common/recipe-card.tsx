@@ -88,7 +88,7 @@ export function RecipeCard({
     e.stopPropagation();
 
     if (!user) {
-      toast.error("Você precisa estar logado para curtir receitas");
+      toast.error(t("recipe.like.login.required"));
       return;
     }
 
@@ -105,7 +105,7 @@ export function RecipeCard({
         setLikesCount(result.likes_count || likesCount + 1);
       }
     } catch (error) {
-      toast.error("Erro ao curtir receita");
+      toast.error(t("recipe.like.error"));
     }
   };
 
@@ -214,7 +214,7 @@ export function RecipeCard({
           {recipe.cooking_time && (
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4" />
-              <span>{recipe.cooking_time}min</span>
+              <span>{recipe.cooking_time} {t("recipe.time")}</span>
             </div>
           )}
           {recipe.servings && (
@@ -264,7 +264,7 @@ export function RecipeCard({
               <ThumbsUp
                 className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-current" : ""}`}
               />
-              {isLiked ? "Curtido" : "Curtir"}
+                              {isLiked ? t("recipe.like.liked") : t("recipe.like.like")}
             </Button>
 
             <Link href={`/recipe/${recipe.id}`}>

@@ -30,14 +30,6 @@ interface FilterModalProps {
   onFiltersChange: (filters: Partial<RecipeParams>) => void;
 }
 
-const timeRanges = [
-  { value: "15", label: "Até 15 min" },
-  { value: "30", label: "Até 30 min" },
-  { value: "45", label: "Até 45 min" },
-  { value: "60", label: "Até 1 hora" },
-  { value: "120", label: "Até 2 horas" },
-];
-
 export function FilterModal({
   isOpen,
   onClose,
@@ -49,6 +41,14 @@ export function FilterModal({
   const [selectedTags, setSelectedTags] = useState<string[]>(
     filters.tags || [],
   );
+
+  const timeRanges = [
+    { value: "15", label: t("filter.time.15") },
+    { value: "30", label: t("filter.time.30") },
+    { value: "45", label: t("filter.time.45") },
+    { value: "60", label: t("filter.time.60") },
+    { value: "120", label: t("filter.time.120") },
+  ];
 
   // Opções de dificuldade com tradução dinâmica
   const difficultyOptions = [
@@ -138,10 +138,10 @@ export function FilterModal({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o nível" />
+                <SelectValue placeholder={t("filter.select.difficulty")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os níveis</SelectItem>
+                <SelectItem value="">{t("filter.all.levels")}</SelectItem>
                 {difficultyOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -164,10 +164,10 @@ export function FilterModal({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o tempo" />
+                <SelectValue placeholder={t("filter.select.time")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Qualquer tempo</SelectItem>
+                <SelectItem value="">{t("filter.any.time")}</SelectItem>
                 {timeRanges.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -198,7 +198,7 @@ export function FilterModal({
 
           {/* Sort By */}
           <div className="space-y-2">
-            <Label>Ordenar por</Label>
+            <Label>{t("filter.sort.label")}</Label>
             <Select
               value={localFilters.sortBy || ""}
               onValueChange={(value) =>
@@ -209,13 +209,13 @@ export function FilterModal({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione a ordenação" />
+                <SelectValue placeholder={t("filter.select.sort")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Padrão</SelectItem>
-                <SelectItem value="newest">Mais recentes</SelectItem>
-                <SelectItem value="oldest">Mais antigas</SelectItem>
-                <SelectItem value="title">Título A-Z</SelectItem>
+                <SelectItem value="">{t("filter.sort.default")}</SelectItem>
+                <SelectItem value="newest">{t("filter.sort.newest")}</SelectItem>
+                <SelectItem value="oldest">{t("filter.sort.oldest")}</SelectItem>
+                <SelectItem value="title">{t("filter.sort.title")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

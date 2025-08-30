@@ -15,8 +15,12 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
+import { useTranslation } from "react-i18next"
+import { useCurrencyFormatter } from "@/lib/utils/currency"
 
 function RegisterPageContent() {
+  const { t } = useTranslation()
+  const { formatCurrencyWithName } = useCurrencyFormatter()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -77,8 +81,8 @@ function RegisterPageContent() {
 
   const planNames = {
     "plano-aprendiz": "Plano Aprendiz (Grátis)",
-    "plano-chef": "Plano Chef (R$ 7,90/mês)",
-    "plano-master-chef": "Plano Master Chef (R$ 10,90/mês)",
+    "plano-chef": `Plano Chef (${formatCurrencyWithName(7.90)}/mês)`,
+    "plano-master-chef": `Plano Master Chef (${formatCurrencyWithName(10.90)}/mês)`,
   }
 
   if (!mounted) {
@@ -88,7 +92,7 @@ function RegisterPageContent() {
           <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat className="w-8 h-8 text-white" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300">Carregando...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t("common.loading")}</p>
         </div>
       </div>
     )
@@ -352,7 +356,7 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-2 text-gray-500">Carregando...</p>
+          <p className="mt-2 text-gray-500">{t("common.loading")}</p>
         </div>
       </div>
     }>

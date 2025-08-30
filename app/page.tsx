@@ -17,23 +17,18 @@ import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAu
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-
+import { useTranslation } from "react-i18next"
 
 import { LoginFormData } from "@/types/forms"
 import { loginSchema } from "@/schemas/forms"
 
 function LoginPageContent() {
   const [error, setError] = useState("")
-
+  const { t } = useTranslation()
 
   const loginMutation = useLogin()
   const { handleGoogleAuth } = useGoogleAuth()
   const { handleFacebookAuth } = useFacebookAuth()
-
-
-
-
-
 
   const { 
     register, 
@@ -66,7 +61,7 @@ function LoginPageContent() {
         err.response && typeof err.response === 'object' && 'data' in err.response &&
         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data
         ? String(err.response.data.message)
-        : "Email ou senha inválidos. Tente novamente."
+        : t("auth.error.invalid")
       setError(errorMessage)
     }
   }
@@ -91,8 +86,8 @@ function LoginPageContent() {
 
         <Card className="bg-white/95 dark:bg-gray-800/95 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
           <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl text-gray-800 dark:text-white">Bem-vindo de volta!</CardTitle>
-            <p className="text-gray-600 dark:text-gray-300">Entre na sua conta para continuar criando receitas incríveis</p>
+            <CardTitle className="text-2xl text-gray-800 dark:text-white">{t("auth.welcome")}</CardTitle>
+            <p className="text-gray-600 dark:text-gray-300">{t("auth.welcome.subtitle")}</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -106,7 +101,7 @@ function LoginPageContent() {
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700 dark:text-white">
-                  Email
+                  {t("auth.email")}
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -126,14 +121,14 @@ function LoginPageContent() {
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-700 dark:text-white">
-                  Senha
+                  {t("auth.password")}
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Sua senha"
+                    placeholder={t("auth.password.placeholder")}
                     {...register("password")}
                     className="pl-10 pr-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   />
@@ -159,11 +154,11 @@ function LoginPageContent() {
                     className="border-gray-300 dark:border-gray-700 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                   />
                   <Label htmlFor="remember" className="text-sm text-gray-600 dark:text-gray-300">
-                    Lembrar de mim
+                    {t("auth.remember")}
                   </Label>
                 </div>
                 <Link href="/forgot-password" className="text-sm text-orange-600 dark:text-orange-400 hover:underline">
-                  Esqueceu a senha?
+                  {t("auth.forgot.password")}
                 </Link>
               </div>
 
@@ -174,10 +169,10 @@ function LoginPageContent() {
                 className="w-full bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 py-6 text-lg"
               >
                 {loginMutation.isPending ? (
-                  "Entrando..."
+                  t("common.loading")
                 ) : (
                   <>
-                    Entrar
+                    {t("auth.sign.in")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </>
                 )}
@@ -190,7 +185,7 @@ function LoginPageContent() {
                 <div className="w-full border-t border-gray-300 dark:border-gray-700" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">ou</span>
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">{t("common.or")}</span>
               </div>
             </div>
 
@@ -220,7 +215,7 @@ function LoginPageContent() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continuar com Google
+                {t("auth.continue.with.google")}
               </Button>
 
               <Button
@@ -235,16 +230,16 @@ function LoginPageContent() {
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.073 24 18.062 24 12.073z" />
                 </svg>
-                Continuar com Facebook
+                {t("auth.continue.with.facebook")}
               </Button>
             </div>
 
             {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-gray-600 dark:text-gray-300">
-                Não tem uma conta?{" "}
+                {t("auth.no.account")}{" "}
                 <Link href="/auth/register" className="text-orange-600 dark:text-orange-400 hover:underline font-medium">
-                  Cadastre-se grátis
+                  {t("auth.sign.up")}
                 </Link>
               </p>
             </div>
@@ -265,7 +260,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat className="w-8 h-8 text-white" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300">Carregando...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
         </div>
       </div>
     }>

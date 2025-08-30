@@ -44,7 +44,7 @@ export function AIChatModal({
   isOpen,
   onClose,
   title,
-  placeholder = t("ai.chat.placeholder"),
+  placeholder,
   initialMessage,
   onRecipeGenerated,
 }: AIChatModalProps) {

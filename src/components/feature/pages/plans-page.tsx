@@ -211,7 +211,7 @@ export function PlansPageContent() {
                   </svg>
                 </div>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <span className="font-medium">ℹ️ Informação:</span> Ao assinar um novo plano, o atual será substituído automaticamente. Tome cuidado ao escolher, pois não é possível manter múltiplos planos ativos simultaneamente.
+                  <span className="font-medium">ℹ️ {t("common.info")}:</span> {t("community.plan.info")}
                 </p>
               </div>
             </div>
@@ -267,7 +267,7 @@ export function PlansPageContent() {
 
                       <div className="py-6">
                         <div className="text-4xl font-bold text-gray-800 dark:text-white">
-                          {formatCurrency(plan.price?.monthly || plan.amount)}
+                          R$ {(plan.price?.monthly || plan.amount).toFixed(2)}
                           {plan.amount > 0 && (
                             <span className="text-lg text-gray-500 dark:text-gray-400">
                               /mês

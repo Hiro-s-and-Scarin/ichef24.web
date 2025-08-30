@@ -33,7 +33,7 @@ const currencyToLocale: Record<string, string> = {
  * Hook para formatar moeda baseada no idioma atual
  */
 export function useCurrencyFormatter() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const getCurrencyForLanguage = (language: string): string => {
     return languageToCurrency[language] || "USD";
@@ -67,10 +67,25 @@ export function useCurrencyFormatter() {
     return currencyToSymbol[targetCurrency] || targetCurrency;
   };
 
+  const getCurrencyName = (currency?: string): string => {
+    const targetCurrency = currency || getCurrentCurrency();
+    const currencyKey = `currency.name.${targetCurrency.toLowerCase()}`;
+    return t(currencyKey, targetCurrency); // Fallback to currency code if translation not found
+  };
+
+  const formatCurrencyWithName = (amount: number, currency?: string): string => {
+    const targetCurrency = currency || getCurrentCurrency();
+    const formattedAmount = formatCurrency(amount, targetCurrency);
+    const currencyName = getCurrencyName(targetCurrency);
+    return `${formattedAmount} ${currencyName}`;
+  };
+
   return {
     getCurrentCurrency,
     formatCurrency,
     getCurrencySymbol,
+    getCurrencyName,
+    formatCurrencyWithName,
     getCurrencyForLanguage,
   };
 }
@@ -98,4 +113,47 @@ export function formatCurrencyByLanguage(
     const symbol = currencyToSymbol[targetCurrency] || targetCurrency;
     return `${symbol}${amount.toFixed(2)}`;
   }
+}
+
+/**
+ * Função utilitária para obter nome da moeda sem hook
+ */
+export function getCurrencyNameByLanguage(
+  currency: string,
+  language: string,
+): string {
+  // Mapeamento direto para nomes de moeda por idioma
+  const currencyNameMap: Record<string, Record<string, string>> = {
+    pt: {
+      brl: "reais",
+      usd: "dólares",
+      eur: "euros",
+      gbp: "libras",
+    },
+    en: {
+      brl: "reais",
+      usd: "dollars",
+      eur: "euros",
+      gbp: "pounds",
+    },
+  };
+
+  const lang = language.startsWith("pt") ? "pt" : "en";
+  const currencyLower = currency.toLowerCase();
+  
+  return currencyNameMap[lang]?.[currencyLower] || currency;
+}
+
+/**
+ * Função utilitária para formatar moeda com nome sem hook
+ */
+export function formatCurrencyWithNameByLanguage(
+  amount: number,
+  language: string,
+  currency?: string,
+): string {
+  const targetCurrency = currency || languageToCurrency[language] || "USD";
+  const formattedAmount = formatCurrencyByLanguage(amount, language, targetCurrency);
+  const currencyName = getCurrencyNameByLanguage(targetCurrency, language);
+  return `${formattedAmount} ${currencyName}`;
 }

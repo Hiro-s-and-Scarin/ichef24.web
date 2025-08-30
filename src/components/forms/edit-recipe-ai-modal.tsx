@@ -267,7 +267,7 @@ export function EditRecipeAIModal({
                         )}
                         <div className="flex-1">
                           <span className="text-sm font-bold opacity-90">
-                            {message.type === "ai" ? "iChef24 AI" : "Você"}
+                            {message.type === "ai" ? t("ai.name") : t("common.you")}
                           </span>
                           <span className="text-sm opacity-70 ml-2">
                             {message.timestamp}
@@ -340,7 +340,7 @@ export function EditRecipeAIModal({
                       onChange={(e) =>
                         updateModalState({ chatInput: e.target.value })
                       }
-                      placeholder="Peça ajuda para melhorar a receita..."
+                                              placeholder={t("ai.improve.placeholder")}
                       className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                       disabled={isGenerating}
                     />
@@ -380,7 +380,7 @@ export function EditRecipeAIModal({
                       onChange={(e) =>
                         updateModalState({ improvementType: e.target.value })
                       }
-                      placeholder="Ex: Sabor, Textura..."
+                                              placeholder={t("ai.improve.type.placeholder")}
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
                   </div>
@@ -393,7 +393,7 @@ export function EditRecipeAIModal({
                       onChange={(e) =>
                         updateModalState({ cookingTime: e.target.value })
                       }
-                      placeholder="Ex: 20 minutos"
+                                              placeholder={t("ai.improve.time.placeholder")}
                       className="h-10 text-sm bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                     />
                   </div>
@@ -413,12 +413,12 @@ export function EditRecipeAIModal({
                 <div className="w-5 h-5 bg-white rounded-full animate-spin">
                   <div className="w-3 h-1 bg-green-500 rounded-full m-1"></div>
                 </div>
-                <span className="font-semibold">Melhorando receita...</span>
+                                        <span className="font-semibold">{t("ai.improving.recipe")}</span>
               </div>
             ) : (
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
-                <span className="font-semibold">Melhorar Receita com IA</span>
+                                        <span className="font-semibold">{t("ai.improve.recipe")}</span>
               </div>
             )}
           </Button>
@@ -430,7 +430,7 @@ export function EditRecipeAIModal({
               className="w-full h-14 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-yellow-500 hover:via-orange-500 hover:to-yellow-600 text-white border-0 font-bold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group mt-4"
             >
               <Save className="w-5 h-5 mr-3 group-hover:animate-pulse" />
-              <span className="font-semibold">Salvar Receita Melhorada</span>
+                                      <span className="font-semibold">{t("ai.save.improved.recipe")}</span>
             </Button>
           )}
         </div>

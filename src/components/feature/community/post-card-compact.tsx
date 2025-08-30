@@ -20,6 +20,7 @@ import { CommunityPost } from "@/types/community";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface PostCardCompactProps {
   post: CommunityPost;
@@ -29,6 +30,7 @@ interface PostCardCompactProps {
 export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const [isLiked, setIsLiked] = useState(false);
   const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
@@ -48,13 +50,13 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
     e.stopPropagation();
 
     if (!user) {
-      toast.error("Você precisa estar logado para curtir posts");
+      toast.error(t("community.post.login.required"));
       return;
     }
 
     // Verificar se já deu like
     if (isLiked) {
-      toast.info("Você já curtiu este post");
+      toast.info(t("community.post.already.liked"));
       return;
     }
 
@@ -67,7 +69,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
 
       await onLikePost(post.id, newIsLiked);
     } catch (error) {
-      toast.error("Erro ao curtir post");
+      toast.error(t("community.post.like.error"));
       // Reverter o estado em caso de erro
       setIsLiked(false);
       setLocalLikesCount(post.likes_count || 0);
@@ -85,9 +87,9 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
     
     try {
       await navigator.clipboard.writeText(postUrl);
-      toast.success("Link do post copiado para a área de transferência!");
+      toast.success(t("community.post.link.copied"));
     } catch (error) {
-      toast.error("Erro ao copiar link");
+      toast.error(t("community.post.copy.error"));
     }
   };
 
@@ -121,14 +123,14 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-800 dark:text-white text-sm">
-                {post.user?.name || "Usuário"}
+                {post.user?.name || t("community.post.user")}
               </h3>
               {post.is_featured && (
                 <Badge
                   variant="secondary"
                   className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs"
                 >
-                  Destaque
+                  {t("community.post.featured")}
                 </Badge>
               )}
             </div>
@@ -201,7 +203,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
             <ChefHat className="w-4 h-4 text-green-600 dark:text-green-400" />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-green-800 dark:text-green-200 truncate">
-                Receita: {truncateText(post.recipe.title, 60)}
+                {t("community.post.recipe")}: {truncateText(post.recipe.title, 60)}
               </div>
               {post.recipe.description && (
                 <div className="text-xs text-green-600 dark:text-green-400 truncate">
@@ -260,7 +262,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               size="sm"
               onClick={handleCopyUrl}
               className="flex items-center gap-1 p-2 h-8 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
-              title="Copiar link do post"
+              title={t("community.post.copy.link")}
             >
               <Copy className="w-3 h-3" />
             </Button>
@@ -272,7 +274,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               className="flex items-center gap-1 p-2 h-8 text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <ExternalLink className="w-3 h-3" />
-              Ver Detalhes
+              {t("community.post.view.details")}
             </Button>
           </div>
         </div>
