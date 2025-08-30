@@ -98,6 +98,11 @@ function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, i
   )
 }
 
+function TokenCaptureWrapper() {
+  useTokenCapture()
+  return null
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -105,9 +110,6 @@ export default function RootLayout({
 }) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/auth/reset-password'
-
-  // Captura o token da URL em qualquer página
-  useTokenCapture()
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
@@ -127,6 +129,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <AuthProvider>
+                <Suspense fallback={null}>
+                  <TokenCaptureWrapper />
+                </Suspense>
                 <RouteProtector isAuthPage={isAuthPage}>
                   {children}
                   <Toaster 
