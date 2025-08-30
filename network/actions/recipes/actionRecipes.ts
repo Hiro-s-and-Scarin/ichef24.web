@@ -85,6 +85,11 @@ export async function postSaveAIRecipe(recipeData: string): Promise<Recipe> {
   return data.data
 }
 
+export async function putUpdateAIRecipe(id: string | number, recipeData: string): Promise<Recipe> {
+  const { data } = await api.put(`/recipes/ai-recipe/${id}`, { recipeData })
+  return data.data
+}
+
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {
   // Esta funcionalidade não existe no backend ainda
   throw new Error("Funcionalidade de melhoria de receitas não implementada")

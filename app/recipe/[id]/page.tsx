@@ -4,20 +4,22 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChefHat, Heart, Share2, Clock, Users, Utensils, BookOpen, ArrowLeft, Star, MessageCircle } from "lucide-react"
+import { ChefHat, Heart, Share2, Clock, Users, Utensils, BookOpen, ArrowLeft, Star, MessageCircle, Sparkles } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { translateDynamicData } from "@/lib/config/i18n"
 import { useRecipe } from "@/network/hooks/recipes/useRecipe"
-import { useAddToFavorites, useRemoveFromFavorites, useLikeRecipe, useIsFavorite } from "@/network/hooks/recipes/useRecipes"
+import { useAddToFavorites, useRemoveFromFavorites, useLikeRecipe, useIsFavorite, useUpdateAIRecipe } from "@/network/hooks/recipes/useRecipes"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
+import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
 
 interface RecipePageState {
   isFavorite: boolean
   mounted: boolean
+  isAIModalOpen: boolean
 }
 
 export default function RecipePage() {
@@ -27,6 +29,7 @@ export default function RecipePage() {
   const [recipeState, setRecipeState] = useState<RecipePageState>({
     isFavorite: false,
     mounted: false,
+    isAIModalOpen: false,
   })
 
   // Estados para curtidas (igual ao detalhe do post)
@@ -41,9 +44,32 @@ export default function RecipePage() {
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
   const likeRecipeMutation = useLikeRecipe()
+  const updateAIRecipeMutation = useUpdateAIRecipe()
 
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
+  }
+
+  const handleOpenAIModal = () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para editar receitas")
+      return
+    }
+    updateRecipeState({ isAIModalOpen: true })
+  }
+
+  const handleCloseAIModal = () => {
+    updateRecipeState({ isAIModalOpen: false })
+  }
+
+  const handleAIRecipeSave = async (updatedRecipe: any) => {
+    try {
+      handleCloseAIModal()
+      // Refresh the recipe data
+      window.location.reload()
+    } catch (error) {
+      toast.error("Erro ao atualizar receita")
+    }
   }
 
   const handleFavoriteToggle = async () => {
@@ -310,6 +336,25 @@ export default function RecipePage() {
                 </CardContent>
               </Card>
 
+              {/* Editar com IA - só aparece para receitas do usuário logado */}
+              {user && recipe.user_id === Number(user.id) && (
+                <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold text-white mb-4">Editar com IA</h3>
+                    <p className="text-gray-300 text-sm mb-4">
+                      Use a inteligência artificial para aprimorar ou modificar esta receita
+                    </p>
+                    <Button
+                      onClick={handleOpenAIModal}
+                      className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Editar com IA
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Curtir Receita */}
               <Card className="bg-gray-800/80 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-6">
@@ -343,6 +388,14 @@ export default function RecipePage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de IA para editar receita */}
+      <CreateRecipeAIModal
+        isOpen={recipeState.isAIModalOpen}
+        onClose={handleCloseAIModal}
+        onSave={handleAIRecipeSave}
+        existingRecipe={recipe}
+      />
     </div>
   )
 }

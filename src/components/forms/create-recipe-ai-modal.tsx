@@ -18,7 +18,7 @@ import {
   Bot,
   Timer,
 } from "lucide-react";
-import { useGenerateRecipeWithAI } from "@/network/hooks";
+import { useGenerateRecipeWithAI, useSaveAIRecipe, useUpdateAIRecipe } from "@/network/hooks";
 import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
@@ -29,6 +29,7 @@ interface CreateRecipeAIModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (recipe: Recipe) => void;
+  existingRecipe?: Recipe; // Para edição de receitas existentes
 }
 
 interface ChatMessage {
@@ -75,6 +76,7 @@ export function CreateRecipeAIModal({
   isOpen,
   onClose,
   onSave,
+  existingRecipe,
 }: CreateRecipeAIModalProps) {
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
@@ -128,6 +130,8 @@ export function CreateRecipeAIModal({
   };
 
   const generateRecipeMutation = useGenerateRecipeWithAI();
+  const saveAIRecipeMutation = useSaveAIRecipe();
+  const updateAIRecipeMutation = useUpdateAIRecipe();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -140,13 +144,20 @@ export function CreateRecipeAIModal({
     setIsSaving(true);
     try {
       const recipeDataString = JSON.stringify(modalState.lastGeneratedRecipe);
-      await api.post("/recipes/ai-recipe", { recipeData: recipeDataString });
+      
+      if (existingRecipe) {
+        // Atualizar receita existente
+        await updateAIRecipeMutation.mutateAsync({
+          id: existingRecipe.id,
+          recipeData: recipeDataString
+        });
+        onSave(modalState.lastGeneratedRecipe);
+      } else {
+        // Criar nova receita
+        const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString);
+        onSave(savedRecipe);
+      }
 
-      // Invalidar queries após salvar
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
-
-      toast.success("Receita salva com sucesso!");
       onClose();
     } catch (error) {
       console.error("Erro ao salvar receita:", error);
@@ -179,31 +190,30 @@ export function CreateRecipeAIModal({
 
     try {
       let recipe;
-      if (!modalState.lastGeneratedRecipe) {
-        // Primeira mensagem: usar first_message
-        recipe = await generateRecipeMutation.mutateAsync({
-          first_message: userMessage,
-        });
-      } else {
-        // Mensagens subsequentes: usar old_recipe e new_recipe
-        // IMPORTANTE: Enviar os dados EXATOS da receita anterior para a IA
-        // NÃO traduzir aqui - manter dados originais para a IA
+      // Se existe uma receita para editar ou já gerou uma receita, usar old_recipe e new_recipe
+      if (existingRecipe || modalState.lastGeneratedRecipe) {
+        const recipeToUse = modalState.lastGeneratedRecipe || existingRecipe;
         const oldRecipeForAI = {
-          title: modalState.lastGeneratedRecipe.title,
-          description: modalState.lastGeneratedRecipe.description,
-          ingredients: modalState.lastGeneratedRecipe.ingredients || [],
-          steps: modalState.lastGeneratedRecipe.steps || [],
-          cooking_time: modalState.lastGeneratedRecipe.cooking_time,
-          servings: modalState.lastGeneratedRecipe.servings,
-          difficulty_level: modalState.lastGeneratedRecipe.difficulty_level,
-          cuisine_type: modalState.lastGeneratedRecipe.cuisine_type,
-          tags: modalState.lastGeneratedRecipe.tags || [],
+          title: recipeToUse!.title,
+          description: recipeToUse!.description,
+          ingredients: recipeToUse!.ingredients || [],
+          steps: recipeToUse!.steps || [],
+          cooking_time: recipeToUse!.cooking_time,
+          servings: recipeToUse!.servings,
+          difficulty_level: recipeToUse!.difficulty_level,
+          cuisine_type: recipeToUse!.cuisine_type,
+          tags: recipeToUse!.tags || [],
         };
 
         recipe = await generateRecipeMutation.mutateAsync({
           first_message: undefined,
           old_recipe: JSON.stringify(oldRecipeForAI),
           new_recipe: userMessage,
+        });
+      } else {
+        // Primeira mensagem sem receita existente: usar first_message
+        recipe = await generateRecipeMutation.mutateAsync({
+          first_message: userMessage,
         });
       }
 
@@ -331,7 +341,7 @@ export function CreateRecipeAIModal({
   return (
           <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
-        <DialogTitle className="sr-only">iChef24 AI - Assistente Culinário Inteligente</DialogTitle>
+        <DialogTitle className="sr-only">Converse com iChef24! - Assistente Culinário Inteligente</DialogTitle>
         {/* Background com gradiente e efeitos */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
           <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/80"></div>
@@ -351,17 +361,17 @@ export function CreateRecipeAIModal({
                 {/* Logo com efeito 3D */}
                 <div className="relative">
                   <div className="w-16 h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <Bot className="w-8 h-8 text-white" />
+                    <ChefHat className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl blur opacity-50"></div>
                 </div>
                 
                 <div className="space-y-2">
                   <h1 className="text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
-                    iChef24 AI
+                    Converse com iChef24!
                   </h1>
                   <p className="text-orange-100 dark:text-orange-200 text-sm font-medium tracking-wide">
-                    ASSISTENTE CULINÁRIO INTELIGENTE
+                    Assistente Culinário Inteligente: Tire dúvidas ou peça adaptações para esta receita!
                   </p>
                 </div>
               </div>

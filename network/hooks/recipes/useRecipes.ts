@@ -17,7 +17,8 @@ import {
   postGenerateRecipeWithAI,
   getTopRecipes,
   likeRecipe,
-  postSaveAIRecipe
+  postSaveAIRecipe,
+  putUpdateAIRecipe
 } from "@/network/actions/recipes/actionRecipes"
 import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
 import { queryKeys } from "@/lib/config/query-keys"
@@ -263,6 +264,38 @@ export function useSaveAIRecipe() {
         toast.error(error.response.data?.message || "Seu plano expirou. Renove para continuar usando o serviço.");
       } else {
         toast.error(error.response?.data?.message || "Erro ao salvar receita");
+      }
+    },
+  })
+}
+
+export function useUpdateAIRecipe() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, recipeData }: { id: string | number, recipeData: string }) => {
+      return await putUpdateAIRecipe(id, recipeData)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(variables.id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.top, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topRecipes })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.topChefs })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all, exact: false })
+      queryClient.invalidateQueries({ queryKey: queryKeys.community.posts, exact: false })
+      toast.success("Receita atualizada com IA com sucesso!")
+    },
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        toast.error(error.response.data?.message || "Você não tem permissão para editar esta receita ou limite atingido.");
+      } else if (error.response?.status === 404) {
+        toast.error("Receita não encontrada.");
+      } else {
+        toast.error(error.response?.data?.message || "Erro ao atualizar receita com IA");
       }
     },
   })
