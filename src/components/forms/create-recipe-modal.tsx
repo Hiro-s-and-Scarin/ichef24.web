@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -97,6 +97,36 @@ export function CreateRecipeModal({
   });
 
   const watchedTags = watch("tags");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Traduzir o botão do input file
+  useEffect(() => {
+    const styleId = 'file-input-translation';
+    let existingStyle = document.getElementById(styleId);
+    
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      input[type="file"]::file-selector-button {
+        content: var(--file-button-text, "${t("form.file.choose")}") !important;
+      }
+      input[type="file"]::-webkit-file-upload-button {
+        content: var(--file-button-text, "${t("form.file.choose")}") !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      const styleToRemove = document.getElementById(styleId);
+      if (styleToRemove) {
+        styleToRemove.remove();
+      }
+    };
+  }, [t]);
 
   const addIngredient = () => {
     appendIngredient({ name: "", amount: "" });
@@ -241,7 +271,7 @@ export function CreateRecipeModal({
                     <Input
                       {...field}
                       type="number"
-                      placeholder="45"
+                      placeholder={t("form.time.number.placeholder")}
                       className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -265,7 +295,7 @@ export function CreateRecipeModal({
                     <Input
                       {...field}
                       type="number"
-                      placeholder="4"
+                      placeholder={t("form.servings.number.placeholder")}
                       className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -342,19 +372,27 @@ export function CreateRecipeModal({
                   control={control}
                   render={({ field: { onChange, value, ...field } }) => (
                     <div className="space-y-2">
-                      <Input
-                        {...field}
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            onChange(file);
-                            setValue("image_url", "");
-                          }
-                        }}
-                        className="h-12 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors file:mr-4 file:py-2.5 file:px-5 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-900/30 dark:file:text-orange-300"
-                      />
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              onChange(file);
+                              setValue("image_url", "");
+                            }
+                          }}
+                          className="h-12 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors file:mr-4 file:py-2.5 file:px-5 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-900/30 dark:file:text-orange-300"
+                          title={t("form.file.choose")}
+                          style={{
+                            '--file-button-text': `"${t("form.file.choose")}"`
+                          } as React.CSSProperties}
+                        />
+
+                      </div>
                       {value && (
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <span>{t("form.file.selected")}: {(value as File).name}</span>
@@ -493,7 +531,7 @@ export function CreateRecipeModal({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="Nome do ingrediente"
+                      placeholder={t("form.ingredient.name.placeholder")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -504,7 +542,7 @@ export function CreateRecipeModal({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="Quantidade"
+                      placeholder={t("form.ingredient.amount.placeholder")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -550,7 +588,7 @@ export function CreateRecipeModal({
                   render={({ field }) => (
                     <Textarea
                       {...field}
-                      placeholder="Descreva este passo..."
+                      placeholder={t("form.step.description")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -588,7 +626,7 @@ export function CreateRecipeModal({
             >
               <Save className="w-5 h-5 mr-2" />
               {isSubmitting || createRecipeMutation.isPending
-                ? "Criando..."
+                ? t("form.creating")
                 : t("form.create.recipe")}
             </Button>
           </div>
