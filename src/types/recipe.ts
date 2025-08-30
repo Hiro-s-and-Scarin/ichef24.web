@@ -70,6 +70,16 @@ export interface RecipeResponse {
   };
 }
 
+export interface FavoriteResponse {
+  data: Recipe[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export interface CreateRecipeData {
   title: string;
   description?: string;

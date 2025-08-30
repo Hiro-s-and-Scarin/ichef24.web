@@ -10,8 +10,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { translateDynamicData } from "@/lib/config/i18n"
-import { useRecipe } from "@/network/hooks/recipes/useRecipe"
-import { useAddToFavorites, useRemoveFromFavorites, useLikeRecipe, useIsFavorite, useUpdateAIRecipe } from "@/network/hooks/recipes/useRecipes"
+import { useRecipe, useAddToFavorites, useRemoveFromFavorites, useLikeRecipe, useIsFavorite } from "@/network/hooks/recipes/useRecipes"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
@@ -44,7 +43,7 @@ export default function RecipePage() {
   const addToFavoritesMutation = useAddToFavorites()
   const removeFromFavoritesMutation = useRemoveFromFavorites()
   const likeRecipeMutation = useLikeRecipe()
-  const updateAIRecipeMutation = useUpdateAIRecipe()
+
 
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
@@ -65,8 +64,8 @@ export default function RecipePage() {
   const handleAIRecipeSave = async (updatedRecipe: any) => {
     try {
       handleCloseAIModal()
-      // Refresh the recipe data
-      window.location.reload()
+      // A invalidação das queries já é feita automaticamente pelo hook useUpdateAIRecipe
+      toast.success("Receita atualizada com sucesso!")
     } catch (error) {
       toast.error("Erro ao atualizar receita")
     }
@@ -232,33 +231,33 @@ export default function RecipePage() {
             {/* Recipe Stats */}
             <div className="p-6 border-b border-gray-700/50">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-                <div className="text-center">
-                  <Clock className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.cooking_time || 'N/A'} min</div>
-                  <div className="text-gray-400 text-sm">{t('form.time')}</div>
-                </div>
-                <div className="text-center">
-                  <Users className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.servings || 'N/A'}</div>
-                  <div className="text-gray-400 text-sm">{t('form.servings')}</div>
-                </div>
-                <div className="text-center">
-                  <Utensils className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">
-                    {recipe.difficulty_level ? translateDynamicData.difficulty(recipe.difficulty_level, i18n.language) : 'N/A'}
-                  </div>
-                  <div className="text-gray-400 text-sm">{t('form.difficulty')}</div>
-                </div>
-                <div className="text-center">
-                  <Star className="w-6 h-6 text-[#ff7518] mx-auto mb-2 fill-current" />
-                  <div className="text-white font-medium">{recipeLikesCount}</div>
-                  <div className="text-gray-400 text-sm">Curtidas</div>
-                </div>
-                <div className="text-center">
-                  <MessageCircle className="w-6 h-6 text-[#ff7518] mx-auto mb-2" />
-                  <div className="text-white font-medium">{recipe.views_count || 0}</div>
-                  <div className="text-gray-400 text-sm">{t('recipe.reviews')}</div>
-                </div>
+                                 <div className="text-center">
+                   <Clock className="w-6 h-6 text-white mx-auto mb-2" />
+                   <div className="text-white font-medium">{recipe.cooking_time || 'N/A'} min</div>
+                   <div className="text-white text-sm">{t('form.time')}</div>
+                 </div>
+                 <div className="text-center">
+                   <Users className="w-6 h-6 text-white mx-auto mb-2" />
+                   <div className="text-white font-medium">{recipe.servings || 'N/A'}</div>
+                   <div className="text-white text-sm">{t('form.servings')}</div>
+                 </div>
+                 <div className="text-center">
+                   <Utensils className="w-6 h-6 text-white mx-auto mb-2" />
+                   <div className="text-white font-medium">
+                     {recipe.difficulty_level ? translateDynamicData.difficulty(recipe.difficulty_level, i18n.language) : 'N/A'}
+                   </div>
+                   <div className="text-white text-sm">{t('form.difficulty')}</div>
+                 </div>
+                 <div className="text-center">
+                   <Star className="w-6 h-6 text-white mx-auto mb-2 fill-current" />
+                   <div className="text-white font-medium">{recipeLikesCount}</div>
+                   <div className="text-white text-sm">Curtidas</div>
+                 </div>
+                 <div className="text-center">
+                   <MessageCircle className="w-6 h-6 text-white mx-auto mb-2" />
+                   <div className="text-white font-medium">{recipe.views_count || 0}</div>
+                   <div className="text-white text-sm">{t('recipe.reviews')}</div>
+                 </div>
               </div>
             </div>
           </Card>

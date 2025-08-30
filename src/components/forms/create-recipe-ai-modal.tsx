@@ -30,6 +30,7 @@ interface CreateRecipeAIModalProps {
   onClose: () => void;
   onSave: (recipe: Recipe) => void;
   existingRecipe?: Recipe; // Para edição de receitas existentes
+  initialMessage?: string; // Mensagem inicial para o chat
 }
 
 interface ChatMessage {
@@ -77,6 +78,7 @@ export function CreateRecipeAIModal({
   onClose,
   onSave,
   existingRecipe,
+  initialMessage,
 }: CreateRecipeAIModalProps) {
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
@@ -99,7 +101,7 @@ export function CreateRecipeAIModal({
         chatMessages: [
           {
             type: "ai",
-            message: "Que receita você quer criar hoje?",
+            message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
             timestamp: new Date().toLocaleTimeString("pt-BR", {
               hour: "2-digit",
               minute: "2-digit",
@@ -107,13 +109,114 @@ export function CreateRecipeAIModal({
             suggestions: [],
           },
         ],
-        chatInput: "",
+        chatInput: initialMessage || "",
         isGenerating: false,
         generatedRecipe: null,
-        lastGeneratedRecipe: null,
+        lastGeneratedRecipe: existingRecipe || null,
       }));
+
+      if (initialMessage && initialMessage.trim()) {
+        setTimeout(() => {
+          const userMessage = initialMessage.trim();
+          updateModalState({ 
+            chatInput: userMessage,
+            chatMessages: [
+              {
+                type: "ai",
+                message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
+                timestamp: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+                suggestions: [],
+              },
+              {
+                type: "user",
+                message: userMessage,
+                timestamp: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
+            ],
+            isGenerating: true,
+          });
+          
+          // Chamar diretamente a mutation em vez de handleChatSubmit
+          generateRecipeMutation.mutateAsync({
+            first_message: userMessage,
+          }).then((recipe) => {
+            const aiResponse = formatRecipe(recipe as any, {
+              isFirstMessage: true,
+            });
+
+            updateModalState({
+              chatMessages: [
+                {
+                  type: "ai",
+                  message: existingRecipe ? "Como você gostaria de modificar esta receita?" : "Que receita você quer criar hoje?",
+                  timestamp: new Date().toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                  suggestions: [],
+                },
+                {
+                  type: "user",
+                  message: userMessage,
+                  timestamp: new Date().toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                },
+                {
+                  type: "ai",
+                  message: aiResponse,
+                  timestamp: new Date().toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                  suggestions: [],
+                  new_recipe: recipe,
+                },
+              ],
+              isGenerating: false,
+              lastGeneratedRecipe: recipe,
+              generatedRecipe: {
+                title: recipe.title || "",
+                description: recipe.description || "",
+                time: recipe.cooking_time?.toString(),
+                servings: recipe.servings?.toString(),
+                difficulty: recipe.difficulty_level?.toString(),
+                ingredients: recipe.ingredients.map(
+                  (i: RecipeIngredient) => `${i.amount} de ${i.name}`,
+                ),
+                instructions: recipe.steps.map((s: RecipeStep) => s.description),
+                image: recipe.image_url || "/placeholder.jpg",
+              },
+            });
+
+            // Invalidar queries APÓS a receita ser criada com sucesso
+            queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+            queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+            queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites });
+            
+            // Se estamos editando uma receita existente, invalidar a query específica dela
+            if (existingRecipe) {
+              queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(existingRecipe.id) });
+            }
+          }).catch((error) => {
+            console.error("Erro ao gerar receita:", error);
+            toast.error("Erro ao gerar receita. Tente novamente.");
+            updateModalState({
+              isGenerating: false,
+            });
+          });
+        }, 100);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, initialMessage, existingRecipe]);
 
   const {
     isGenerating,
@@ -146,18 +249,15 @@ export function CreateRecipeAIModal({
       const recipeDataString = JSON.stringify(modalState.lastGeneratedRecipe);
       
       if (existingRecipe) {
-        // Atualizar receita existente
         await updateAIRecipeMutation.mutateAsync({
           id: existingRecipe.id,
           recipeData: recipeDataString
         });
-        onSave(modalState.lastGeneratedRecipe);
       } else {
-        // Criar nova receita
-        const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString);
-        onSave(savedRecipe);
+        await saveAIRecipeMutation.mutateAsync(recipeDataString);
       }
 
+      onSave(modalState.lastGeneratedRecipe);
       onClose();
     } catch (error) {
       console.error("Erro ao salvar receita:", error);
@@ -251,11 +351,16 @@ export function CreateRecipeAIModal({
         },
       });
 
-      // Invalidar queries APÓS a receita ser criada com sucesso
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites });
+             // Invalidar queries APÓS a receita ser criada com sucesso
+       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites });
+       
+       // Se estamos editando uma receita existente, invalidar a query específica dela
+       if (existingRecipe) {
+         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(existingRecipe.id) });
+       }
 
     } catch (error: unknown) {
       console.error("Erro detalhado ao gerar receita:", error);

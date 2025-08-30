@@ -20,7 +20,7 @@ import {
   postSaveAIRecipe,
   putUpdateAIRecipe
 } from "@/network/actions/recipes/actionRecipes"
-import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest } from "@/types/recipe"
+import { Recipe, RecipeParams, CreateRecipeData, AIRecipeRequest, FavoriteResponse } from "@/types/recipe"
 import { queryKeys } from "@/lib/config/query-keys"
 
 export function useRecipes(params: RecipeParams = {}) {
@@ -117,7 +117,7 @@ export function useDeleteRecipe() {
 }
 
 export function useFavoriteRecipes(params: RecipeParams = {}) {
-  return useQuery({
+  return useQuery<FavoriteResponse>({
     queryKey: [...queryKeys.recipes.favorites, params],
     queryFn: async () => await getFavoriteRecipes(params),
     staleTime: 1000 * 60 * 5,
@@ -362,7 +362,7 @@ export function useIsFavorite(recipeId: string | number) {
     queryKey: [...queryKeys.recipes.favorites, 'isFavorite', recipeId],
     queryFn: async () => {
       if (!favorites?.data) return false
-      return favorites.data.some(favorite => favorite.recipe.id === Number(recipeId))
+      return favorites.data.some(favorite => favorite.id === Number(recipeId))
     },
     enabled: !!favorites?.data,
     staleTime: 1000 * 60 * 5,

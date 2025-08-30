@@ -19,7 +19,7 @@ export default function Favorites() {
   }
 
   // Extrair as receitas dos favoritos
-  const recipes = recipesData?.data?.map(favorite => favorite.recipe) || []
+  const recipes = Array.isArray(recipesData?.data) ? recipesData.data : []
 
   if (isLoading) {
     return (
