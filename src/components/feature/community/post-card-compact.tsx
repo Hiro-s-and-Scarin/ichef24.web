@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
   ChefHat,
+  Copy,
 } from "lucide-react";
 import { CommunityPost } from "@/types/community";
 import { useRouter } from "next/navigation";
@@ -75,6 +76,19 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
 
   const handleViewDetails = () => {
     router.push(`/community/post/${post.id}`);
+  };
+
+  const handleCopyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const postUrl = `${window.location.origin}/community/post/${post.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      toast.success("Link do post copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -242,10 +256,20 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
             </Button>
 
             <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyUrl}
+              className="flex items-center gap-1 p-2 h-8 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
+              title="Copiar link do post"
+            >
+              <Copy className="w-3 h-3" />
+            </Button>
+
+            <Button
               variant="outline"
               size="sm"
               onClick={handleViewDetails}
-              className="flex items-center gap-1 p-2 h-8 text-xs"
+              className="flex items-center gap-1 p-2 h-8 text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <ExternalLink className="w-3 h-3" />
               Ver Detalhes

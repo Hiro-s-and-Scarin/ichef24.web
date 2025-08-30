@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Trophy,
   ChefHat,
@@ -13,6 +15,7 @@ import {
   Users,
   TrendingUp,
   Image as ImageIcon,
+  Copy,
 } from "lucide-react";
 import { Recipe } from "@/types/recipe";
 import { getRecipeImageUrl, hasRecipeImage } from "@/lib/utils/recipe-image";
@@ -91,6 +94,19 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+  };
+
+  const handleCopyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const recipeUrl = `${window.location.origin}/recipe/${recipe.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(recipeUrl);
+      toast.success("Link da receita copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
+    }
   };
 
   return (
@@ -273,6 +289,19 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
                 width: `${Math.min(100, recipe.likes_count / 10)}%`,
               }}
             />
+          </div>
+
+          {/* Copy URL Button */}
+          <div className="mt-3 flex justify-end">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCopyUrl}
+              className="text-xs px-2 py-1.5 h-8 hover:bg-gray-50 dark:hover:bg-gray-700"
+              title="Copiar link da receita"
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </Button>
           </div>
         </div>
       </CardContent>

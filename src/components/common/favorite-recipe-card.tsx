@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { translateDynamicData } from "@/lib/config/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Clock, Users, Star, Eye, ThumbsUp, Trash2 } from "lucide-react";
+import { Heart, Clock, Users, Star, Eye, ThumbsUp, Trash2, Copy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Recipe } from "@/types/recipe";
@@ -113,6 +113,19 @@ export function FavoriteRecipeCard({
     }
   };
 
+  const handleCopyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const recipeUrl = `${window.location.origin}/recipe/${recipe.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(recipeUrl);
+      toast.success("Link da receita copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
+    }
+  };
+
   return (
     <Card
       className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] h-full flex flex-col cursor-pointer min-h-[480px] w-full max-w-md mx-auto relative"
@@ -213,7 +226,17 @@ export function FavoriteRecipeCard({
             <span>{likesCount}</span>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCopyUrl}
+              className="text-xs px-2 py-1.5 h-8 hover:bg-gray-50 dark:hover:bg-gray-700"
+              title="Copiar link da receita"
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </Button>
+
             <Button
               size="sm"
               variant="outline"
@@ -221,8 +244,8 @@ export function FavoriteRecipeCard({
               disabled={likeRecipeMutation.isPending || isLiked}
               className={`text-xs px-3 py-1.5 h-8 ${
                 isLiked 
-                  ? 'bg-orange-200 text-orange-800 border-orange-400 cursor-not-allowed' 
-                  : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border-orange-300'
+                  ? 'bg-orange-200 text-orange-800 border-orange-400 cursor-not-allowed dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-600' 
+                  : 'bg-orange-100 hover:bg-orange-200 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700'
               }`}
             >
               <ThumbsUp

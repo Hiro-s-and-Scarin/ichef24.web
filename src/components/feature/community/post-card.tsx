@@ -19,6 +19,7 @@ import {
   Image as ImageIcon,
   User,
   ChefHat,
+  Copy,
 } from "lucide-react";
 import * as yup from "yup";
 import { CommunityPost, PostComment } from "@/types/community";
@@ -112,6 +113,19 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
   const handleRecipeClick = () => {
     if (post.recipe?.id) {
       router.push(`/recipe/${post.recipe.id}`);
+    }
+  };
+
+  const handleCopyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const postUrl = `${window.location.origin}/community/post/${post.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      toast.success("Link do post copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
     }
   };
 
@@ -282,6 +296,17 @@ export function PostCard({ post, onCreateComment, onLikePost }: PostCardProps) {
               <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
               <span className="text-sm">{likesCount}</span>
             </button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyUrl}
+              className="flex items-center gap-2"
+              title="Copiar link do post"
+            >
+              <Copy className="w-4 h-4 text-gray-500" />
+              <span className="text-sm">Copiar</span>
+            </Button>
 
             <Button
               variant="ghost"

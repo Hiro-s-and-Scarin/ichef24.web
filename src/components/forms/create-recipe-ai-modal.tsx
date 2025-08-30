@@ -205,6 +205,8 @@ export function CreateRecipeAIModal({
             // Se estamos editando uma receita existente, invalidar a query específica dela
             if (existingRecipe) {
               queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(existingRecipe.id) });
+            } else if (recipe && recipe.id) {
+              queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(recipe.id) });
             }
           }).catch((error) => {
             console.error("Erro ao gerar receita:", error);
@@ -360,6 +362,8 @@ export function CreateRecipeAIModal({
        // Se estamos editando uma receita existente, invalidar a query específica dela
        if (existingRecipe) {
          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(existingRecipe.id) });
+       } else if (recipe && recipe.id) {
+         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.one(recipe.id) });
        }
 
     } catch (error: unknown) {

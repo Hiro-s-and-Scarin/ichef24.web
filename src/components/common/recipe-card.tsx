@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { translateDynamicData } from "@/lib/config/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Clock, Users, Star, Eye, ThumbsUp } from "lucide-react";
+import { Heart, Clock, Users, Star, Eye, ThumbsUp, Copy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Recipe } from "@/types/recipe";
@@ -106,6 +106,19 @@ export function RecipeCard({
       }
     } catch (error) {
       toast.error("Erro ao curtir receita");
+    }
+  };
+
+  const handleCopyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const recipeUrl = `${window.location.origin}/recipe/${recipe.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(recipeUrl);
+      toast.success("Link da receita copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
     }
   };
 
@@ -230,13 +243,23 @@ export function RecipeCard({
             <span>{likesCount}</span>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCopyUrl}
+              className="text-xs px-2 py-1.5 h-8 hover:bg-gray-50 dark:hover:bg-gray-700"
+              title="Copiar link da receita"
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </Button>
+
             <Button
               size="sm"
               variant="outline"
               onClick={handleLike}
               disabled={isLiked}
-              className={`text-xs px-3 py-1.5 h-8 ${isLiked ? "bg-blue-100 text-blue-700 border-blue-300" : "hover:bg-blue-50"}`}
+              className={`text-xs px-3 py-1.5 h-8 ${isLiked ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-600" : "hover:bg-blue-50 dark:hover:bg-blue-900/30"}`}
             >
               <ThumbsUp
                 className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-current" : ""}`}
