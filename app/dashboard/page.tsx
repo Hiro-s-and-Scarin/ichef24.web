@@ -13,6 +13,7 @@ import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal"
 import { useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/config/query-keys"
+import { MainFeaturesSection } from "@/components/dashboard/main-features-section"
 
 
 export default function HomePage() {
@@ -184,6 +185,8 @@ function HomePageContent() {
           </Card>
         </div>
 
+        {/* Main Features Section */}
+        <MainFeaturesSection />
 
       </div>
 

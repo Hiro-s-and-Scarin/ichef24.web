@@ -19,9 +19,9 @@ const resources = {
       "home.title":
         "iChef24 AI - Criador de Receitas com Inteligência Artificial",
       "home.subtitle":
-        "Crie receitas incríveis com inteligência artificial. Seu assistente culinário gourmet.",
+        "Seu assistente culinário que cria receitas incríveis com o que você já tem na cozinha",
       "home.description":
-        "Transforme sua experiência culinária com IA avançada. Crie, personalize e descubra receitas únicas.",
+        "Descubra, organize e crie: seu espaço para receitas, conexões e um livro digital feito para você.",
       "home.cta": "Começar Agora",
       "home.features.title": "Recursos Principais",
       "home.features.ai": "IA Avançada",
@@ -30,6 +30,35 @@ const resources = {
       "home.features.community.desc": "Compartilhe e descubra receitas",
       "home.features.favorites": "Favoritos",
       "home.features.favorites.desc": "Salve suas receitas preferidas",
+
+      // Main Features Section
+      "mainFeatures.title": "Principais Funcionalidades",
+      "mainFeatures.subtitle": "Descubra tudo que o iChef24 pode fazer por você",
+      "mainFeatures.description": "Conheça novas criações, participe da comunidade e monte seu livro digital personalizado para sua dieta e estilo de vida.",
+      
+      // Feature 1
+      "mainFeatures.personalized.title": "Receitas Personalizadas",
+      "mainFeatures.personalized.desc": "Receitas criadas especialmente para você com base nos seus gostos e ingredientes",
+      
+      // Feature 2
+      "mainFeatures.assistant.title": "Assistente Culinário",
+      "mainFeatures.assistant.desc": "Tire suas dúvidas sobre culinária a qualquer hora com nossa inteligência artificial",
+      
+      // Feature 3
+      "mainFeatures.instant.title": "Receitas Instantâneas",
+      "mainFeatures.instant.desc": "Digite o que tem na geladeira e receba sugestões na hora",
+      
+      // Feature 4
+      "mainFeatures.favorites.title": "Favoritos Inteligentes",
+      "mainFeatures.favorites.desc": "Organize suas receitas favoritas em pastas personalizadas",
+      
+      // Feature 5
+      "mainFeatures.dietary.title": "Adaptações Alimentares",
+      "mainFeatures.dietary.desc": "Receitas ajustadas para dietas sem glúten, lactose ou açúcar",
+      
+      // Feature 6
+      "mainFeatures.links.title": "Salva Links",
+      "mainFeatures.links.desc": "Guarde e acesse facilmente receitas de qualquer site e crie seu próprio livro de receitas digital",
 
       // Dashboard Page
       "dashboard.ai.button": "Criar Receita com IA",
@@ -815,9 +844,9 @@ const resources = {
       // Home Page
       "home.title": "iChef24 AI - Recipe Creator with Artificial Intelligence",
       "home.subtitle":
-        "Create amazing recipes with artificial intelligence. Your gourmet culinary assistant.",
+        "Your culinary assistant that creates amazing recipes with what you already have in the kitchen",
       "home.description":
-        "Transform your culinary experience with advanced AI. Create, customize and discover unique recipes.",
+        "Discover, organize and create: your space for recipes, connections and a digital book made for you.",
       "home.cta": "Get Started",
       "home.features.title": "Main Features",
       "home.features.ai": "Advanced AI",
@@ -826,6 +855,35 @@ const resources = {
       "home.features.community.desc": "Share and discover recipes",
       "home.features.favorites": "Favorites",
       "home.features.favorites.desc": "Save your favorite recipes",
+
+      // Main Features Section
+      "mainFeatures.title": "Main Features",
+      "mainFeatures.subtitle": "Discover everything iChef24 can do for you",
+      "mainFeatures.description": "Discover new creations, participate in the community and build your personalized digital book for your diet and lifestyle.",
+      
+      // Feature 1
+      "mainFeatures.personalized.title": "Personalized Recipes",
+      "mainFeatures.personalized.desc": "Recipes created especially for you based on your tastes and ingredients",
+      
+      // Feature 2
+      "mainFeatures.assistant.title": "Culinary Assistant",
+      "mainFeatures.assistant.desc": "Ask your culinary questions anytime with our artificial intelligence",
+      
+      // Feature 3
+      "mainFeatures.instant.title": "Instant Recipes",
+      "mainFeatures.instant.desc": "Type what you have in the fridge and get suggestions instantly",
+      
+      // Feature 4
+      "mainFeatures.favorites.title": "Smart Favorites",
+      "mainFeatures.favorites.desc": "Organize your favorite recipes in personalized folders",
+      
+      // Feature 5
+      "mainFeatures.dietary.title": "Dietary Adaptations",
+      "mainFeatures.dietary.desc": "Recipes adjusted for gluten-free, lactose-free or sugar-free diets",
+      
+      // Feature 6
+      "mainFeatures.links.title": "Save Links",
+      "mainFeatures.links.desc": "Save and easily access recipes from any site and create your own digital recipe book",
 
       // Dashboard Page
       "dashboard.ai.button": "Create Recipe with AI",
