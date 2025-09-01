@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Recipe } from "@/types/recipe";
 import { getRecipeImageUrl, hasRecipeImage } from "@/lib/utils/recipe-image";
+import { translateDynamicData } from "@/lib/config/i18n";
 
 interface TopRecipeCardProps {
   recipe: Recipe;
@@ -27,7 +28,7 @@ interface TopRecipeCardProps {
 }
 
 export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const getRankColor = (rank: number) => {
     switch (rank) {
@@ -73,20 +74,8 @@ export function TopRecipeCard({ recipe, rank }: TopRecipeCardProps) {
   };
 
   const getDifficultyText = (difficulty: number) => {
-    switch (difficulty) {
-      case 1:
-        return t("filter.difficulty.very.easy");
-      case 2:
-        return t("filter.difficulty.easy");
-      case 3:
-        return t("filter.difficulty.intermediate");
-      case 4:
-        return t("filter.difficulty.hard");
-      case 5:
-        return t("filter.difficulty.very.hard");
-      default:
-        return t("recipe.card.difficulty.not.specified");
-    }
+    if (!difficulty) return t("recipe.card.difficulty.not.specified");
+    return translateDynamicData.difficulty(difficulty, i18n.language);
   };
 
   const formatTime = (minutes: number | undefined) => {

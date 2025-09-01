@@ -450,7 +450,7 @@ export function CreateRecipeAIModal({
 
   return (
           <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+        <DialogContent className="max-w-6xl w-[95vw] md:w-[80vw] lg:w-[60vw] h-[95vh] md:h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
         <DialogTitle className="sr-only">Converse com iChef24! - Assistente Culinário Inteligente</DialogTitle>
         {/* Background com gradiente e efeitos */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -460,27 +460,27 @@ export function CreateRecipeAIModal({
         {/* Container principal com glassmorphism */}
         <div className="relative z-10 min-h-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden flex flex-col">
           {/* Header elegante */}
-          <div className="relative p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
+          <div className="relative p-6 md:p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
             {/* Elementos decorativos de fundo */}
             <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 via-yellow-600/20 to-orange-600/20"></div>
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400/30 to-yellow-400/30 rounded-full blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-full blur-2xl"></div>
             
             <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
                 {/* Logo com efeito 3D */}
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <ChefHat className="w-8 h-8 text-white" />
+                  <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <ChefHat className="w-7 h-7 md:w-8 md:h-8 text-white" />
                   </div>
                   <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl blur opacity-50"></div>
                 </div>
                 
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
+                <div className="space-y-1 md:space-y-2">
+                  <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
                     Converse com iChef24!
                   </h1>
-                  <p className="text-orange-100 dark:text-orange-200 text-sm font-medium tracking-wide">
+                  <p className="text-orange-100 dark:text-orange-200 text-sm md:text-base font-medium tracking-wide">
                     Assistente Culinário Inteligente: Tire dúvidas ou peça adaptações para esta receita!
                   </p>
                 </div>
@@ -491,7 +491,7 @@ export function CreateRecipeAIModal({
                 onClick={onClose}
                 className="group relative w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 backdrop-blur-sm"
               >
-                <X className="w-5 h-5 text-white group-hover:text-orange-200 transition-colors" />
+                <X className="w-6 h-6 text-white group-hover:text-orange-200 transition-colors" />
               </button>
             </div>
 
@@ -518,7 +518,7 @@ export function CreateRecipeAIModal({
              
               {/* Área de mensagens - com altura flexível */}
               <div 
-                className="flex-1 overflow-y-auto p-6 space-y-4 ai-modal-scrollbar min-h-0" 
+                className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 ai-modal-scrollbar min-h-0" 
                 style={{
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#fb923c #fed7aa'

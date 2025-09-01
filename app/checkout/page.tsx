@@ -14,7 +14,7 @@ import { PaymentStatus } from "@/src/components/ui/payment-status"
 import { useAuth } from "@/src/contexts/auth-context"
 
 function CheckoutContent() {
-  const { t } = useTranslation()
+  const { t, ready } = useTranslation()
   const { user } = useAuth()
   const { formatCurrencyWithName } = useCurrencyFormatter()
   const searchParams = useSearchParams()
@@ -36,6 +36,17 @@ function CheckoutContent() {
   }
 
   const createCheckoutMutation = useCreateStripeCheckout()
+
+  if (!ready || !t) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Carregando...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleCreateCheckout = async () => {
     // Verificar se o usuário está logado

@@ -183,7 +183,7 @@ export function HistoryPageContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <History className="text-orange-500" />
@@ -193,9 +193,9 @@ export function HistoryPageContent() {
                 {t("history.subtitle")}
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
               <Button
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
                 onClick={() =>
                   setModalState((prev) => ({
                     ...prev,
@@ -207,7 +207,7 @@ export function HistoryPageContent() {
               </Button>
               <Button
                 variant="outline"
-                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white w-full sm:w-auto"
                 onClick={() =>
                   setModalState((prev) => ({
                     ...prev,
@@ -217,7 +217,7 @@ export function HistoryPageContent() {
               >
                 {t("history.create.ai")}
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="w-full sm:w-auto">
                 <Link href="/dashboard">{t("history.back.home")}</Link>
               </Button>
             </div>
@@ -254,27 +254,17 @@ export function HistoryPageContent() {
           {/* Search and Filters */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
             <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="relative flex-1 max-w-md">
+              <div className="flex flex-col gap-4">
+                <div className="relative w-full max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
                     placeholder={t("history.search.placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-gray-200 dark:border-gray-600"
+                    className="pl-10 border-gray-200 dark:border-gray-600 w-full"
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  {/* Botão de filtros removido para evitar problemas de validação */}
-                  {/* <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsFilterModalOpen(true)}
-                    className="border-gray-200 dark:border-gray-600"
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    {t('history.filters')}
-                  </Button> */}
+                <div className="flex items-center justify-center sm:justify-end">
                   <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
                     <Button
                       variant={viewMode === "grid" ? "default" : "ghost"}

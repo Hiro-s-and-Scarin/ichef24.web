@@ -43,7 +43,7 @@ export default function CheckoutSuccessPage() {
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-            {t("checkout.success.subtitle", { planName: planName || t("checkout.success.default.plan") })}
+            Seu plano {planName || t("checkout.success.default.plan")} foi ativado com sucesso!
           </p>
           
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
