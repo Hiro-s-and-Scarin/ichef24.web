@@ -49,6 +49,23 @@ const resources = {
         "Interface intuitiva que qualquer pessoa pode usar",
       "dashboard.loading": "Carregando...",
 
+      // Main Features Section
+      "mainFeatures.title": "Recursos Principais",
+      "mainFeatures.subtitle": "Descubra todas as funcionalidades do iChef24",
+      "mainFeatures.description": "Uma plataforma completa para criar, compartilhar e descobrir receitas incríveis com o poder da inteligência artificial.",
+      "mainFeatures.personalized.title": "Receitas Personalizadas",
+      "mainFeatures.personalized.desc": "IA avançada que cria receitas únicas baseadas em suas preferências e ingredientes disponíveis",
+      "mainFeatures.assistant.title": "Assistente Inteligente",
+      "mainFeatures.assistant.desc": "Chat interativo que te guia na criação de receitas e responde suas dúvidas culinárias",
+      "mainFeatures.instant.title": "Resultados Instantâneos",
+      "mainFeatures.instant.desc": "Receba receitas completas em segundos, com ingredientes, modo de preparo e dicas especiais",
+      "mainFeatures.favorites.title": "Favoritos Sincronizados",
+      "mainFeatures.favorites.desc": "Salve suas receitas preferidas e acesse de qualquer dispositivo, sempre organizadas",
+      "mainFeatures.dietary.title": "Restrições Alimentares",
+      "mainFeatures.dietary.desc": "Filtros inteligentes para vegetarianos, veganos, sem glúten e outras necessidades dietéticas",
+      "mainFeatures.links.title": "Compartilhamento Fácil",
+      "mainFeatures.links.desc": "Compartilhe suas criações com links diretos e integração com redes sociais",
+
       // History Page
       "history.title": "Histórico de Receitas",
       "history.subtitle": "Suas criações culinárias organizadas por data",
@@ -260,6 +277,22 @@ const resources = {
       "post.like.login.required": "Você precisa estar logado para curtir posts",
       "post.like.error": "Erro ao curtir post",
 
+      // Notifications and Messages
+      "notification.success": "Sucesso!",
+      "notification.error": "Erro!",
+      "notification.warning": "Aviso!",
+      "notification.info": "Informação",
+      "notification.loading": "Carregando...",
+      "notification.saving": "Salvando...",
+      "notification.deleting": "Deletando...",
+      "notification.creating": "Criando...",
+      "notification.updating": "Atualizando...",
+      "notification.copied": "Copiado para a área de transferência!",
+      "notification.deleted": "Deletado com sucesso!",
+      "notification.saved": "Salvo com sucesso!",
+      "notification.created": "Criado com sucesso!",
+      "notification.updated": "Atualizado com sucesso!",
+
       // Plans Page
       "plans.title": "Escolha seu Plano",
       "plans.subtitle": "Planos flexíveis para todos os tipos de chef",
@@ -345,9 +378,15 @@ const resources = {
       "recipe.servings": "pessoas",
       "recipe.difficulty": "Dificuldade",
       "recipe.rating": "Avaliação",
+      "recipe.rating.excellent": "Excelente",
+      "recipe.rating.very.good": "Muito Bom",
+      "recipe.rating.good": "Bom",
+      "recipe.rating.regular": "Regular",
+      "recipe.rating.can.improve": "Pode Melhorar",
       "recipe.view": "Ver Receita",
       "recipe.edit": "Editar",
       "recipe.favorite": "Favoritar",
+      "recipe.card.difficulty.not.specified": "Não especificado",
       "recipe.unfavorite": "Desfavoritar",
       "recipe.share": "Compartilhar",
       "recipe.nutrition": "Informação Nutricional",
@@ -480,8 +519,7 @@ const resources = {
 
       // Error Messages
       "error.general": "Erro ao processar solicitação",
-      "error.create.account":
-        "Erro ao criar conta. Verifique os dados e tente novamente.",
+
       "error.create.post": "Erro ao criar post. Tente novamente.",
       "error.create.recipe": "Erro ao criar receita",
       "error.update.recipe": "Erro ao atualizar receita",
@@ -536,12 +574,11 @@ const resources = {
       "error.send.message": "Erro ao enviar mensagem",
       "error.delete.message": "Erro ao deletar mensagem",
       "error.login": "Erro ao fazer login",
-      "error.create.account": "Erro ao criar conta",
+
       "error.send.recovery.email": "Erro ao enviar email de recuperação",
       "error.invalid.code": "Código inválido ou expirado",
       "error.logout": "Erro ao fazer logout",
       "error.send.verification.code": "Erro ao enviar código de verificação",
-      "error.update.profile": "Erro ao atualizar perfil",
       "error.update.password": "Erro ao atualizar senha",
       "error.sign.plan": "Erro ao assinar plano",
       "error.change.plan": "Erro ao alterar plano",
@@ -839,9 +876,28 @@ const resources = {
       "dashboard.features.recipes.title": "Unique Recipes",
       "dashboard.features.recipes.desc":
         "Thousands of combinations based on your available ingredients",
+      "dashboard.features.community.title": "Active Community",
+      "dashboard.features.community.desc": "Connect with other chefs, share experiences and discover new recipes",
       "dashboard.features.easy.title": "Easy to Use",
       "dashboard.features.easy.desc": "Intuitive interface that anyone can use",
       "dashboard.loading": "Loading...",
+
+      // Main Features Section
+      "mainFeatures.title": "Main Features",
+      "mainFeatures.subtitle": "Discover all the features of iChef24",
+      "mainFeatures.description": "A complete platform to create, share and discover amazing recipes with the power of artificial intelligence.",
+      "mainFeatures.personalized.title": "Personalized Recipes",
+      "mainFeatures.personalized.desc": "Advanced AI that creates unique recipes based on your preferences and available ingredients",
+      "mainFeatures.assistant.title": "Smart Assistant",
+      "mainFeatures.assistant.desc": "Interactive chat that guides you in creating recipes and answers your culinary questions",
+      "mainFeatures.instant.title": "Instant Results",
+      "mainFeatures.instant.desc": "Get complete recipes in seconds, with ingredients, preparation method and special tips",
+      "mainFeatures.favorites.title": "Synchronized Favorites",
+      "mainFeatures.favorites.desc": "Save your favorite recipes and access them from any device, always organized",
+      "mainFeatures.dietary.title": "Dietary Restrictions",
+      "mainFeatures.dietary.desc": "Smart filters for vegetarians, vegans, gluten-free and other dietary needs",
+      "mainFeatures.links.title": "Easy Sharing",
+      "mainFeatures.links.desc": "Share your creations with direct links and social media integration",
 
       // History Page
       "history.title": "Recipe History",
@@ -1069,9 +1125,20 @@ const resources = {
       "recipe.servings": "people",
       "recipe.difficulty": "Difficulty",
       "recipe.rating": "Rating",
+      "recipe.rating.excellent": "Excellent",
+      "recipe.rating.very.good": "Very Good",
+      "recipe.rating.good": "Good",
+      "recipe.rating.regular": "Regular",
+      "recipe.rating.can.improve": "Can Improve",
       "recipe.view": "View Recipe",
       "recipe.edit": "Edit",
       "recipe.favorite": "Favorite",
+      "recipe.nutrition": "Nutritional Information",
+      "recipe.calories": "Calories",
+      "recipe.protein": "Protein",
+      "recipe.carbs": "Carbs",
+      "recipe.fat": "Fat",
+      "recipe.rate": "Rate this recipe",
       "recipe.unfavorite": "Unfavorite",
       "recipe.share": "Share",
 
@@ -1479,21 +1546,7 @@ const resources = {
       "currency.name.eur": "euros",
       "currency.name.gbp": "pounds",
       
-      // Notifications and Messages
-      "notification.success": "Success!",
-      "notification.error": "Error!",
-      "notification.warning": "Warning!",
-      "notification.info": "Information",
-      "notification.loading": "Loading...",
-      "notification.saving": "Saving...",
-      "notification.deleting": "Deleting...",
-      "notification.creating": "Creating...",
-      "notification.updating": "Updating...",
-      "notification.copied": "Copied to clipboard!",
-      "notification.deleted": "Successfully deleted!",
-      "notification.saved": "Successfully saved!",
-      "notification.created": "Successfully created!",
-      "notification.updated": "Successfully updated!",
+
       
       // Error Messages
       "error.general": "Something went wrong. Please try again.",

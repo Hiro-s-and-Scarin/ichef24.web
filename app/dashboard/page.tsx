@@ -209,7 +209,7 @@ function HomePageContent() {
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user, exact: false })
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false })
           queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false })
-          toast.success("Receita criada com sucesso!")
+          toast.success(t("success.recipe.created"))
         }}
         initialMessage={dashboardState.inputValue}
       />
