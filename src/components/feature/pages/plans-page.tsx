@@ -202,6 +202,26 @@ export function PlansPageContent() {
               {t("plans.subtitle")}
             </p>
 
+            {/* Aviso sobre necessidade de assinar plano */}
+            <div className="mt-6 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-200 dark:border-orange-600 rounded-xl shadow-lg">
+              <div className="flex items-center justify-center space-x-3 mb-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-orange-800 dark:text-orange-200">
+                  {t("plans.required.title")}
+                </h3>
+              </div>
+              <p className="text-center text-orange-700 dark:text-orange-300 text-lg leading-relaxed">
+                {t("plans.required.subtitle")}
+              </p>
+              <p className="text-center text-orange-600 dark:text-orange-400 mt-2">
+                {t("plans.required.description")}
+              </p>
+            </div>
+
             {/* Mensagem Informativa sobre Substituição de Planos */}
             <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
               <div className="flex items-center space-x-2">

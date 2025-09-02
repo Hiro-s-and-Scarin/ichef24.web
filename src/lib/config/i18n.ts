@@ -19,9 +19,9 @@ const resources = {
       "home.title":
         "iChef24 AI - Criador de Receitas com Inteligência Artificial",
       "home.subtitle":
-        "Crie receitas incríveis com inteligência artificial. Seu assistente culinário gourmet.",
+        "Seu assistente culinário que cria receitas incríveis com o que você já tem na cozinha.",
       "home.description":
-        "Transforme sua experiência culinária com IA avançada. Crie, personalize e descubra receitas únicas.",
+        "Descubra, organize e crie: seu espaço para receitas, conexões e um livro digital feito por você.",
       "home.cta": "Começar Agora",
       "home.features.title": "Recursos Principais",
       "home.features.ai": "IA Avançada",
@@ -555,6 +555,16 @@ const resources = {
         "Seu plano expirou. Renove para continuar usando o serviço.",
       "error.plan.no.permission":
         "Seu plano não permite criar receitas. Atualize seu plano para acessar esta funcionalidade.",
+      "error.plan.not.active":
+        "Você precisa ativar um plano para usar esta funcionalidade. Escolha um plano e comece a criar receitas incríveis!",
+      "error.plan.activate.message":
+        "Ative um plano para desbloquear todas as funcionalidades do iChef24",
+      "error.plan.no.active.plan":
+        "Você precisa ativar um plano para usar esta funcionalidade. Escolha um plano e comece a criar receitas incríveis!",
+      "plans.required.title": "Plano Obrigatório",
+      "plans.required.subtitle": "Para usar a plataforma iChef24, você precisa assinar um plano",
+      "plans.required.description": "Escolha o plano ideal para você e comece a criar receitas incríveis com IA avançada",
+      "plans.required.cta": "Ver Planos",
       "error.rate.limit":
         "Limite de requisições excedido. Tente novamente em alguns minutos.",
       "error.recipe.not.found": "Receita não encontrada.",
@@ -854,9 +864,9 @@ const resources = {
       // Home Page
       "home.title": "iChef24 AI - Recipe Creator with Artificial Intelligence",
       "home.subtitle":
-        "Create amazing recipes with artificial intelligence. Your gourmet culinary assistant.",
+        "Your culinary assistant that creates incredible recipes with what you already have in the kitchen.",
       "home.description":
-        "Transform your culinary experience with advanced AI. Create, customize and discover unique recipes.",
+        "Discover, organize and create: your space for recipes, connections and a digital book made by you.",
       "home.cta": "Get Started",
       "home.features.title": "Main Features",
       "home.features.ai": "Advanced AI",
@@ -1361,6 +1371,20 @@ const resources = {
       "error.facebook.auth": "Error starting Facebook authentication",
       "error.process.auth": "Error processing authentication",
       "error.no.recipe.to.save": "No recipe to save",
+      "error.plan.no.permission":
+        "Your plan does not allow creating recipes. Upgrade your plan to access this feature.",
+      "error.plan.not.active":
+        "You need to activate a plan to use this feature. Choose a plan and start creating amazing recipes!",
+      "error.plan.activate.message":
+        "Activate a plan to unlock all iChef24 features",
+      "error.plan.no.active.plan":
+        "You need to activate a plan to use this feature. Choose a plan and start creating amazing recipes!",
+      "plans.required.title": "Plan Required",
+      "plans.required.subtitle": "To use the iChef24 platform, you need to subscribe to a plan",
+      "plans.required.description": "Choose the ideal plan for you and start creating amazing recipes with advanced AI",
+      "plans.required.cta": "View Plans",
+      "error.plan.expired":
+        "Your plan has expired. Renew to continue using the service.",
 
       // Success Messages
       "success.recipe.created": "Recipe created successfully!",

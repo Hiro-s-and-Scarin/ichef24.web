@@ -14,22 +14,19 @@ export function useTokenCapture() {
     
     if (token) {
       try {
-        // Armazena o token JWT nos cookies
         setCookie(null, 'jwt', token, {
-          maxAge: 30 * 24 * 60 * 60, // 30 dias
+          maxAge: 30 * 24 * 60 * 60, 
           path: '/',
         })
 
         toast.success("Login realizado com sucesso!")
         
-        // Remove o token da URL e redireciona para dashboard
         const url = new URL(window.location.href)
         url.searchParams.delete('token')
         window.history.replaceState({}, document.title, url.pathname)
         
-        // Redireciona para dashboard
         setTimeout(() => {
-          router.push("/dashboard")
+          router.push("/plans")
         }, 100)
       } catch (error) {
         toast.error("Erro ao processar autenticação")
