@@ -29,8 +29,12 @@ export async function createPayment(paymentData: CreatePaymentRequest): Promise<
 //   return data
 // } 
 
-export async function getStripeProducts(): Promise<StripeProductsResponse> {
-  const { data } = await api.get("/stripe/products");
+export async function getStripeProducts(currency?: string, billingCycle?: string): Promise<StripeProductsResponse> {
+  const params = new URLSearchParams();
+  if (currency) params.append('currency', currency);
+  if (billingCycle) params.append('billingCycle', billingCycle);
+  
+  const { data } = await api.get(`/stripe/products?${params.toString()}`);
   return data;
 }
 

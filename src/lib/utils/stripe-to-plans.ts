@@ -17,13 +17,18 @@ export function convertStripeProductsToPlans(stripeProducts: StripeProduct[]): P
       (price) => price.type === "one_time" && price.active
     );
 
-    // Determinar o tipo de plano baseado no nome ou metadados
-    const planType = determinePlanType(product.name, product.metadata);
+    // Determinar o tipo de plano baseado no nome e metadados
+    let planType = determinePlanType(
+      product.name, 
+      product.metadata
+    );
+    
+
     
     // Usar o preço mensal como padrão, ou o preço único se não houver mensal
-    const defaultPrice = monthlyPrice || oneTimePrice;
+    const defaultPrice = monthlyPrice || yearlyPrice || oneTimePrice;
     
-    return {
+    const plan = {
       id: index + 1, // Usar índice + 1 para garantir IDs únicos
       plan_type: planType,
       billing_cycle: monthlyPrice ? "monthly" : yearlyPrice ? "yearly" : "one_time",
@@ -46,12 +51,15 @@ export function convertStripeProductsToPlans(stripeProducts: StripeProduct[]): P
       // Marcar como popular se for o plano chef (intermediário)
       isPopular: planType === "basic",
     } as Plan;
+    
+    return plan;
   });
 }
 
 function determinePlanType(name: string, metadata: Record<string, unknown>): "free" | "basic" | "premium" | "enterprise" {
   const nameLower = name.toLowerCase();
   
+  // Priorizar metadados se existirem
   if (metadata?.plan_type && typeof metadata.plan_type === 'string') {
     const planType = metadata.plan_type as "free" | "basic" | "premium" | "enterprise";
     if (['free', 'basic', 'premium', 'enterprise'].includes(planType)) {
@@ -59,6 +67,7 @@ function determinePlanType(name: string, metadata: Record<string, unknown>): "fr
     }
   }
   
+  // Análise baseada no nome do produto
   if (nameLower.includes("free") || nameLower.includes("gratuito") || nameLower.includes("aprendiz") || nameLower.includes("trial")) {
     return "free";
   }

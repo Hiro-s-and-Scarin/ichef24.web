@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react";
@@ -15,22 +15,59 @@ import { convertStripeProductsToPlans } from "@/lib/utils/stripe-to-plans";
 import { toast } from "sonner";
 
 export function PlansPageContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { formatCurrency, getCurrentCurrency } = useCurrencyFormatter();
+  const currentCurrency = getCurrentCurrency();
+  
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
-  const { data: stripeProductsData, isLoading: isLoadingProducts } = useGetStripeProducts();
+  const { data: stripeProductsData, isLoading: isLoadingProducts } = useGetStripeProducts(currentCurrency, billingCycle);
   const createFreePlanMutation = useCreateFreePlan();
   const { data: freePlanStatus } = useGetFreePlanStatus();
 
-  const { formatCurrency } = useCurrencyFormatter();
+  // Recarregar produtos quando moeda ou ciclo de cobrança mudar
+  useEffect(() => {
+    // A query será automaticamente recarregada devido às mudanças na queryKey
+  }, [currentCurrency, billingCycle]);
 
   const plans: Plan[] = useMemo(() => {
+    // Plano gratuito sempre disponível
+    const freePlan: Plan = {
+      id: 0,
+      plan_type: "free",
+      billing_cycle: "monthly",
+      amount: 0,
+      currency: currentCurrency,
+      status: "active",
+      cancel_at_period_end: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      name: "Plano Gratuito",
+      stripe_subscription_id: "free_plan",
+      metadata: {},
+      price: {
+        monthly: 0,
+        yearly: 0,
+      },
+      features: [
+        "Gerar Receitas: 2 por dia",
+        "Salvar em Favoritas: até 5",
+        "Histórico: não disponível",
+        "Suporte por email",
+      ],
+      isPopular: false,
+    };
+
+    // Planos da Stripe
     if (!stripeProductsData?.success || !stripeProductsData.data) {
-      return [];
+      return [freePlan];
     }
-    return convertStripeProductsToPlans(stripeProductsData.data);
-  }, [stripeProductsData]);
+    
+    const stripePlans = convertStripeProductsToPlans(stripeProductsData.data);
+    return [freePlan, ...stripePlans];
+  }, [stripeProductsData, currentCurrency]);
 
   const getPlanIcon = useCallback((planType: string) => {
     switch (planType.toLowerCase()) {
@@ -117,9 +154,46 @@ export function PlansPageContent() {
     }
   }, [t]);
 
-  const handleSubscribe = useCallback(async (plan: Plan) => {
-   
+  // Função para obter o preço baseado no ciclo de cobrança
+  const getPlanPrice = useCallback((plan: Plan) => {
+    if (plan.amount === 0) return 0;
     
+    if (billingCycle === 'yearly' && plan.price?.yearly && plan.price.yearly > 0) {
+      return plan.price.yearly;
+    }
+    
+    if (billingCycle === 'monthly' && plan.price?.monthly && plan.price.monthly > 0) {
+      return plan.price.monthly;
+    }
+    
+    // Fallback para o preço padrão se não houver preço específico para o ciclo
+    return plan.amount;
+  }, [billingCycle]);
+
+  // Função para determinar o tipo de plano baseado no preço atual
+  const getCurrentPlanType = useCallback((plan: Plan) => {
+    const currentPrice = getPlanPrice(plan);
+    
+    if (currentPrice === 0) return "free";
+    if (currentPrice <= 3) return "basic";      // Plano médio: $3
+    if (currentPrice <= 5) return "premium";    // Plano avançado: $5
+    return "enterprise";                         // Planos acima de $5
+  }, [getPlanPrice]);
+
+
+
+  // Função para obter o texto do ciclo de cobrança
+  const getBillingCycleText = useCallback((plan: Plan) => {
+    if (plan.amount === 0) return '';
+    
+    if (billingCycle === 'yearly') {
+      return '/ano';
+    }
+    
+    return '/mês';
+  }, [billingCycle]);
+
+  const handleSubscribe = useCallback(async (plan: Plan) => {
     if (plan.amount === 0) {
       try {
         setIsLoading(true);
@@ -128,7 +202,7 @@ export function PlansPageContent() {
           plan_type: plan.plan_type,
           billing_cycle: 'monthly',
           amount: 0,
-          currency: 'BRL',
+          currency: currentCurrency,
           stripe_subscription_id: plan.stripe_subscription_id,
         });
 
@@ -163,28 +237,22 @@ export function PlansPageContent() {
         product => product.id === plan.stripe_subscription_id
       );
       
-      console.log('Produto encontrado no Stripe:', stripeProduct);
-      
       if (stripeProduct) {
-        // Buscar o preço mensal do Stripe
-        const monthlyPrice = stripeProduct.prices.find(price => 
-          price.recurring?.interval === "month" && price.active
+        // Buscar o preço baseado no ciclo de cobrança selecionado
+        const targetPrice = stripeProduct.prices.find(price => 
+          price.recurring?.interval === billingCycle && price.active
         );
-        if (monthlyPrice) {
-          priceId = monthlyPrice.id;
-          console.log('Preço mensal encontrado:', monthlyPrice);
+        if (targetPrice) {
+          priceId = targetPrice.id;
         }
       }
     }
 
-    console.log('ID do preço final:', priceId);
-    console.log('Ciclo de cobrança:', "monthly"); // Simplificado para "monthly"
-
     // Redirecionar para checkout com o ID do preço correto
     router.push(
-      `/checkout?planId=${priceId}&planName=${plan.name}&price=${plan.price?.monthly || plan.amount}&billingCycle=monthly`,
+      `/checkout?planId=${priceId}&planName=${plan.name}&price=${getPlanPrice(plan)}&billingCycle=${billingCycle}`,
     );
-  }, [stripeProductsData, router, createFreePlanMutation]);
+  }, [stripeProductsData, router, createFreePlanMutation, billingCycle, currentCurrency, getPlanPrice]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -202,37 +270,41 @@ export function PlansPageContent() {
               {t("plans.subtitle")}
             </p>
 
-            {/* Aviso sobre necessidade de assinar plano */}
-            <div className="mt-6 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-200 dark:border-orange-600 rounded-xl shadow-lg">
-              <div className="flex items-center justify-center space-x-3 mb-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-orange-800 dark:text-orange-200">
-                  {t("plans.required.title")}
-                </h3>
-              </div>
-              <p className="text-center text-orange-700 dark:text-orange-300 text-lg leading-relaxed">
-                {t("plans.required.subtitle")}
-              </p>
-              <p className="text-center text-orange-600 dark:text-orange-400 mt-2">
-                {t("plans.required.description")}
-              </p>
-            </div>
-
-            {/* Mensagem Informativa sobre Substituição de Planos */}
-            <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <div className="flex-shrink-0">
-                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <span className="font-medium">ℹ️ {t("common.info")}:</span> {t("community.plan.info")}
-                </p>
+            {/* Billing Cycle Toggle Switch */}
+            <div className="flex items-center justify-center space-x-4 mt-8">
+              
+              <div className="flex items-center space-x-3">
+                <span className={`text-sm font-medium transition-colors ${
+                  billingCycle === 'monthly' 
+                    ? 'text-[#f54703]' 
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  {t("plans.billing.monthly")}
+                </span>
+                
+                {/* Toggle Switch */}
+                <button
+                  onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                  className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#f54703] focus:ring-offset-2 ${
+                    billingCycle === 'yearly' 
+                      ? 'bg-gradient-to-r from-[#f54703] to-[#ff7518]' 
+                      : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
+                      billingCycle === 'yearly' ? 'translate-x-8' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                
+                <span className={`text-sm font-medium transition-colors ${
+                  billingCycle === 'yearly' 
+                    ? 'text-[#f54703]' 
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  {t("plans.billing.yearly")}
+                </span>
               </div>
             </div>
           </div>
@@ -253,44 +325,44 @@ export function PlansPageContent() {
                   <Card
                     key={plan.stripe_subscription_id}
                     className={`relative bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:scale-105 flex flex-col ${
-                      plan.plan_type === "basic"
+                      getCurrentPlanType(plan) === "basic"
                         ? "border-[#ff7518]/50 shadow-2xl shadow-[#ff7518]/20"
                         : ""
                     }`}
                   >
-                    {plan.plan_type === "basic" && (
+                    {getCurrentPlanType(plan) === "basic" && (
                       <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#f54703] to-[#ff7518] text-white text-center py-2 text-sm font-medium">
                         ⭐ {t("plans.most.popular")}
                       </div>
                     )}
 
                     <CardHeader
-                      className={`text-center ${plan.plan_type === "basic" ? "pt-12" : "pt-8"}`}
+                      className={`text-center ${getCurrentPlanType(plan) === "basic" ? "pt-12" : "pt-8"}`}
                     >
                       <div
-                        className={`w-16 h-16 bg-gradient-to-r ${getPlanColor(plan.plan_type)} rounded-2xl flex items-center justify-center mx-auto mb-4`}
+                        className={`w-16 h-16 bg-gradient-to-r ${getPlanColor(getCurrentPlanType(plan))} rounded-2xl flex items-center justify-center mx-auto mb-4`}
                       >
-                        {getPlanIcon(plan.plan_type)}
+                        {getPlanIcon(getCurrentPlanType(plan))}
                       </div>
                       <CardTitle className="text-2xl text-gray-800 dark:text-white">
                         {plan.name}
                       </CardTitle>
                       <p className="text-gray-600 dark:text-gray-300">
-                        {plan.plan_type === "free"
+                        {getCurrentPlanType(plan) === "free"
                           ? t("plans.free.description")
-                          : plan.plan_type === "basic"
+                          : getCurrentPlanType(plan) === "basic"
                             ? t("plans.pro.description")
-                            : plan.plan_type === "premium"
+                            : getCurrentPlanType(plan) === "premium"
                               ? t("plans.premium.description")
                               : t("plans.premium.description")}
                       </p>
 
                       <div className="py-6">
                         <div className="text-4xl font-bold text-gray-800 dark:text-white">
-                          R$ {(plan.price?.monthly || plan.amount).toFixed(2)}
+                          {formatCurrency(getPlanPrice(plan), currentCurrency)}
                           {plan.amount > 0 && (
                             <span className="text-lg text-gray-500 dark:text-gray-400">
-                              /mês
+                              {getBillingCycleText(plan)}
                             </span>
                           )}
                         </div>
@@ -299,7 +371,7 @@ export function PlansPageContent() {
 
                     <CardContent className="space-y-6 flex-1 flex flex-col">
                       <ul className="space-y-3 flex-1">
-                        {getPlanFeatures(plan.plan_type).map(
+                        {getPlanFeatures(getCurrentPlanType(plan)).map(
                           (feature: string, featureIndex: number) => (
                             <li
                               key={featureIndex}
@@ -315,32 +387,55 @@ export function PlansPageContent() {
                       </ul>
 
                       <div className="mt-auto pt-4">
-                                              <Button
-                        className={`w-full py-6 text-lg font-medium ${
-                          plan.plan_type === "basic"
-                            ? "bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#ff7518] text-white border-0"
-                            : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
-                        }`}
-                        variant={
-                          plan.plan_type === "basic" ? "default" : "outline"
-                        }
-                        onClick={() => handleSubscribe(plan)}
-                        disabled={isLoading || (plan.plan_type === "free" && freePlanStatus?.data?.hasUsedFreePlan)}
-                      >
-                        {isLoading ? (
-                          "Processando..."
-                        ) : plan.plan_type === "free" && freePlanStatus?.data?.hasUsedFreePlan ? (
-                          "Plano Gratuito Já Utilizado"
-                        ) : (
-                          plan.amount === 0
-                            ? t("plans.start.free")
-                            : t("plans.upgrade")
-                        )}
-                      </Button>
+                        <Button
+                          className={`w-full py-6 text-lg font-medium ${
+                            getCurrentPlanType(plan) === "basic"
+                              ? "bg-gradient-to-r from-[#f54703] to-[#ff7518] hover:from-[#ff7518] hover:to-[#ff7518] text-white border-0"
+                              : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 bg-transparent"
+                          }`}
+                          variant={
+                            getCurrentPlanType(plan) === "basic" ? "default" : "outline"
+                          }
+                          onClick={() => handleSubscribe(plan)}
+                          disabled={isLoading || (getCurrentPlanType(plan) === "free" && freePlanStatus?.data?.hasUsedFreePlan)}
+                        >
+                          {isLoading ? (
+                            "Processando..."
+                          ) : getCurrentPlanType(plan) === "free" && freePlanStatus?.data?.hasUsedFreePlan ? (
+                            "Plano Gratuito Já Utilizado"
+                          ) : (
+                            plan.amount === 0
+                              ? t("plans.start.free")
+                              : t("plans.upgrade")
+                          )}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+
+              {/* Aviso sobre necessidade de assinar plano - Movido para o final */}
+              <div className="mt-16 p-6 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 border-2 border-blue-200 dark:border-blue-600 rounded-xl shadow-lg">
+                <div className="flex items-center justify-center space-x-3 mb-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-blue-800 dark:text-blue-200">
+                    {t("plans.required.title")}
+                  </h3>
+                </div>
+                <p className="text-center text-blue-700 dark:text-blue-300 text-lg leading-relaxed">
+                  {t("plans.required.subtitle")}
+                </p>
+                <p className="text-center text-blue-600 dark:text-blue-400 mt-2">
+                  {t("plans.required.description")}
+                </p>
+                <p className="text-center text-blue-500 dark:text-blue-400 mt-3 text-sm">
+                  <strong>Importante:</strong> Se você assinar um plano menor que o atual, o plano atual será substituído pelo novo.
+                </p>
               </div>
             </>
           )}

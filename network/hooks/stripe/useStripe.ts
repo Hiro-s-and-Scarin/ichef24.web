@@ -16,10 +16,10 @@ export function useCreatePayment() {
   });
 }
 
-export function useGetStripeProducts() {
+export function useGetStripeProducts(currency?: string, billingCycle?: string) {
   return useQuery<StripeProductsResponse>({
-    queryKey: ["stripe", "products"],
-    queryFn: getStripeProducts,
+    queryKey: ["stripe", "products", currency, billingCycle],
+    queryFn: () => getStripeProducts(currency, billingCycle),
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
   });
