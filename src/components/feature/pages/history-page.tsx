@@ -183,7 +183,7 @@ export function HistoryPageContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <History className="text-orange-500" />
@@ -193,97 +193,19 @@ export function HistoryPageContent() {
                 {t("history.subtitle")}
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <Button
-                className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
-                onClick={() =>
-                  setModalState((prev) => ({
-                    ...prev,
-                    isCreateModalOpen: true,
-                  }))
-                }
-              >
-                {t("history.create.new")}
-              </Button>
-              <Button
-                variant="outline"
-                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white w-full sm:w-auto"
-                onClick={() =>
-                  setModalState((prev) => ({
-                    ...prev,
-                    isCreateAIModalOpen: true,
-                  }))
-                }
-              >
-                {t("history.create.ai")}
-              </Button>
-              <Button variant="outline" asChild className="w-full sm:w-auto">
-                <Link href="/dashboard">{t("history.back.home")}</Link>
-              </Button>
-            </div>
           </div>
 
-          {/* Stats Card */}
+          {/* Search Input */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-500">
-                    {totalRecipes}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.created")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-500">{totalLikes}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.rating")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500">{averageTime}min</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.time")}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Search and Filters */}
-          <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex flex-col gap-4">
-                <div className="relative w-full max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder={t("history.search.placeholder")}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-gray-200 dark:border-gray-600 w-full"
-                  />
-                </div>
-                <div className="flex items-center justify-center sm:justify-end">
-                  <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.grid")}
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.list")}
-                    </Button>
-                  </div>
-                </div>
+              <div className="relative w-full max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder={t("history.search.placeholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 border-gray-200 dark:border-gray-600 w-full"
+                />
               </div>
             </CardContent>
           </Card>
@@ -298,106 +220,33 @@ export function HistoryPageContent() {
             </div>
           ) : (
             <>
-              {/* Recipes Grid/List */}
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentRecipes.map((recipe: RecipeType) => (
-                    <div key={recipe.id} className="relative">
-                      <RecipeCard recipe={recipe} />
-                      <div className="absolute top-2 right-2 flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openEditModal(recipe)}
-                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDeleteRecipe(String(recipe.id))}
-                          disabled={deleteRecipeMutation.isPending}
-                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+              {/* Recipes Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                {currentRecipes.map((recipe: RecipeType) => (
+                  <div key={recipe.id} className="relative">
+                    <RecipeCard recipe={recipe} />
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditModal(recipe)}
+                        className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteRecipe(String(recipe.id))}
+                        disabled={deleteRecipeMutation.isPending}
+                        className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentRecipes.map((recipe: RecipeType) => (
-                    <Card
-                      key={recipe.id}
-                      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden"
-                    >
-                      <div className="flex">
-                        <div className="w-32 h-24 relative flex-shrink-0">
-                          <Image
-                            src={
-                              recipe.image_url ||
-                              "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"
-                            }
-                            alt={recipe.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-800 dark:text-white text-lg mb-1">
-                                {recipe.title}
-                              </h3>
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
-                                {recipe.description}
-                              </p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                <div className="flex items-center space-x-1">
-                                  <Clock className="w-4 h-4" />
-                                  <span>{recipe.cooking_time} {t("recipe.time")}</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <Users className="w-4 h-4" />
-                                  <span>{recipe.servings} {t("recipe.servings")}</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <Star className="w-4 h-4" />
-                                  <span>Nível {recipe.difficulty_level}</span>
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                                  <span>
-                                    {t("history.likes")} {recipe.likes_count}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2 ml-4">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDeleteRecipe(String(recipe.id))
-                                }
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <Share2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
             </>
           )}
 

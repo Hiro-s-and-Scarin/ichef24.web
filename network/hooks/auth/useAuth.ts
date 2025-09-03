@@ -44,7 +44,7 @@ export function useLogin() {
       toast.success("Login realizado com sucesso!")
       
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push("/home")
       }, 100)
     },
     onError: (error: any) => {

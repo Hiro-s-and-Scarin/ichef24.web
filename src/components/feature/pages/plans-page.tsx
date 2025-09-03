@@ -217,7 +217,7 @@ export function PlansPageContent() {
         
         if (errorMessage.includes('já está vinculado')) {
           toast.info("Você já possui um plano ativo!");
-          router.push('/dashboard');
+          router.push('/home');
         } else {
           toast.error(errorMessage);
         }

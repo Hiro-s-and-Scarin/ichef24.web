@@ -17,7 +17,7 @@ export function Header() {
   const { t } = useTranslation();
 
   const navItems = [
-    { href: "/dashboard", label: t("header.home"), icon: ChefHat },
+    { href: "/home", label: t("header.home"), icon: ChefHat },
     { href: "/history", label: t("header.history"), icon: Clock },
     { href: "/favorites", label: t("header.favorites"), icon: Heart },
     { href: "/community", label: t("header.community"), icon: Users },
@@ -31,7 +31,7 @@ export function Header() {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-lg flex items-center justify-center">
             <ChefHat className="w-4 h-4 text-white" />
           </div>

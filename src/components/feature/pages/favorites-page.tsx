@@ -103,7 +103,7 @@ export function FavoritesPageContent() {
             </div>
             <div className="flex items-center gap-4">
               <Button variant="outline" asChild>
-                <Link href="/dashboard">{t("common.back")}</Link>
+                <Link href="/home">{t("common.back")}</Link>
               </Button>
             </div>
           </div>

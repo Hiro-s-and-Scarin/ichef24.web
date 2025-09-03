@@ -2,6 +2,7 @@ export interface Recipe {
   id: number;
   user_id: number;
   title: string;
+  title_translate?: string; // Adicionado para busca de imagens
   description?: string;
   ingredients: any; // JSONB field from backend
   steps: any; // JSONB field from backend
