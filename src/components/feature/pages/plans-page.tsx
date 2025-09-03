@@ -191,7 +191,7 @@ export function PlansPageContent() {
     }
     
     return t("plans.billing.perMonth");
-  }, [billingCycle, t]);
+  }, [billingCycle]);
 
   const handleSubscribe = useCallback(async (plan: Plan) => {
     if (plan.amount === 0) {
@@ -227,6 +227,11 @@ export function PlansPageContent() {
       return;
     }
     
+    // Debug logs
+    console.log('Plan:', plan);
+    console.log('Stripe Products Data:', stripeProductsData);
+    console.log('Billing Cycle:', billingCycle);
+    
     // Encontrar o preço correto baseado no ciclo de cobrança selecionado
     let priceId = plan.stripe_subscription_id; // Fallback para o ID do produto
     
@@ -237,16 +242,25 @@ export function PlansPageContent() {
         product => product.id === plan.stripe_subscription_id
       );
       
+      console.log('Found Stripe Product:', stripeProduct);
+      
       if (stripeProduct) {
         // Buscar o preço baseado no ciclo de cobrança selecionado
         const targetPrice = stripeProduct.prices.find(price => 
-          price.recurring?.interval === billingCycle && price.active
+          price.recurring?.interval === (billingCycle === 'monthly' ? 'month' : 'year') && price.active
         );
+        
+        console.log('Target Price:', targetPrice);
+        console.log('All Prices:', stripeProduct.prices);
+        
         if (targetPrice) {
           priceId = targetPrice.id;
+          console.log('Using Price ID:', priceId);
         }
       }
     }
+
+    console.log('Final Price ID:', priceId);
 
     // Redirecionar para checkout com o ID do preço correto
     router.push(
