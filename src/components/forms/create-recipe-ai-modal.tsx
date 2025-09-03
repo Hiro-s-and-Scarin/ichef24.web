@@ -17,6 +17,8 @@ import {
   Sparkles,
   Bot,
   Timer,
+  Clock,
+  Users,
 } from "lucide-react";
 import { useGenerateRecipeWithAI, useSaveAIRecipe, useUpdateAIRecipe } from "@/network/hooks";
 import { useCurrentUser } from "@/network/hooks/users/useUsers";
@@ -25,6 +27,77 @@ import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useTranslation } from "react-i18next";
+import { RecipeCard } from "@/components/common/recipe-card";
+import { useSearchImageByTitle } from "@/network/hooks/recipe-image/useRecipeImage";
+
+// Componente RecipeCard simplificado para o modal AI
+function AIRecipeCard({ recipe }: { recipe: any }) {
+  return (
+    <div className="bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-lg overflow-hidden shadow-lg min-h-[400px] w-full max-w-md mx-auto">
+      {/* Recipe Image */}
+      <div className="relative h-48 w-full">
+        {recipe.image_url && recipe.image_url !== "/placeholder.jpg" ? (
+          <img
+            src={recipe.image_url}
+            alt={recipe.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 flex items-center justify-center">
+            <span className="text-4xl">🍳</span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 flex-1 flex flex-col">
+        {/* Recipe Title */}
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-2 line-clamp-2">
+          {recipe.title}
+        </h3>
+
+        {/* Recipe Description */}
+        {recipe.description && (
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+            {recipe.description}
+          </p>
+        )}
+
+        {/* Recipe Stats */}
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+          {recipe.cooking_time && (
+            <div className="flex items-center space-x-1">
+              <Clock className="w-4 h-4" />
+              <span>{recipe.cooking_time} min</span>
+            </div>
+          )}
+          {recipe.servings && (
+            <div className="flex items-center space-x-1">
+              <Users className="w-4 h-4" />
+              <span>{recipe.servings} porções</span>
+            </div>
+          )}
+        </div>
+
+        {/* Difficulty Level */}
+        {recipe.difficulty_level && (
+          <div className="mb-3">
+            <span className="inline-block px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+              {recipe.difficulty_level === 1 ? "Fácil" : 
+               recipe.difficulty_level === 2 ? "Médio" : 
+               recipe.difficulty_level === 3 ? "Difícil" : "Não especificado"}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Função auxiliar para detectar se uma mensagem é uma pergunta
+const isQuestion = (message: string) => {
+  const lowerCaseMessage = message.toLowerCase();
+  return lowerCaseMessage.includes("?") || lowerCaseMessage.includes("como") || lowerCaseMessage.includes("quero");
+};
 
 interface CreateRecipeAIModalProps {
   isOpen: boolean;
@@ -39,7 +112,10 @@ interface ChatMessage {
   message: string;
   timestamp: string;
   suggestions?: string[];
-  new_recipe?: Recipe;
+  isRecipe?: boolean; // Indica se a mensagem contém uma receita
+  recipeData?: any; // Dados da receita quando isRecipe for true
+  userInteractionMessage?: string; // Mensagem de interação do usuário
+  isQuestion?: boolean; // Indica se é uma pergunta (não uma modificação)
 }
 
 interface GeneratedRecipe {
@@ -84,6 +160,7 @@ export function CreateRecipeAIModal({
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
+  const searchImageMutation = useSearchImageByTitle();
 
   const [modalState, setModalState] = useState<CreateRecipeAIModalState>({
     isGenerating: false,
@@ -95,6 +172,8 @@ export function CreateRecipeAIModal({
     cookingTime: "",
     lastGeneratedRecipe: null,
   });
+  
+  const [isQuestionLoading, setIsQuestionLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -147,10 +226,22 @@ export function CreateRecipeAIModal({
           // Chamar diretamente a mutation em vez de handleChatSubmit
           generateRecipeMutation.mutateAsync({
             first_message: userMessage,
-          }).then((recipe) => {
-            const aiResponse = formatRecipe(recipe as any, {
-              isFirstMessage: true,
-            });
+          }).then(async (recipe) => {
+            // Buscar imagem para a receita inicial
+            if ((recipe as any).title_translate) {
+              try {
+                const imageData = await searchImageMutation.mutateAsync((recipe as any).title_translate);
+                if (imageData?.data?.url_signed) {
+                  (recipe as any).image_url = imageData.data.url_signed;
+                }
+              } catch (error) {
+                // Usar imagem padrão se falhar
+                (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg";
+              }
+            } else {
+              // Se não tem title_translate, usar imagem padrão
+              (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg";
+            }
 
             updateModalState({
               chatMessages: [
@@ -173,13 +264,16 @@ export function CreateRecipeAIModal({
                 },
                 {
                   type: "ai",
-                  message: aiResponse,
+                  message: '',
                   timestamp: new Date().toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
                     minute: "2-digit",
                   }),
                   suggestions: [],
-                  new_recipe: recipe,
+                  isRecipe: true,
+                  recipeData: recipe,
+                  userInteractionMessage: '',
+                  isQuestion: false,
                 },
               ],
               isGenerating: false,
@@ -194,7 +288,7 @@ export function CreateRecipeAIModal({
                   (i: RecipeIngredient) => `${i.amount} de ${i.name}`,
                 ),
                 instructions: recipe.steps.map((s: RecipeStep) => s.description),
-                image: recipe.image_url || "/placeholder.jpg",
+                image: (recipe as any).image_url || "/placeholder.jpg", // Usar image_url atualizado
               },
             });
 
@@ -250,7 +344,13 @@ export function CreateRecipeAIModal({
 
     setIsSaving(true);
     try {
-      const recipeDataString = JSON.stringify(modalState.lastGeneratedRecipe);
+      // Garantir que o image_url seja incluído corretamente
+      const recipeToSave = {
+        ...modalState.lastGeneratedRecipe,
+        image_url: (modalState.lastGeneratedRecipe as any).image_url || "/placeholder.jpg"
+      };
+      
+      const recipeDataString = JSON.stringify(recipeToSave);
       
       if (existingRecipe) {
         await updateAIRecipeMutation.mutateAsync({
@@ -261,7 +361,7 @@ export function CreateRecipeAIModal({
         await saveAIRecipeMutation.mutateAsync(recipeDataString);
       }
 
-      onSave(modalState.lastGeneratedRecipe);
+      onSave(recipeToSave);
       onClose();
     } catch (error) {
       console.error("Erro ao salvar receita:", error);
@@ -276,6 +376,9 @@ export function CreateRecipeAIModal({
     if (!chatInput.trim() || isGenerating) return;
 
     const userMessage = chatInput.trim();
+    const isQuestionMessage = isQuestion(userMessage);
+    setIsQuestionLoading(isQuestionMessage);
+    
     updateModalState({
       chatMessages: [
         ...chatMessages,
@@ -321,9 +424,28 @@ export function CreateRecipeAIModal({
         });
       }
 
-      const aiResponse = formatRecipe(recipe as any, {
-        isFirstMessage: !modalState.lastGeneratedRecipe,
-      });
+      // Detectar se é uma pergunta ou modificação
+      const isQuestionResult = isQuestion(userMessage);
+      const userInteractionMessage = (recipe as any).user_interaction_message || '';
+      
+      // Se for pergunta, não mostrar recipe card, apenas o diálogo
+      const aiResponse = isQuestionResult ? userInteractionMessage : '';
+
+      // Se não for pergunta, buscar imagem para a receita
+      if (!isQuestionResult && (recipe as any).title_translate) {
+        try {
+          const imageData = await searchImageMutation.mutateAsync((recipe as any).title_translate);
+          if (imageData?.data?.url_signed) {
+            (recipe as any).image_url = imageData.data.url_signed;
+          }
+        } catch (error) {
+          // Usar imagem padrão se falhar
+          (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg";
+        }
+      } else if (!isQuestionResult) {
+        // Se não for pergunta mas não tem title_translate, usar imagem padrão
+        (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg";
+      }
 
       updateModalState({
         chatMessages: [
@@ -336,7 +458,10 @@ export function CreateRecipeAIModal({
               minute: "2-digit",
             }),
             suggestions: [],
-            new_recipe: recipe,
+            isRecipe: !isQuestionResult, // Só é receita se não for pergunta
+            recipeData: isQuestionResult ? undefined : recipe,
+            userInteractionMessage: userInteractionMessage,
+            isQuestion: isQuestionResult,
           },
         ],
         isGenerating: false,
@@ -351,9 +476,12 @@ export function CreateRecipeAIModal({
             (i: RecipeIngredient) => `${i.amount} de ${i.name}`,
           ),
           instructions: recipe.steps.map((s: RecipeStep) => s.description),
-          image: recipe.image_url || "/placeholder.jpg",
+          image: (recipe as any).image_url || "/placeholder.jpg", // Usar image_url atualizado
         },
       });
+      
+      // Reset do loading de pergunta
+      setIsQuestionLoading(false);
 
              // Invalidar queries APÓS a receita ser criada com sucesso
        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
@@ -393,6 +521,7 @@ export function CreateRecipeAIModal({
       }
       
       toast.error(errorMessage);
+      setIsQuestionLoading(false);
       updateModalState({
         isGenerating: false,
         chatMessages: [
@@ -450,7 +579,7 @@ export function CreateRecipeAIModal({
 
   return (
           <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl w-[95vw] md:w-[80vw] lg:w-[60vw] h-[95vh] md:h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
+        <DialogContent className="max-w-6xl w-[60vw] h-[93vh] p-0 bg-transparent border-0 shadow-none overflow-hidden">
         <DialogTitle className="sr-only">Converse com iChef24! - Assistente Culinário Inteligente</DialogTitle>
         {/* Background com gradiente e efeitos */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -460,27 +589,27 @@ export function CreateRecipeAIModal({
         {/* Container principal com glassmorphism */}
         <div className="relative z-10 min-h-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden flex flex-col">
           {/* Header elegante */}
-          <div className="relative p-6 md:p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
+          <div className="relative p-8 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white overflow-hidden rounded-t-none">
             {/* Elementos decorativos de fundo */}
             <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 via-yellow-600/20 to-orange-600/20"></div>
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400/30 to-yellow-400/30 rounded-full blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-full blur-2xl"></div>
             
             <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-3 md:gap-4">
+              <div className="flex items-center gap-4">
                 {/* Logo com efeito 3D */}
                 <div className="relative">
-                  <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <ChefHat className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <ChefHat className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 rounded-2xl blur opacity-50"></div>
                 </div>
                 
-                <div className="space-y-1 md:space-y-2">
-                  <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-black bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 bg-clip-text text-transparent">
                     Converse com iChef24!
                   </h1>
-                  <p className="text-orange-100 dark:text-orange-200 text-sm md:text-base font-medium tracking-wide">
+                  <p className="text-orange-100 dark:text-orange-200 text-sm font-medium tracking-wide">
                     Assistente Culinário Inteligente: Tire dúvidas ou peça adaptações para esta receita!
                   </p>
                 </div>
@@ -491,7 +620,7 @@ export function CreateRecipeAIModal({
                 onClick={onClose}
                 className="group relative w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 backdrop-blur-sm"
               >
-                <X className="w-6 h-6 text-white group-hover:text-orange-200 transition-colors" />
+                <X className="w-5 h-5 text-white group-hover:text-orange-200 transition-colors" />
               </button>
             </div>
 
@@ -518,7 +647,7 @@ export function CreateRecipeAIModal({
              
               {/* Área de mensagens - com altura flexível */}
               <div 
-                className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 ai-modal-scrollbar min-h-0" 
+                className="flex-1 overflow-y-auto p-6 space-y-4 ai-modal-scrollbar min-h-0" 
                 style={{
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#fb923c #fed7aa'
@@ -553,9 +682,24 @@ export function CreateRecipeAIModal({
                       </div>
 
                       <div className="space-y-2">
-                        <div className="text-sm leading-relaxed whitespace-pre-line">
-                          {message.message}
-                        </div>
+                        {/* Para perguntas: mostrar apenas o diálogo */}
+                        {message.isQuestion ? (
+                          <div className="text-sm leading-relaxed whitespace-pre-line">
+                            {message.message}
+                          </div>
+                        ) : (
+                          /* Para receitas: mostrar apenas o AIRecipeCard */
+                          message.isRecipe && message.recipeData ? (
+                            <div className="mt-4">
+                              <AIRecipeCard recipe={message.recipeData} />
+                            </div>
+                          ) : (
+                            /* Fallback: mostrar a mensagem se não for nem pergunta nem receita */
+                            <div className="text-sm leading-relaxed whitespace-pre-line">
+                              {message.message}
+                            </div>
+                          )
+                        )}
 
                         {message.suggestions && (
                           <div className="flex flex-wrap gap-2 pt-4 border-t border-white/20 dark:border-orange-600/30">
@@ -597,7 +741,7 @@ export function CreateRecipeAIModal({
                             </div>
                           </div>
                           <p className="text-sm text-orange-600 dark:text-orange-300">
-                            Criando sua receita especial...
+                            {isQuestionLoading ? "Buscando respostas..." : "Criando sua receita especial..."}
                           </p>
                         </div>
                       </div>
