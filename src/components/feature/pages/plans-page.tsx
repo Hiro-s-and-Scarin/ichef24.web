@@ -187,11 +187,11 @@ export function PlansPageContent() {
     if (plan.amount === 0) return '';
     
     if (billingCycle === 'yearly') {
-      return '/ano';
+      return t("plans.billing.perYear");
     }
     
-    return '/mês';
-  }, [billingCycle]);
+    return t("plans.billing.perMonth");
+  }, [billingCycle, t]);
 
   const handleSubscribe = useCallback(async (plan: Plan) => {
     if (plan.amount === 0) {
