@@ -9,6 +9,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { api } from "@/src/lib/api/api";
 
 // Chave pública do Stripe hardcoded
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51RZcXaCD3Jr5oY2ganomuVgKLHiRjQn9SrwtK5Tvs1gsZGAMh5ykfEkYU98ecYeZ9AcA9aZeutDlBVA8ymo8IrXp00XeUzphvR"
@@ -56,32 +57,20 @@ function CheckoutForm() {
       }
 
       // Enviar para o backend
-      const response = await fetch('/api/stripe/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: productId,
-          paymentMethodType: 'card',
-          paymentMethod: paymentMethod.id,
-          email: 'teste@exemplo.com',
-        }),
+      const response = await api.post('/stripe/payment', {
+        productId: productId,
+        paymentMethodType: 'card',
+        paymentMethod: paymentMethod.id,
+        email: 'teste@exemplo.com',
       })
 
-      if (response.ok) {
-        const result = await response.json()
-        setPaymentResult({
-          status: 'success',
-          paymentMethod: paymentMethod.id,
-          backendResponse: result
-        })
-        toast.success('Pagamento processado com sucesso!')
+      setPaymentResult({
+        status: 'success',
+        paymentMethod: paymentMethod.id,
+        backendResponse: response.data
+      })
+      toast.success('Pagamento processado com sucesso!')
 
-      } else {
-        const errorData = await response.json()
-        toast.error('Erro no backend: ' + (errorData.message || 'Erro desconhecido'))
-      }
     } catch (error) {
       toast.error('Erro ao processar pagamento: ' + (error as Error).message)
     } finally {

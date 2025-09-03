@@ -179,10 +179,18 @@ export default function RecipePage() {
       const isQuestionResult = isQuestion(userMessage)
       const userInteractionMessage = (aiRecipe as any).user_interaction_message || ''
       
+      console.log("=== DEBUG AI RESPONSE ===")
+      console.log("Mensagem do usuário:", userMessage)
+      console.log("É pergunta?", isQuestionResult)
+      console.log("Resposta completa da IA:", aiRecipe)
+      console.log("user_interaction_message:", userInteractionMessage)
+      console.log("========================")
+      
       // Se for pergunta, mostrar a mensagem de interação ou uma resposta padrão
       let aiResponse = ''
       if (isQuestionResult) {
         aiResponse = userInteractionMessage || `Entendi sua pergunta sobre "${userMessage}". Como posso ajudar você com esta receita?`
+        console.log("Resposta para pergunta:", aiResponse)
       }
 
       // Se não for pergunta, buscar imagem para a receita
@@ -203,7 +211,7 @@ export default function RecipePage() {
 
       const newAIMessage = {
         type: "ai" as const,
-        message: aiResponse,
+        message: isQuestionResult ? aiResponse : '', // Para perguntas, usar aiResponse
         timestamp: new Date().toLocaleTimeString("pt-BR", {
           hour: "2-digit",
           minute: "2-digit",
@@ -218,6 +226,7 @@ export default function RecipePage() {
       console.log("Nova mensagem AI:", newAIMessage)
       console.log("É receita?", !isQuestionResult)
       console.log("Dados da receita:", aiRecipe)
+      console.log("Mensagem para pergunta:", aiResponse)
 
       setRecipeState(prev => {
         const newState = {
@@ -255,7 +264,9 @@ export default function RecipePage() {
     const questionWordsPT = [
       "como", "quando", "onde", "por que", "porque", "qual", "quais", 
       "quem", "o que", "que", "quanto", "quantos", "quantas",
-      "pode", "deve", "deveria", "seria", "é possível", "tem como"
+      "pode", "deve", "deveria", "seria", "é possível", "tem como",
+      "dá para", "da para", "consegue", "consegues", "sabe", "sabes",
+      "explica", "explicas", "diz", "dizes", "conta", "contas"
     ]
     
     // Palavras que indicam pergunta em inglês
@@ -263,7 +274,9 @@ export default function RecipePage() {
       "how", "when", "where", "why", "what", "which", "who", 
       "can", "could", "should", "would", "is it possible", "do you have",
       "does it have", "will it", "does this", "can you", "how do i",
-      "what if", "tell me", "explain", "describe", "suggest"
+      "what if", "tell me", "explain", "describe", "suggest",
+      "is there", "are there", "does it", "do you", "would you",
+      "could you", "should i", "can i", "may i", "might i"
     ]
     
     // Verificar se contém ponto de interrogação

@@ -13,7 +13,7 @@ import {
   createPlan,
   createFreePlan
 } from "@/network/actions/plans/actionPlans"
-import { getFreePlanStatus } from "@/network/actions/plans"
+import { getFreePlanStatus, getUserPlanStatus } from "@/network/actions/plans"
 import { CreatePlanRequest } from "@/src/types"
 import { queryKeys } from "@/lib/config/query-keys"
 
@@ -168,6 +168,14 @@ export function useGetFreePlanStatus() {
   return useQuery({
     queryKey: ['plans', 'free-status'],
     queryFn: getFreePlanStatus,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+}
+
+export function useGetUserPlanStatus() {
+  return useQuery({
+    queryKey: ['plans', 'user-status'],
+    queryFn: getUserPlanStatus,
     staleTime: 5 * 60 * 1000, // 5 minutos
   });
 }
