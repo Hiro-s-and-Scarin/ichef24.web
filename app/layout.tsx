@@ -58,9 +58,11 @@ const inter = Inter({ subsets: ["latin"] })
 
 function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, isAuthPage: boolean }) {
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
-    if (!isAuthPage) {
+    // Se não for uma página pública, verificar se o usuário está logado
+    if (pathname !== '/' && pathname !== '/login' && pathname !== '/register' && !pathname.startsWith('/auth/')) {
       const cookies = parseCookies()
       const token = cookies.jwt
 
@@ -68,23 +70,18 @@ function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, i
         router.replace('/')
       }
     }
-  }, [isAuthPage, router])
+  }, [pathname, router])
 
-  if (isAuthPage) {
+  // Para páginas de autenticação pura (/login, /register), não mostrar header
+  if (pathname === '/login' || pathname === '/register') {
     return <>{children}</>
   }
 
-  const cookies = parseCookies()
-  const token = cookies.jwt
-
-  if (!token) {
-    return null
-  }
-
+  // Para todas as outras páginas (incluindo /), sempre mostrar header
   return (
     <>
       <Suspense fallback={
-        <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
+        <div className="border-b border-orange-200/50 backdrop-blur-sm bg-white/80 dark:border-gray-700/50 dark:bg-black/80 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between">
             <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
             <div className="w-64 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
