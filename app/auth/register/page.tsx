@@ -60,12 +60,12 @@ function RegisterPageContent() {
     setError("")
 
     if (formData.password !== formData.confirmPassword) {
-      setError("As senhas não coincidem!")
+      setError(t("register.passwords.dont.match"))
       return
     }
 
     if (!acceptTerms) {
-      setError("Você deve aceitar os termos de uso!")
+      setError(t("register.must.accept.terms"))
       return
     }
 
@@ -75,14 +75,14 @@ function RegisterPageContent() {
     if (success) {
       router.push("/")
     } else {
-      setError("Erro ao criar conta. Verifique os dados e tente novamente.")
+      setError(t("register.error.creating"))
     }
   }
 
   const planNames = {
-    "plano-aprendiz": "Plano Aprendiz (Grátis)",
-    "plano-chef": `Plano Chef (${formatCurrencyWithName(7.90)}/mês)`,
-    "plano-master-chef": `Plano Master Chef (${formatCurrencyWithName(10.90)}/mês)`,
+    "plano-aprendiz": t("register.plan.free"),
+    "plano-chef": `${t("register.plan.chef")} (${formatCurrencyWithName(7.90)}/mês)`,
+    "plano-master-chef": `${t("register.plan.master.chef")} (${formatCurrencyWithName(10.90)}/mês)`,
   }
 
   if (!mounted) {
@@ -122,13 +122,13 @@ function RegisterPageContent() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Plano Selecionado:</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t("register.selected.plan")}</p>
                   <p className="font-semibold text-orange-700 dark:text-orange-300">
                     {planNames[selectedPlan as keyof typeof planNames]}
                   </p>
                 </div>
                 <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                  {selectedPlan.includes("chef") ? "Premium" : "Grátis"}
+                  {selectedPlan.includes("chef") ? t("register.plan.premium") : t("register.plan.free.badge")}
                 </Badge>
               </div>
             </CardContent>
@@ -138,8 +138,8 @@ function RegisterPageContent() {
         {/* Formulário */}
         <Card className="bg-white/95 dark:bg-gray-800/95 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
           <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl text-gray-800 dark:text-white">Criar Conta</CardTitle>
-            <p className="text-gray-600 dark:text-gray-300">Junte-se à comunidade iChef24</p>
+            <CardTitle className="text-2xl text-gray-800 dark:text-white">{t("register.title")}</CardTitle>
+            <p className="text-gray-600 dark:text-gray-300">{t("register.subtitle")}</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -152,7 +152,7 @@ function RegisterPageContent() {
 
               {/* Nome */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-700 dark:text-white">Nome Completo</Label>
+                <Label htmlFor="name" className="text-gray-700 dark:text-white">{t("register.full.name")}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -161,7 +161,7 @@ function RegisterPageContent() {
                     type="text"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Seu nome completo"
+                    placeholder={t("register.full.name.placeholder")}
                     className="pl-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                   />
@@ -170,7 +170,7 @@ function RegisterPageContent() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 dark:text-white">Email</Label>
+                <Label htmlFor="email" className="text-gray-700 dark:text-white">{t("register.email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -179,7 +179,7 @@ function RegisterPageContent() {
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="seu@email.com"
+                    placeholder={t("register.email.placeholder")}
                     className="pl-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                   />
@@ -188,7 +188,7 @@ function RegisterPageContent() {
 
               {/* Senha */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 dark:text-white">Senha</Label>
+                <Label htmlFor="password" className="text-gray-700 dark:text-white">{t("register.password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -197,7 +197,7 @@ function RegisterPageContent() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder={t("register.password.placeholder")}
                     className="pl-10 pr-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                     minLength={6}
@@ -214,7 +214,7 @@ function RegisterPageContent() {
 
               {/* Confirmar Senha */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-white">Confirmar Senha</Label>
+                <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-white">{t("register.confirm.password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -223,7 +223,7 @@ function RegisterPageContent() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    placeholder="Confirme sua senha"
+                    placeholder={t("register.confirm.password.placeholder")}
                     className="pl-10 pr-10 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                     minLength={6}
@@ -247,13 +247,13 @@ function RegisterPageContent() {
                   className="border-gray-300 dark:border-gray-700 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                 />
                 <Label htmlFor="terms" className="text-sm text-gray-600 dark:text-gray-400">
-                  Aceito os{" "}
+                  {t("register.accept.terms")}{" "}
                   <Link href="/terms" className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline">
-                    termos de uso
+                    {t("register.terms.of.use")}
                   </Link>{" "}
-                  e{" "}
+                  {t("register.and")}{" "}
                   <Link href="/privacy" className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline">
-                    política de privacidade
+                    {t("register.privacy.policy")}
                   </Link>
                 </Label>
               </div>
@@ -267,11 +267,11 @@ function RegisterPageContent() {
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Criando conta...</span>
+                    <span>{t("register.creating.account")}</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <span>Criar Conta</span>
+                    <span>{t("register.create.account")}</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 )}
@@ -284,7 +284,7 @@ function RegisterPageContent() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
-                    Ou continue com
+                    {t("register.or.continue.with")}
                   </span>
                 </div>
               </div>
@@ -334,9 +334,9 @@ function RegisterPageContent() {
               {/* Link para Login */}
               <div className="text-center">
                 <p className="text-gray-600 dark:text-gray-300">
-                  Já tem uma conta?{" "}
+                  {t("register.already.have.account")}{" "}
                   <Link href="/" className="text-orange-600 dark:text-orange-400 hover:underline font-medium">
-                    Fazer login
+                    {t("register.login")}
                   </Link>
                 </p>
               </div>

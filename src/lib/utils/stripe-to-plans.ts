@@ -99,7 +99,7 @@ function getPlanFeatures(planType: string): string[] {
       ];
     case "basic":
       return [
-        "Gerar Receitas: 5 por dia",
+        "Gerar Receitas: 10 por dia",
         "Salvar em Favoritas: até 10",
         "Histórico: últimas 5 receitas geradas",
         "Receitas personalizadas",
