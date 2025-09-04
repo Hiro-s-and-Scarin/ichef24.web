@@ -281,72 +281,62 @@ function HomePageContent() {
         <div className="absolute inset-0 bg-black/40 dark:bg-black/60"></div>
         
         {/* Conteúdo Hero */}
-        <div className="relative z-10 text-center px-4 w-full pt-4 sm:pt-6 md:pt-8 lg:pt-10">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
           {/* Logo e Título */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-            <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-20 lg:h-20 xl:w-24 xl:h-24 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-2xl">
-              <ChefHat className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-10 lg:h-10 xl:w-14 xl:h-14 text-white" />
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="w-20 h-20 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-3xl flex items-center justify-center shadow-2xl">
+              <ChefHat className="w-12 h-12 text-white" />
             </div>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white drop-shadow-2xl">
+            <h1 className="text-7xl md:text-9xl font-black text-white drop-shadow-2xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400">
-                {t("home.hero.title")}
+                iChef24
               </span>
             </h1>
           </div>
           
           {/* Subtítulo Principal */}
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-5 lg:mb-6 drop-shadow-xl leading-tight text-center">
-            {t("home.hero.subtitle")}
+            Seu chef pessoal 24h por dia
           </h2>
-          
-          {/* Descrição */}
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-xl xl:text-xl 2xl:text-2xl text-white/90 mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-relaxed drop-shadow-lg text-center">
-            {t("home.hero.description")}
-          </p>
-          
-          {/* Call to Action */}
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-xl xl:text-xl text-orange-200 font-semibold mb-5 sm:mb-6 md:mb-8 lg:mb-12 drop-shadow-lg text-center">
-            {t("home.hero.cta")}
-          </p>
 
           {/* Input de busca principal */}
-          <div className="w-full max-w-5xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <form onSubmit={handleInputSubmit} className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-3xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-              <div className="relative bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-orange-300 dark:border-orange-500 overflow-hidden">
+              <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-orange-200 dark:border-gray-700 overflow-hidden">
                 <Input
                   value={dashboardState.inputValue}
                   onChange={handleInputChange}
-                  placeholder={t("home.hero.input.placeholder")}
-                  className="w-full h-12 sm:h-14 md:h-16 lg:h-14 xl:h-16 px-4 sm:px-5 md:px-6 lg:px-5 xl:px-6 text-base sm:text-lg md:text-xl lg:text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-600 dark:placeholder:text-gray-300 text-gray-900 dark:text-white font-medium"
+                  placeholder={t("ai.welcome.message")}
+                  className="w-full h-16 px-8 text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
                   disabled={dashboardState.isGenerating}
                 />
                 <Button
                   type="submit"
-                  className="absolute right-2 sm:right-3 top-2 sm:top-3 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-10 lg:w-10 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-700 text-white rounded-lg sm:rounded-xl md:rounded-xl lg:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-2 top-2 h-12 w-12 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!dashboardState.inputValue.trim() || dashboardState.isGenerating}
                 >
                   {dashboardState.isGenerating ? (
-                    <Loader2 className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-4 lg:h-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-4 lg:h-4" />
+                    <Send className="w-5 h-5" />
                   )}
                 </Button>
               </div>
             </form>
             
             {/* Sugestões */}
-            <div className="mt-3 sm:mt-4 md:mt-5 lg:mt-6">
-              <p className="text-gray-200 text-base sm:text-lg md:text-xl mb-2 sm:mb-3 md:mb-4 lg:mb-4 text-center">
-                {t("home.hero.suggestions.title")}
+            <div className="mt-6">
+              <p className="text-gray-200 text-sm mb-4">
+                {t("ai.suggestions")}
               </p>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4">
+              <div className="flex flex-wrap justify-center gap-3">
                 {[
-                  t("home.hero.suggestions.chocolate"),
-                  t("home.hero.suggestions.vegan"), 
-                  t("home.hero.suggestions.sushi"),
-                  t("home.hero.suggestions.pizza"),
-                  t("home.hero.suggestions.smoothie")
+                  "Bolo de Chocolate",
+                  "Lasanha Vegana", 
+                  "Sushi Caseiro",
+                  "Pizza Margherita",
+                  "Smoothie Detox"
                 ].map((suggestion) => (
                   <Button
                     key={suggestion}
@@ -354,7 +344,7 @@ function HomePageContent() {
                     size="sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                     disabled={dashboardState.isGenerating}
-                    className="text-base sm:text-lg md:text-xl rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed px-3 py-2 sm:px-4 sm:py-2 md:px-5 md:py-3 lg:px-4 lg:py-2"
+                    className="rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {suggestion}
                   </Button>
@@ -397,11 +387,11 @@ function HomePageContent() {
               </div>
               
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                {t("login.modal.title")}
+                Continue com iChef24
               </h2>
               
               <p className="text-gray-600 dark:text-gray-400 mb-8">
-                {t("login.modal.description")}
+                Para usar o iChef24, crie uma conta ou faça login em uma existente.
               </p>
               
               {/* Botões de Ação */}
@@ -413,7 +403,7 @@ function HomePageContent() {
                   }}
                   className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  {t("login.modal.create.account")}
+                  Criar Conta
                 </Button>
                 
                 <Button
@@ -424,7 +414,7 @@ function HomePageContent() {
                   }}
                   className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold py-3 rounded-xl transition-all duration-300"
                 >
-                  {t("login.modal.login")}
+                  Fazer Login
                 </Button>
               </div>
               
@@ -435,7 +425,7 @@ function HomePageContent() {
                 onClick={handleCloseLoginModal}
                 className="mt-6 text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 transition-colors"
               >
-                {t("login.modal.close")}
+                Fechar
               </Button>
             </div>
           </div>
@@ -456,7 +446,7 @@ function HomePageContent() {
             {/* Header do Modal */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Receita Gerada
+                {t("recipe.modal.title")}
               </h2>
               <Button
                 variant="ghost"
@@ -479,7 +469,7 @@ function HomePageContent() {
                   onClick={handleCloseModal}
                   className="px-6 py-2"
                 >
-                  Fechar
+                  {t("recipe.modal.close")}
                 </Button>
                 <Button
                   onClick={handleSaveRecipe}
@@ -489,12 +479,12 @@ function HomePageContent() {
                   {dashboardState.isSaving ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Salvando...
+                      {t("recipe.modal.saving")}
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" />
-                      Salvar Receita
+                      {t("recipe.modal.save")}
                     </>
                   )}
                 </Button>

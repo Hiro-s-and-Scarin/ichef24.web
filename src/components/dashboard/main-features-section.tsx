@@ -60,14 +60,8 @@ export function MainFeaturesSection() {
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              {t("mainFeatures.title")}
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto">
               {t("mainFeatures.subtitle")}
-            </p>
-            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed">
-              {t("mainFeatures.description")}
-            </p>
+            </h2>
           </div>
 
           {/* Features Grid */}
@@ -101,6 +95,8 @@ export function MainFeaturesSection() {
     </section>
   )
 }
+
+
 
 
 
