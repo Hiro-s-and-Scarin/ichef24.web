@@ -204,36 +204,7 @@ export function HistoryPageContent() {
                     className="pl-10 border-gray-200 dark:border-gray-600"
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  {/* Botão de filtros removido para evitar problemas de validação */}
-                  {/* <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsFilterModalOpen(true)}
-                    className="border-gray-200 dark:border-gray-600"
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    {t('history.filters')}
-                  </Button> */}
-                  <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.grid")}
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.list")}
-                    </Button>
-                  </div>
-                </div>
+                
               </div>
             </CardContent>
           </Card>
