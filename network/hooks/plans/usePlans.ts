@@ -73,7 +73,6 @@ export function useSubscribeToPlan() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao assinar plano")
-      console.error("Error subscribing to plan:", error)
     },
   })
 
@@ -94,7 +93,6 @@ export function useChangeSubscription() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao alterar plano")
-      console.error("Error changing subscription:", error)
     },
   })
 
@@ -115,7 +113,6 @@ export function useCancelSubscription() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao cancelar plano")
-      console.error("Error cancelling subscription:", error)
     },
   })
 
@@ -136,7 +133,6 @@ export function useReactivateSubscription() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao reativar plano")
-      console.error("Error reactivating subscription:", error)
     },
   })
 
@@ -157,7 +153,6 @@ export function useCreateFreePlan() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao criar plano gratuito")
-      console.error("Error creating free plan:", error)
     },
   })
 

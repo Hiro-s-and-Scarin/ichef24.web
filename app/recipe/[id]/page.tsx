@@ -20,6 +20,7 @@ import { useGenerateRecipeWithAI } from "@/network/hooks/recipes/useRecipes"
 import { useSearchImageByTitle } from "@/network/hooks/recipe-image/useRecipeImage"
 import { useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/config/query-keys"
+import { useRouter } from "next/navigation"
 
 interface ChatMessage {
   type: "user" | "ai"
@@ -78,6 +79,7 @@ export default function RecipePage() {
   const { data: currentUser } = useCurrentUser()
   const saveAIRecipeMutation = useSaveAIRecipe()
   const updateAIRecipeMutation = useUpdateAIRecipe()
+  const router = useRouter()
 
   const updateRecipeState = (updates: Partial<RecipePageState>) => {
     setRecipeState(prev => ({ ...prev, ...updates }))
@@ -87,22 +89,9 @@ export default function RecipePage() {
 
   const handleAIRecipeSave = async (updatedRecipe: any) => {
     try {
-      console.log("Salvando receita:", updatedRecipe)
-      
-      if (recipe) {
-        // Se existe uma receita, atualizar
-        const recipeDataString = JSON.stringify(updatedRecipe)
-        await updateAIRecipeMutation.mutateAsync({
-          id: recipe.id,
-          recipeData: recipeDataString
-        })
-        toast.success("Receita atualizada com sucesso!")
-      } else {
-        // Se não existe receita, criar nova
-        const recipeDataString = JSON.stringify(updatedRecipe)
-        await saveAIRecipeMutation.mutateAsync(recipeDataString)
-        toast.success("Receita criada com sucesso!")
-      }
+      const recipeDataString = JSON.stringify(updatedRecipe)
+      const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString)
+      toast.success("Receita salva com sucesso!")
       
       // Invalidar queries para atualizar a interface
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
@@ -110,8 +99,13 @@ export default function RecipePage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
       
+      // Redirecionar para a página da receita
+      if (savedRecipe?.id) {
+        router.push(`/recipe/${savedRecipe.id}`)
+      } else {
+        toast.error("Erro ao salvar receita: ID não encontrado")
+      }
     } catch (error) {
-      console.error("Erro ao salvar receita:", error)
       toast.error("Erro ao salvar receita")
     }
   }
@@ -122,12 +116,10 @@ export default function RecipePage() {
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("handleChatSubmit chamado com:", recipeState.chatInput)
     if (!recipeState.chatInput.trim() || recipeState.isGenerating) return
 
     const userMessage = recipeState.chatInput.trim()
     const isQuestionMessage = isQuestion(userMessage)
-    console.log("Mensagem do usuário:", userMessage, "É pergunta?", isQuestionMessage)
     
     // Adicionar mensagem do usuário
     const newUserMessage = {
@@ -179,18 +171,10 @@ export default function RecipePage() {
       const isQuestionResult = isQuestion(userMessage)
       const userInteractionMessage = (aiRecipe as any).user_interaction_message || ''
       
-      console.log("=== DEBUG AI RESPONSE ===")
-      console.log("Mensagem do usuário:", userMessage)
-      console.log("É pergunta?", isQuestionResult)
-      console.log("Resposta completa da IA:", aiRecipe)
-      console.log("user_interaction_message:", userInteractionMessage)
-      console.log("========================")
-      
       // Se for pergunta, mostrar a mensagem de interação ou uma resposta padrão
       let aiResponse = ''
       if (isQuestionResult) {
         aiResponse = userInteractionMessage || `Entendi sua pergunta sobre "${userMessage}". Como posso ajudar você com esta receita?`
-        console.log("Resposta para pergunta:", aiResponse)
       }
 
       // Se não for pergunta, buscar imagem para a receita
@@ -223,11 +207,6 @@ export default function RecipePage() {
         isQuestion: isQuestionResult,
       }
 
-      console.log("Nova mensagem AI:", newAIMessage)
-      console.log("É receita?", !isQuestionResult)
-      console.log("Dados da receita:", aiRecipe)
-      console.log("Mensagem para pergunta:", aiResponse)
-
       setRecipeState(prev => {
         const newState = {
           ...prev,
@@ -239,7 +218,6 @@ export default function RecipePage() {
           lastGeneratedRecipe: aiRecipe,
           isQuestionLoading: false,
         }
-        console.log("Novo estado:", newState)
         return newState
       })
 
@@ -250,7 +228,6 @@ export default function RecipePage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
 
     } catch (error) {
-      console.error("Erro ao gerar receita:", error)
       toast.error("Erro ao processar mensagem")
       setRecipeState(prev => ({ ...prev, isGenerating: false, isQuestionLoading: false }))
     }
@@ -351,7 +328,6 @@ export default function RecipePage() {
 
   useEffect(() => {
     updateRecipeState({ mounted: true })
-    console.log("Estado inicial do chat:", recipeState.chatMessages)
   }, [])
 
   if (!mounted || isLoading) {

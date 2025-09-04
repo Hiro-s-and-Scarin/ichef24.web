@@ -1,17 +1,18 @@
 "use client"
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getStripeProducts, createStripeCheckout } from "@/network/actions/stripe";
 import { StripeProductsResponse } from "@/src/types";
+import { toast } from "sonner";
 
 export function useCreatePayment() {
   return useMutation({
     mutationFn: createStripeCheckout,
     onSuccess: (data) => {
-      console.log("Payment created successfully:", data);
+      toast.success("Pagamento criado com sucesso!")
     },
-    onError: (error) => {
-      console.error("Payment creation failed:", error);
+    onError: (error: any) => {
+      toast.error("Erro ao criar pagamento")
     },
   });
 }
@@ -29,10 +30,10 @@ export function useCreateStripeCheckout() {
   return useMutation({
     mutationFn: createStripeCheckout,
     onSuccess: (data) => {
-      console.log("Checkout session created successfully:", data);
+      toast.success("Checkout criado com sucesso!")
     },
-    onError: (error) => {
-      console.error("Checkout session creation failed:", error);
+    onError: (error: any) => {
+      toast.error("Erro ao criar checkout")
     },
   });
 } 

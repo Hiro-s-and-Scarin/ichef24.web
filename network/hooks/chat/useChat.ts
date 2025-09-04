@@ -45,8 +45,7 @@ export function useCreateChatSession() {
       toast.success("Sessão de chat criada com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao criar sessão de chat")
-      console.error("Error creating chat session:", error)
+      toast.error("Erro ao criar sessão de chat")
     },
   })
 }
@@ -65,7 +64,6 @@ export function useUpdateChatSession() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar sessão de chat")
-      console.error("Error updating chat session:", error)
     },
   })
 }
@@ -83,7 +81,6 @@ export function useDeleteChatSession() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao deletar sessão de chat")
-      console.error("Error deleting chat session:", error)
     },
   })
 }
@@ -111,7 +108,6 @@ export function useCreateChatMessage() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao enviar mensagem")
-      console.error("Error creating chat message:", error)
     },
   })
 }
@@ -129,7 +125,6 @@ export function useDeleteChatMessage() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao deletar mensagem")
-      console.error("Error deleting chat message:", error)
     },
   })
 } 

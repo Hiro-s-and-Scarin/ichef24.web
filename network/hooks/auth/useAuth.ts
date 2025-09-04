@@ -44,12 +44,11 @@ export function useLogin() {
       toast.success("Login realizado com sucesso!")
       
       setTimeout(() => {
-        router.push("/home")
+        router.push("/dashboard")
       }, 100)
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao fazer login")
-      console.error("Error logging in:", error)
     },
   })
 
@@ -69,7 +68,6 @@ export function useRegister() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao criar conta")
-      console.error("Error registering:", error)
     },
   })
 
@@ -86,7 +84,6 @@ export function useForgotPassword() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao enviar email de recuperação")
-      console.error("Error sending forgot password email:", error)
     },
   })
 
@@ -103,7 +100,6 @@ export function useConfirmForgotPassword() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Código inválido ou expirado")
-      console.error("Error confirming forgot password:", error)
     },
   })
 
@@ -125,9 +121,7 @@ export function useLogout() {
 
   const mutate = useMutation({
     mutationFn: async () => {
-      console.log('🔐 useLogout: Chamando endpoint de logout...');
       const result = await postLogout()
-      console.log('🔐 useLogout: Resposta do endpoint:', result);
       return result;
     },
     onSuccess: () => {
@@ -205,7 +199,6 @@ export function useSendResetPassword() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao enviar código de verificação")
-      console.error("Error sending reset password code:", error)
     },
   })
 
@@ -228,7 +221,6 @@ export function useConfirmCodeResetPassword() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Código inválido ou expirado")
-      console.error("Error confirming reset password code:", error)
     },
   })
 
@@ -248,7 +240,6 @@ export function useUpdateProfile() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar perfil")
-      console.error("Error updating profile:", error)
     },
   })
 
@@ -265,7 +256,6 @@ export function useUpdatePassword() {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Erro ao atualizar senha")
-      console.error("Error updating password:", error)
     },
   })
 
@@ -288,8 +278,7 @@ export function useResetPasswordData() {
       
       return result
     } catch (error) {
-      console.error("useResetPasswordData: Erro ao ler cookies:", error)
-      return { email: null, newPassword: null }
+      return { success: false, message: "Erro ao ler cookies" }
     }
   }
 

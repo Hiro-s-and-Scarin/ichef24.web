@@ -108,8 +108,7 @@ export function useDeleteUser() {
       toast.success("Usuário deletado com sucesso!")
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Erro ao deletar usuário")
-      console.error("Error deleting user:", error)
+      toast.error("Erro ao deletar usuário")
     },
   })
 }

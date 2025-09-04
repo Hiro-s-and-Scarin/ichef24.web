@@ -11,8 +11,7 @@ export function useGoogleAuth() {
     try {
       await initiateGoogleAuth()
     } catch (error) {
-      toast.error("Erro ao iniciar autenticação com Google")
-      console.error("Google auth error:", error)
+      toast.error("Erro na autenticação com Google")
     }
   }
 
@@ -27,7 +26,6 @@ export function useFacebookAuth() {
       await initiateFacebookAuth()
     } catch (error) {
       toast.error("Erro ao iniciar autenticação com Facebook")
-      console.error("Facebook auth error:", error)
     }
   }
 

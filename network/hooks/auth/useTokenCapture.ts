@@ -27,14 +27,10 @@ export function useTokenCapture() {
           url.searchParams.delete('token')
           window.history.replaceState({}, document.title, url.pathname)
           
-          // Verificar se o usuário tem plano ativo
           const planStatus = await getUserPlanStatus()
           
           if (planStatus.success && planStatus.data) {
-            // Usuário tem plano ativo, permanecer na página atual
-            console.log("Usuário tem plano ativo:", planStatus.data)
           } else {
-            // Usuário não tem plano ativo, redirecionar para /plans
             setTimeout(() => {
               router.push("/plans")
             }, 100)

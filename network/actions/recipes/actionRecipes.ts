@@ -59,7 +59,7 @@ export async function getRecipeCategories(): Promise<string[]> {
 
 export async function postRecipeReview(recipeId: string, body: { rating: number; comment?: string }): Promise<{ message: string }> {
   // Esta funcionalidade não existe no backend ainda
-  throw new Error("Funcionalidade de reviews não implementada")
+  return { message: "Funcionalidade de reviews não implementada" }
 }
 
 export async function postGenerateRecipeWithAI(body: AIRecipeRequest): Promise<Recipe> {
@@ -79,7 +79,7 @@ export async function putUpdateAIRecipe(id: string | number, recipeData: string)
 
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {
   // Esta funcionalidade não existe no backend ainda
-  throw new Error("Funcionalidade de melhoria de receitas não implementada")
+  return { message: "Funcionalidade de melhoria de receitas não implementada" } as any
 }
 
 export async function getTopRecipes(): Promise<RecipeResponse> {

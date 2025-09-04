@@ -5,8 +5,11 @@ export async function getRecipeById(id: string): Promise<{ success: boolean; dat
     const response = await api.get(`/recipes/${id}`);
     return { success: true, data: response.data.data };
   } catch (error: any) {
-    console.error('Erro ao buscar receita:', error);
-    throw new Error(error.response?.data?.message || 'Erro ao buscar receita');
+    return { 
+      success: false, 
+      data: null, 
+      message: error.response?.data?.message || 'Erro ao buscar receita' 
+    };
   }
 }
 

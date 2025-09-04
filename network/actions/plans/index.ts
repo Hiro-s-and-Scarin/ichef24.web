@@ -5,7 +5,6 @@ export async function getFreePlanStatus(): Promise<{ success: boolean; data: { h
     const response = await api.get('/plans/free-status');
     return { success: true, data: response.data.data };
   } catch (error) {
-    console.error('Erro ao verificar status do plano gratuito:', error);
     return { 
       success: false, 
       data: { hasUsedFreePlan: false, canCreateFreePlan: true } 
@@ -20,7 +19,6 @@ export async function getUserPlanStatus(): Promise<{ success: boolean; data: any
     const planData = response.data.data;
     return { success: true, data: planData };
   } catch (error) {
-    console.error('Erro ao verificar status do plano do usuário:', error);
     return { 
       success: false, 
       data: null 
