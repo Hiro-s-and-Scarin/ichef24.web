@@ -361,8 +361,8 @@ export default function RecipePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="w-full px-4 py-8">
+        <div className="w-full max-w-6xl mx-auto space-y-8">
           {/* Back Button */}
           <Button
             variant="outline"
@@ -376,15 +376,15 @@ export default function RecipePage() {
           </Button>
 
           {/* Top Section - Recipe Overview with Orange Gradient Background */}
-          <div className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-4 sm:p-6 lg:p-8 text-white">
             {/* Recipe Title */}
-            <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">{recipe.title}</h1>
             
             {/* Recipe Description */}
-            <p className="text-xl mb-6 opacity-90">{recipe.description}</p>
+            <p className="text-base sm:text-lg lg:text-xl mb-6 opacity-90">{recipe.description}</p>
             
             {/* Recipe Metadata */}
-            <div className="flex items-center gap-8 mb-6">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 mb-6">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
                 <span>{recipe.cooking_time || 'N/A'} minutos</span>
@@ -441,12 +441,12 @@ export default function RecipePage() {
           </div>
 
           {/* Main Content Area - Two Columns */}
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Left Column: Ingredients */}
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-6">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-6">
-                  <Leaf className="w-6 h-6 text-green-600" />
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4 sm:mb-6">
+                  <Leaf className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   Ingredientes
                 </h3>
                 <ul className="space-y-3">
@@ -466,9 +466,9 @@ export default function RecipePage() {
 
             {/* Right Column: Preparation Method */}
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-6">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-6">
-                  <Utensils className="w-6 h-6 text-green-600" />
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4 sm:mb-6">
+                  <Utensils className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   Modo de Preparo
                 </h3>
                 <ol className="space-y-4">
@@ -491,9 +491,9 @@ export default function RecipePage() {
 
           {/* Bottom Section: AI Chat */}
           <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-            <CardContent className="p-6">
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4">
-                <ChefHat className="w-6 h-6 text-orange-500" />
+            <CardContent className="p-4 sm:p-6">
+              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4">
+                <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
                 Converse com o Chef AI
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
