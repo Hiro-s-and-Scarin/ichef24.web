@@ -751,7 +751,7 @@ const resources = {
         "Seu plano {planName} foi ativado com sucesso!",
       "checkout.success.description":
         "Você já pode aproveitar todos os recursos premium do iChef24. Recebemos a confirmação do Stripe e sua assinatura está ativa.",
-      "checkout.success.dashboard": "Ir para o Dashboard",
+      "checkout.success.home": "Ir para o Início",
       "checkout.success.plans": "Ver Meus Planos",
       "checkout.success.tip":
         "💡 Dica: Verifique seu email para receber o recibo de pagamento do Stripe.",
@@ -1536,7 +1536,7 @@ const resources = {
         "Your {planName} plan has been successfully activated!",
       "checkout.success.description":
         "You can now enjoy all premium features of iChef24. We received confirmation from Stripe and your subscription is active.",
-      "checkout.success.dashboard": "Go to Dashboard",
+      "checkout.success.home": "Go to Home",
       "checkout.success.plans": "View My Plans",
       "checkout.success.tip":
         "💡 Tip: Check your email to receive the Stripe payment receipt.",
