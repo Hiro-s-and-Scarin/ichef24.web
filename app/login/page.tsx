@@ -12,6 +12,7 @@ import { ChefHat, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { LanguageToggle } from "@/components/layout/language-toggle"
 import { useLogin } from "@/network/hooks/auth/useAuth"
 import { useGoogleAuth, useFacebookAuth } from "@/network/hooks/auth/useSocialAuth"
 
@@ -68,8 +69,9 @@ function LoginPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center p-4">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4">
+      {/* Theme and Language Toggle */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <LanguageToggle />
         <ThemeToggle />
       </div>
       
