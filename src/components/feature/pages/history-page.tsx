@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { RecipeModal } from "@/components/common/recipe-modal";
 import { CreateRecipeModal } from "@/components/forms/create-recipe-modal";
 import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
@@ -34,6 +35,7 @@ import { queryKeys } from "@/lib/config/query-keys";
 export function HistoryPageContent() {
   const { t, ready } = useTranslation();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -73,11 +75,7 @@ export function HistoryPageContent() {
   };
 
   const openRecipeModal = (recipe: RecipeType) => {
-    setModalState((prev) => ({
-      ...prev,
-      selectedRecipe: recipe,
-      isRecipeModalOpen: true,
-    }));
+    router.push(`/recipe/${recipe.id}`);
   };
 
   const adaptRecipeForModal = (recipe: RecipeType) => ({
@@ -193,19 +191,107 @@ export function HistoryPageContent() {
                 {t("history.subtitle")}
               </p>
             </div>
+            <div className="flex items-center gap-4">
+              <Button
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+                onClick={() =>
+                  setModalState((prev) => ({
+                    ...prev,
+                    isCreateModalOpen: true,
+                  }))
+                }
+              >
+                {t("history.create.new")}
+              </Button>
+              <Button
+                variant="outline"
+                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                onClick={() =>
+                  setModalState((prev) => ({
+                    ...prev,
+                    isCreateAIModalOpen: true,
+                  }))
+                }
+              >
+                {t("history.create.ai")}
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/dashboard">{t("history.back.home")}</Link>
+              </Button>
+            </div>
           </div>
 
-          {/* Search Input */}
+          {/* Stats Card */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
             <CardContent className="p-6">
-              <div className="relative w-full max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder={t("history.search.placeholder")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-gray-200 dark:border-gray-600 w-full"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-500">
+                    {totalRecipes}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {t("history.stats.created")}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-500">{totalLikes}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {t("history.stats.rating")}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-500">{averageTime}min</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {t("history.stats.time")}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Search and Filters */}
+          <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder={t("history.search.placeholder")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 border-gray-200 dark:border-gray-600"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Botão de filtros removido para evitar problemas de validação */}
+                  {/* <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFilterModalOpen(true)}
+                    className="border-gray-200 dark:border-gray-600"
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    {t('history.filters')}
+                  </Button> */}
+                  <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
+                    <Button
+                      variant={viewMode === "grid" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("grid")}
+                      className="px-3"
+                    >
+                      {t("history.view.mode.grid")}
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className="px-3"
+                    >
+                      {t("history.view.mode.list")}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -224,12 +310,18 @@ export function HistoryPageContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
                 {currentRecipes.map((recipe: RecipeType) => (
                   <div key={recipe.id} className="relative">
-                    <RecipeCard recipe={recipe} />
-                    <div className="absolute top-2 right-2 flex gap-2">
+                    <RecipeCard 
+                      recipe={recipe} 
+                      onClick={() => openRecipeModal(recipe)}
+                    />
+                    <div className="absolute top-2 right-2 flex gap-2 z-10">
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => openEditModal(recipe)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditModal(recipe);
+                        }}
                         className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
                       >
                         <Edit className="w-4 h-4" />
@@ -237,7 +329,10 @@ export function HistoryPageContent() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDeleteRecipe(String(recipe.id))}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteRecipe(String(recipe.id));
+                        }}
                         disabled={deleteRecipeMutation.isPending}
                         className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
                       >
