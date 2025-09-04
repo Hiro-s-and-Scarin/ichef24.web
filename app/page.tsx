@@ -283,11 +283,11 @@ function HomePageContent() {
         {/* Conteúdo Hero */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
           {/* Logo e Título */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-2xl">
-              <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-white" />
+          <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-4 sm:mb-6 md:mb-8">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl sm:rounded-2xl md:rounded-3xl flex items-center justify-center shadow-2xl">
+              <ChefHat className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-12 lg:h-12 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black text-white drop-shadow-2xl">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-9xl font-black text-white drop-shadow-2xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400">
                 {t("home.hero.title")}
               </span>
@@ -295,17 +295,17 @@ function HomePageContent() {
           </div>
           
           {/* Subtítulo Principal */}
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 drop-shadow-xl leading-tight">
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-6 drop-shadow-xl leading-tight">
             {t("home.hero.subtitle")}
           </h2>
           
           {/* Descrição */}
-          <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-4xl mx-auto leading-relaxed drop-shadow-lg">
+          <p className="text-xs sm:text-sm md:text-base lg:text-xl xl:text-2xl text-white/90 mb-4 sm:mb-6 md:mb-8 max-w-4xl mx-auto leading-relaxed drop-shadow-lg">
             {t("home.hero.description")}
           </p>
           
           {/* Call to Action */}
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-orange-200 font-semibold mb-8 sm:mb-12 drop-shadow-lg">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-orange-200 font-semibold mb-6 sm:mb-8 md:mb-12 drop-shadow-lg">
             {t("home.hero.cta")}
           </p>
 
@@ -318,29 +318,29 @@ function HomePageContent() {
                   value={dashboardState.inputValue}
                   onChange={handleInputChange}
                   placeholder={t("home.hero.input.placeholder")}
-                  className="w-full h-12 sm:h-14 md:h-16 px-4 sm:px-6 md:px-8 text-sm sm:text-base md:text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
+                  className="w-full h-10 sm:h-12 md:h-14 lg:h-16 px-3 sm:px-4 md:px-6 lg:px-8 text-xs sm:text-sm md:text-base lg:text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
                   disabled={dashboardState.isGenerating}
                 />
                 <Button
                   type="submit"
-                  className="absolute right-1 sm:right-2 top-1 sm:top-2 h-10 w-10 sm:h-12 sm:w-12 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-1 sm:right-2 top-1 sm:top-2 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-700 text-white rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!dashboardState.inputValue.trim() || dashboardState.isGenerating}
                 >
                   {dashboardState.isGenerating ? (
-                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Send className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                   )}
                 </Button>
               </div>
             </form>
             
             {/* Sugestões */}
-            <div className="mt-4 sm:mt-6">
-              <p className="text-gray-200 text-xs sm:text-sm mb-3 sm:mb-4">
+            <div className="mt-3 sm:mt-4 md:mt-6">
+              <p className="text-gray-200 text-xs sm:text-sm mb-2 sm:mb-3 md:mb-4">
                 {t("home.hero.suggestions.title")}
               </p>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+              <div className="flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-3">
                 {[
                   t("home.hero.suggestions.chocolate"),
                   t("home.hero.suggestions.vegan"), 
@@ -354,7 +354,7 @@ function HomePageContent() {
                     size="sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                     disabled={dashboardState.isGenerating}
-                    className="text-xs sm:text-sm rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1 sm:px-4 sm:py-2"
+                    className="text-xs sm:text-sm rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2"
                   >
                     {suggestion}
                   </Button>

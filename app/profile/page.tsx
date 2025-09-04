@@ -101,10 +101,10 @@ export default function Profile() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              Configurações do Perfil
+              {t("profile.title")}
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              Gerencie suas informações pessoais e configurações de conta
+              {t("profile.subtitle")}
             </p>
           </div>
 
@@ -136,7 +136,7 @@ export default function Profile() {
                       {user.plan}
                     </Badge>
                     <Badge variant="outline">
-                      Membro desde {new Date().getFullYear()}
+                      {t("profile.overview.member.since")} {new Date().getFullYear()}
                     </Badge>
                   </div>
                 </div>
@@ -149,18 +149,18 @@ export default function Profile() {
             <TabsList className="grid w-full grid-cols-3 bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Dados da Conta
+                {t("profile.tabs.account")}
               </TabsTrigger>
               <TabsTrigger
                 value="preferences"
                 className="flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
-                Preferências
+                {t("profile.tabs.preferences")}
               </TabsTrigger>
               <TabsTrigger value="security" className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
-                Segurança
+                {t("profile.tabs.security")}
               </TabsTrigger>
             </TabsList>
 
@@ -170,7 +170,7 @@ export default function Profile() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="w-5 h-5" />
-                    Informações Pessoais
+                    {t("profile.account.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -182,17 +182,17 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Nome Completo
+                            {t("profile.account.full.name")}
                           </label>
                           <Input
                             {...registerProfile("name", {
                               minLength: {
                                 value: 2,
                                 message:
-                                  "Nome deve ter pelo menos 2 caracteres",
+                                  t("profile.account.name.error"),
                               },
                             })}
-                            placeholder="Seu nome completo (opcional)"
+                            placeholder={t("profile.account.name.placeholder")}
                             className="border-gray-300 dark:border-gray-600"
                           />
                           {profileErrors.name && (
@@ -203,18 +203,18 @@ export default function Profile() {
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email
+                            {t("profile.account.email")}
                           </label>
                           <Input
                             {...registerProfile("email", {
                               pattern: {
                                 value:
                                   /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: "Email inválido",
+                                message: t("profile.account.email.error"),
                               },
                             })}
                             type="email"
-                            placeholder="seu@email.com (opcional)"
+                            placeholder={t("profile.account.email.placeholder")}
                             className="border-gray-300 dark:border-gray-600"
                           />
                           {profileErrors.email && (
@@ -233,15 +233,15 @@ export default function Profile() {
                         >
                           <Save className="w-4 h-4 mr-2" />
                           {isProfileSubmitting
-                            ? "Salvando..."
-                            : "Salvar Alterações"}
+                            ? t("profile.account.saving")
+                            : t("profile.account.save")}
                         </Button>
                         <Button
                           type="button"
                           variant="outline"
                           onClick={cancelProfileEdit}
                         >
-                          Cancelar
+                          {t("profile.account.cancel")}
                         </Button>
                       </div>
                     </form>
@@ -250,7 +250,7 @@ export default function Profile() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nome Completo
+                            {t("profile.account.full.name")}
                           </label>
                           <p className="text-gray-900 dark:text-white">
                             {user.name}
@@ -258,7 +258,7 @@ export default function Profile() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Email
+                            {t("profile.account.email")}
                           </label>
                           <p className="text-gray-900 dark:text-white">
                             {user.email}
@@ -271,7 +271,7 @@ export default function Profile() {
                         className="bg-orange-500 hover:bg-orange-600"
                       >
                         <Edit className="w-4 h-4 mr-2" />
-                        Editar Dados
+                        {t("profile.account.edit")}
                       </Button>
                     </div>
                   )}
@@ -285,7 +285,7 @@ export default function Profile() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="w-5 h-5" />
-                    Preferências da Conta
+                    {t("profile.preferences.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -296,10 +296,10 @@ export default function Profile() {
                         <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Tema da Interface
+                            {t("profile.preferences.theme.title")}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Escolha entre tema claro e escuro
+                            {t("profile.preferences.theme.desc")}
                           </p>
                         </div>
                       </div>
@@ -312,10 +312,10 @@ export default function Profile() {
                         <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Idioma
+                            {t("profile.preferences.language.title")}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Escolha o idioma da interface
+                            {t("profile.preferences.language.desc")}
                           </p>
                         </div>
                       </div>
@@ -328,10 +328,10 @@ export default function Profile() {
                         <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Status da Conta
+                            {t("profile.preferences.status.title")}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Sua conta está ativa e funcionando normalmente
+                            {t("profile.preferences.status.desc")}
                           </p>
                         </div>
                       </div>
@@ -339,7 +339,7 @@ export default function Profile() {
                         variant="outline"
                         className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                       >
-                        Ativo
+                        {t("profile.preferences.status.active")}
                       </Badge>
                     </div>
                   </div>
@@ -353,7 +353,7 @@ export default function Profile() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Shield className="w-5 h-5" />
-                    Segurança da Conta
+                    {t("profile.security.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -366,10 +366,10 @@ export default function Profile() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Sair da Conta
+                            {t("profile.security.logout.title")}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Encerre sua sessão atual e saia da aplicação
+                            {t("profile.security.logout.desc")}
                           </p>
                         </div>
                       </div>
@@ -382,7 +382,7 @@ export default function Profile() {
                         className="bg-red-600 hover:bg-red-700 text-white"
                       >
                         <Shield className="w-4 h-4 mr-2" />
-                        Sair
+                        {t("profile.security.logout.button")}
                       </Button>
                     </div>
 
@@ -392,10 +392,10 @@ export default function Profile() {
                         <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Senha da Conta
+                            {t("profile.security.password.title")}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Mantenha sua conta segura com uma senha forte
+                            {t("profile.security.password.desc")}
                           </p>
                         </div>
                       </div>
@@ -405,7 +405,7 @@ export default function Profile() {
                         className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300 dark:hover:bg-blue-900/30"
                       >
                         <Lock className="w-4 h-4 mr-2" />
-                        Alterar Senha
+                        {t("profile.security.password.button")}
                       </Button>
                     </div>
 
@@ -417,11 +417,10 @@ export default function Profile() {
                         </div>
                         <div>
                           <p className="font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-                            Importante
+                            {t("profile.security.warning.title")}
                           </p>
                           <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                            Suas receitas e dados permanecerão seguros e você
-                            poderá fazer login novamente a qualquer momento.
+                            {t("profile.security.warning.desc")}
                           </p>
                         </div>
                       </div>
