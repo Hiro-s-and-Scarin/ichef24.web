@@ -6,16 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Search,
-  Share2,
-  Clock,
-  Users,
-  Star,
+
   History,
   Trash2,
   Edit,
 } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RecipeModal } from "@/components/common/recipe-modal";
 import { CreateRecipeModal } from "@/components/forms/create-recipe-modal";
@@ -191,63 +186,10 @@ export function HistoryPageContent() {
                 {t("history.subtitle")}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <Button
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-                onClick={() =>
-                  setModalState((prev) => ({
-                    ...prev,
-                    isCreateModalOpen: true,
-                  }))
-                }
-              >
-                {t("history.create.new")}
-              </Button>
-              <Button
-                variant="outline"
-                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                onClick={() =>
-                  setModalState((prev) => ({
-                    ...prev,
-                    isCreateAIModalOpen: true,
-                  }))
-                }
-              >
-                {t("history.create.ai")}
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/dashboard">{t("history.back.home")}</Link>
-              </Button>
-            </div>
+            
           </div>
 
-          {/* Stats Card */}
-          <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-500">
-                    {totalRecipes}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.created")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-500">{totalLikes}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.rating")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500">{averageTime}min</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.time")}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          
 
           {/* Search and Filters */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
