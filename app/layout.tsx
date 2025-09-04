@@ -61,8 +61,8 @@ function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, i
   const pathname = usePathname()
 
   useEffect(() => {
-    // Se não for uma página pública, verificar se o usuário está logado
-    if (pathname !== '/' && pathname !== '/login' && pathname !== '/register' && !pathname.startsWith('/auth/')) {
+    // Se não for uma página pública (auth page), verificar se o usuário está logado
+    if (!isAuthPage) {
       const cookies = parseCookies()
       const token = cookies.jwt
 
@@ -70,10 +70,10 @@ function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, i
         router.replace('/')
       }
     }
-  }, [pathname, router])
+  }, [pathname, router, isAuthPage])
 
-  // Para páginas de autenticação pura (/login, /register), não mostrar header
-  if (pathname === '/login' || pathname === '/register') {
+  // Para páginas de autenticação pura (/login, /register, /auth/register, /forgot-password, /reset-password, /auth/reset-password), não mostrar header
+  if (pathname === '/login' || pathname === '/register' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/reset-password' || pathname === '/auth/reset-password') {
     return <>{children}</>
   }
 
@@ -107,7 +107,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isAuthPage = pathname === '/' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/auth/reset-password'
+  const isAuthPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/reset-password' || pathname === '/auth/reset-password'
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
