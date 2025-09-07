@@ -159,17 +159,21 @@ export default function RecipePage() {
           first_message: undefined,
           old_recipe: JSON.stringify(oldRecipeForAI),
           new_recipe: userMessage,
+          recipe_id: recipe.id,
         })
       } else {
         // Primeira mensagem sem receita existente: usar first_message
         aiRecipe = await generateRecipeMutation.mutateAsync({
-          first_message: userMessage,
+          first_message: userMessage
         })
       }
 
+      // Extrair dados da resposta da API
+      const recipeData = aiRecipe.data || aiRecipe;
+      
       // Detectar se é uma pergunta ou modificação
       const isQuestionResult = isQuestion(userMessage)
-      const userInteractionMessage = (aiRecipe as any).user_interaction_message || ''
+      const userInteractionMessage = (recipeData as any).user_interaction_message || ''
       
       // Se for pergunta, mostrar a mensagem de interação ou uma resposta padrão
       let aiResponse = ''
@@ -178,19 +182,19 @@ export default function RecipePage() {
       }
 
       // Se não for pergunta, buscar imagem para a receita
-      if (!isQuestionResult && (aiRecipe as any).title_translate) {
+      if (!isQuestionResult && (recipeData as any).title_translate) {
         try {
-          const imageData = await searchImageMutation.mutateAsync((aiRecipe as any).title_translate)
+          const imageData = await searchImageMutation.mutateAsync((recipeData as any).title_translate)
           if (imageData?.data?.url_signed) {
-            (aiRecipe as any).image_url = imageData.data.url_signed
+            (recipeData as any).image_url = imageData.data.url_signed
           }
         } catch (error) {
           // Usar imagem padrão se falhar
-          (aiRecipe as any).image_url = (aiRecipe as any).image_url || "/placeholder.jpg"
+          (recipeData as any).image_url = (recipeData as any).image_url || "/placeholder.jpg"
         }
       } else if (!isQuestionResult) {
         // Se não for pergunta mas não tem title_translate, usar imagem padrão
-        (aiRecipe as any).image_url = (aiRecipe as any).image_url || "/placeholder.jpg"
+        (recipeData as any).image_url = (recipeData as any).image_url || "/placeholder.jpg"
       }
 
       const newAIMessage = {
@@ -202,7 +206,7 @@ export default function RecipePage() {
         }),
         suggestions: [],
         isRecipe: !isQuestionResult, // Só é receita se não for pergunta
-        recipeData: isQuestionResult ? undefined : aiRecipe,
+        recipeData: isQuestionResult ? undefined : recipeData,
         userInteractionMessage: userInteractionMessage,
         isQuestion: isQuestionResult,
       }
@@ -215,7 +219,7 @@ export default function RecipePage() {
             newAIMessage,
           ],
           isGenerating: false,
-          lastGeneratedRecipe: aiRecipe,
+          lastGeneratedRecipe: recipeData,
           isQuestionLoading: false,
         }
         return newState

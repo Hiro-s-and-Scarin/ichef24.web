@@ -102,4 +102,5 @@ export interface AIRecipeRequest {
   first_message?: string;
   new_recipe?: string;
   old_recipe?: string;
+  recipe_id?: number;
 }
