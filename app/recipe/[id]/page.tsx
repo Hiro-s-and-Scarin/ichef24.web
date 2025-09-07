@@ -162,26 +162,21 @@ export default function RecipePage() {
           recipe_id: recipe.id,
         })
       } else {
-        // Primeira mensagem sem receita existente: usar first_message
         aiRecipe = await generateRecipeMutation.mutateAsync({
           first_message: userMessage
         })
       }
 
-      // Extrair dados da resposta da API
-      const recipeData = aiRecipe.data || aiRecipe;
+      const recipeData = aiRecipe['data' as keyof typeof aiRecipe] as any || aiRecipe;
       
-      // Detectar se é uma pergunta ou modificação
       const isQuestionResult = isQuestion(userMessage)
       const userInteractionMessage = (recipeData as any).user_interaction_message || ''
       
-      // Se for pergunta, mostrar a mensagem de interação ou uma resposta padrão
       let aiResponse = ''
       if (isQuestionResult) {
         aiResponse = userInteractionMessage || `Entendi sua pergunta sobre "${userMessage}". Como posso ajudar você com esta receita?`
       }
 
-      // Se não for pergunta, buscar imagem para a receita
       if (!isQuestionResult && (recipeData as any).title_translate) {
         try {
           const imageData = await searchImageMutation.mutateAsync((recipeData as any).title_translate)
@@ -189,11 +184,9 @@ export default function RecipePage() {
             (recipeData as any).image_url = imageData.data.url_signed
           }
         } catch (error) {
-          // Usar imagem padrão se falhar
           (recipeData as any).image_url = (recipeData as any).image_url || "/placeholder.jpg"
         }
       } else if (!isQuestionResult) {
-        // Se não for pergunta mas não tem title_translate, usar imagem padrão
         (recipeData as any).image_url = (recipeData as any).image_url || "/placeholder.jpg"
       }
 
@@ -225,7 +218,6 @@ export default function RecipePage() {
         return newState
       })
 
-      // Invalidar queries
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
@@ -239,7 +231,27 @@ export default function RecipePage() {
 
   // Função auxiliar para detectar se uma mensagem é uma pergunta
   const isQuestion = (message: string) => {
-    const lowerCaseMessage = message.toLowerCase()
+    const lowerCaseMessage = message.toLowerCase().trim()
+    
+    // Palavras que indicam MODIFICAÇÃO (prioridade alta - se tem essas, NÃO é pergunta)
+    const modificationKeywords = [
+      // Português
+      "atualize", "atualizar", "modifique", "modificar", "mude", "mudar", 
+      "altere", "alterar", "troque", "trocar", "substitua", "substituir",
+      "adicione", "adicionar", "remova", "remover", "tire", "tirar",
+      "melhore", "melhorar", "otimize", "otimizar", "refaça", "refazer",
+      "crie", "criar", "faça", "fazer", "prepare", "preparar",
+      "transforme", "transformar", "converta", "converter",
+      // Inglês
+      "update", "modify", "change", "alter", "replace", "substitute",
+      "add", "remove", "improve", "optimize", "remake", "create", "make",
+      "prepare", "transform", "convert"
+    ]
+    
+    // Se tem palavra de modificação, NÃO é pergunta
+    if (modificationKeywords.some(keyword => lowerCaseMessage.includes(keyword))) {
+      return false
+    }
     
     // Palavras que indicam pergunta em português
     const questionWordsPT = [
@@ -247,7 +259,8 @@ export default function RecipePage() {
       "quem", "o que", "que", "quanto", "quantos", "quantas",
       "pode", "deve", "deveria", "seria", "é possível", "tem como",
       "dá para", "da para", "consegue", "consegues", "sabe", "sabes",
-      "explica", "explicas", "diz", "dizes", "conta", "contas"
+      "explica", "explicas", "diz", "dizes", "conta", "contas",
+      "posso", "você pode", "você consegue", "você sabe"
     ]
     
     // Palavras que indicam pergunta em inglês
@@ -261,21 +274,21 @@ export default function RecipePage() {
     ]
     
     // Verificar se contém ponto de interrogação
-    if (lowerCaseMessage.includes("?")) return true
+    const hasQuestionMark = lowerCaseMessage.includes("?")
     
-    // Verificar se começa com palavras de pergunta em português
-    if (questionWordsPT.some(word => lowerCaseMessage.startsWith(word))) return true
+    // Verificar se contém palavras de pergunta
+    const hasQuestionKeyword = questionWordsPT.some(word => lowerCaseMessage.includes(word)) ||
+                              questionWordsEN.some(word => lowerCaseMessage.includes(word))
     
-    // Verificar se começa com palavras de pergunta em inglês
-    if (questionWordsEN.some(word => lowerCaseMessage.startsWith(word))) return true
+    // Verificar se começa com palavras de pergunta
+    const startsWithQuestion = lowerCaseMessage.startsWith("posso") ||
+                              lowerCaseMessage.startsWith("você pode") ||
+                              lowerCaseMessage.startsWith("você consegue") ||
+                              lowerCaseMessage.startsWith("você sabe") ||
+                              questionWordsPT.some(word => lowerCaseMessage.startsWith(word)) ||
+                              questionWordsEN.some(word => lowerCaseMessage.startsWith(word))
     
-    // Verificar se contém palavras de pergunta no meio (português)
-    if (questionWordsPT.some(word => lowerCaseMessage.includes(word))) return true
-    
-    // Verificar se contém palavras de pergunta no meio (inglês)
-    if (questionWordsEN.some(word => lowerCaseMessage.includes(word))) return true
-    
-    return false
+    return hasQuestionKeyword && (hasQuestionMark || startsWithQuestion)
   }
 
   const handleCopyUrl = async () => {
