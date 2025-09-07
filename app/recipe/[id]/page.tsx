@@ -92,7 +92,7 @@ export default function RecipePage() {
       if (recipe?.id) {
         const savedRecipe = await updateAIRecipeMutation.mutateAsync({
           id: recipe.id,
-          ...updatedRecipe
+          recipeData: JSON.stringify(updatedRecipe)
         })
         toast.success("Receita atualizada com sucesso!")
         
