@@ -89,21 +89,33 @@ export default function RecipePage() {
 
   const handleAIRecipeSave = async (updatedRecipe: any) => {
     try {
-      const recipeDataString = JSON.stringify(updatedRecipe)
-      const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString)
-      toast.success("Receita salva com sucesso!")
-      
-      // Invalidar queries para atualizar a interface
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
-      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
-      
-      // Redirecionar para a página da receita
-      if (savedRecipe?.id) {
-        router.push(`/recipe/${savedRecipe.id}`)
+      if (recipe?.id) {
+        const savedRecipe = await updateAIRecipeMutation.mutateAsync({
+          id: recipe.id,
+          ...updatedRecipe
+        })
+        toast.success("Receita atualizada com sucesso!")
+        
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+        
       } else {
-        toast.error("Erro ao salvar receita: ID não encontrado")
+        const recipeDataString = JSON.stringify(updatedRecipe)
+        const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString)
+        toast.success("Receita salva com sucesso!")
+        
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+        
+        if (savedRecipe?.id) {
+          router.push(`/recipe/${savedRecipe.id}`)
+        } else {
+          toast.error("Erro ao salvar receita: ID não encontrado")
+        }
       }
     } catch (error) {
       toast.error("Erro ao salvar receita")
