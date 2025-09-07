@@ -551,7 +551,7 @@ export function EditRecipeModal({
             <div className="space-y-2">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <ChefHat className="w-4 h-4 text-orange-500" />
-                Tipo de Cozinha
+                {t("form.cuisine.type")}
               </Label>
               <Controller
                 name="cuisine_type"
@@ -559,7 +559,7 @@ export function EditRecipeModal({
                 render={({ field }) => (
                   <Input
                     {...field}
-                    placeholder="Ex: Italiana, Brasileira, Asiática..."
+                    placeholder={t("form.cuisine.type.placeholder")}
                     className="h-12 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                   />
                 )}
@@ -569,7 +569,7 @@ export function EditRecipeModal({
             <div className="space-y-2">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <ChefHat className="w-4 h-4 text-orange-500" />
-                Imagem da Receita
+                {t("form.image")}
               </Label>
               
               {/* Preview da imagem atual */}
@@ -577,7 +577,7 @@ export function EditRecipeModal({
                 <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
                   <img
                     src={watch("image_url")}
-                    alt="Imagem atual da receita"
+                    alt={t("form.image.current")}
                     className="w-full h-full object-cover"
                   />
                   <Button
@@ -635,7 +635,7 @@ export function EditRecipeModal({
               {/* Campo de URL (fallback) */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Ou insira uma URL da imagem:
+                  {t("form.image.url.alternative")}
                 </Label>
                 <Controller
                   name="image_url"
@@ -643,7 +643,7 @@ export function EditRecipeModal({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="https://example.com/image.jpg"
+                      placeholder={t("form.image.url.placeholder")}
                       className="h-10 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -751,7 +751,7 @@ export function EditRecipeModal({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="Nome do ingrediente"
+                      placeholder={t("form.ingredients.name.placeholder")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -762,7 +762,7 @@ export function EditRecipeModal({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="Quantidade"
+                      placeholder={t("form.ingredients.amount.placeholder")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -808,7 +808,7 @@ export function EditRecipeModal({
                   render={({ field }) => (
                     <Textarea
                       {...field}
-                      placeholder="Descreva este passo..."
+                      placeholder={t("form.instructions.step.placeholder")}
                       className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:border-orange-500 dark:focus:border-orange-400 transition-colors"
                     />
                   )}
@@ -842,7 +842,7 @@ export function EditRecipeModal({
             <div className="flex items-center justify-between">
               <Label className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
                 <Bot className="w-4 h-4 text-orange-500" />
-                Assistente de IA
+                {t("form.ai.assistant")}
               </Label>
               <Button
                 type="button"
@@ -851,7 +851,7 @@ export function EditRecipeModal({
                 className="border border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                {showChat ? "Ocultar Chat" : "Abrir Chat"}
+                {showChat ? t("form.ai.hide.chat") : t("form.ai.open.chat")}
               </Button>
             </div>
 
@@ -913,23 +913,23 @@ export function EditRecipeModal({
                           {message.new_recipe && (
                             <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
                               <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">
-                                🚀 Nova Versão da Receita
+                                🚀 {t("form.ai.new.version")}
                               </h4>
                               <div className="space-y-1 text-sm text-orange-700 dark:text-orange-300">
                                 <p>
-                                  <strong>Título:</strong>{" "}
+                                  <strong>{t("form.recipe.name")}:</strong>{" "}
                                   {message.new_recipe.title}
                                 </p>
                                 <p>
-                                  <strong>Tempo:</strong>{" "}
+                                  <strong>{t("form.time")}:</strong>{" "}
                                   {message.new_recipe.cooking_time} min
                                 </p>
                                 <p>
-                                  <strong>Dificuldade:</strong>{" "}
+                                  <strong>{t("form.difficulty")}:</strong>{" "}
                                   {message.new_recipe.difficulty_level}/5
                                 </p>
                                 <p>
-                                  <strong>IA:</strong>{" "}
+                                  <strong>{t("form.ai.model")}:</strong>{" "}
                                   {message.new_recipe.ai_model_version}
                                 </p>
                               </div>
@@ -959,7 +959,7 @@ export function EditRecipeModal({
                               </div>
                             </div>
                             <p className="text-sm text-gray-600 dark:text-gray-300">
-                              Pensando...
+                              {t("form.ai.thinking")}
                             </p>
                           </div>
                         </div>
@@ -976,7 +976,7 @@ export function EditRecipeModal({
                       <Input
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        placeholder="Peça ajuda para melhorar a receita..."
+                        placeholder={t("form.ai.chat.placeholder")}
                         className="relative h-12 pr-16 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                         disabled={isGenerating}
                       />
@@ -1006,7 +1006,7 @@ export function EditRecipeModal({
             >
               <Save className="w-5 h-5 mr-2" />
               {isSubmitting || putRecipeMutation.isPending
-                ? "Salvando..."
+                ? t("form.saving")
                 : t("form.edit.recipe")}
             </Button>
           </div>
