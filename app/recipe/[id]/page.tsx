@@ -131,7 +131,7 @@ export default function RecipePage() {
     if (!recipeState.chatInput.trim() || recipeState.isGenerating) return
 
     const userMessage = recipeState.chatInput.trim()
-    const isQuestionMessage = isQuestion(userMessage)
+    // Removido - agora usamos a detecção do backend
     
     // Adicionar mensagem do usuário
     const newUserMessage = {
@@ -148,7 +148,7 @@ export default function RecipePage() {
       chatMessages: [...prev.chatMessages, newUserMessage],
       chatInput: "",
       isGenerating: true,
-      isQuestionLoading: isQuestionMessage,
+      isQuestionLoading: false, // Será determinado pelo backend
     }))
 
     try {
@@ -181,12 +181,18 @@ export default function RecipePage() {
 
       const recipeData = aiRecipe['data' as keyof typeof aiRecipe] as any || aiRecipe;
       
-      const isQuestionResult = isQuestion(userMessage)
       const userInteractionMessage = (recipeData as any).user_interaction_message || ''
+      
+      // Se tem user_interaction_message E tem título de receita, é uma receita (nova ou atualizada)
+      // Se tem user_interaction_message E NÃO tem título de receita, é uma pergunta
+      const hasRecipeTitle = !!(recipeData as any).title
+      const isQuestionResult = !!userInteractionMessage && !hasRecipeTitle
+      
+      
       
       let aiResponse = ''
       if (isQuestionResult) {
-        aiResponse = userInteractionMessage || `Entendi sua pergunta sobre "${userMessage}". Como posso ajudar você com esta receita?`
+        aiResponse = userInteractionMessage
       }
 
       if (!isQuestionResult && (recipeData as any).title_translate) {
@@ -242,66 +248,7 @@ export default function RecipePage() {
   }
 
   // Função auxiliar para detectar se uma mensagem é uma pergunta
-  const isQuestion = (message: string) => {
-    const lowerCaseMessage = message.toLowerCase().trim()
-    
-    // Palavras que indicam MODIFICAÇÃO (prioridade alta - se tem essas, NÃO é pergunta)
-    const modificationKeywords = [
-      // Português
-      "atualize", "atualizar", "modifique", "modificar", "mude", "mudar", 
-      "altere", "alterar", "troque", "trocar", "substitua", "substituir",
-      "adicione", "adicionar", "remova", "remover", "tire", "tirar",
-      "melhore", "melhorar", "otimize", "otimizar", "refaça", "refazer",
-      "crie", "criar", "faça", "fazer", "prepare", "preparar",
-      "transforme", "transformar", "converta", "converter",
-      // Inglês
-      "update", "modify", "change", "alter", "replace", "substitute",
-      "add", "remove", "improve", "optimize", "remake", "create", "make",
-      "prepare", "transform", "convert"
-    ]
-    
-    // Se tem palavra de modificação, NÃO é pergunta
-    if (modificationKeywords.some(keyword => lowerCaseMessage.includes(keyword))) {
-      return false
-    }
-    
-    // Palavras que indicam pergunta em português
-    const questionWordsPT = [
-      "como", "quando", "onde", "por que", "porque", "qual", "quais", 
-      "quem", "o que", "que", "quanto", "quantos", "quantas",
-      "pode", "deve", "deveria", "seria", "é possível", "tem como",
-      "dá para", "da para", "consegue", "consegues", "sabe", "sabes",
-      "explica", "explicas", "diz", "dizes", "conta", "contas",
-      "posso", "você pode", "você consegue", "você sabe"
-    ]
-    
-    // Palavras que indicam pergunta em inglês
-    const questionWordsEN = [
-      "how", "when", "where", "why", "what", "which", "who", 
-      "can", "could", "should", "would", "is it possible", "do you have",
-      "does it have", "will it", "does this", "can you", "how do i",
-      "what if", "tell me", "explain", "describe", "suggest",
-      "is there", "are there", "does it", "do you", "would you",
-      "could you", "should i", "can i", "may i", "might i"
-    ]
-    
-    // Verificar se contém ponto de interrogação
-    const hasQuestionMark = lowerCaseMessage.includes("?")
-    
-    // Verificar se contém palavras de pergunta
-    const hasQuestionKeyword = questionWordsPT.some(word => lowerCaseMessage.includes(word)) ||
-                              questionWordsEN.some(word => lowerCaseMessage.includes(word))
-    
-    // Verificar se começa com palavras de pergunta
-    const startsWithQuestion = lowerCaseMessage.startsWith("posso") ||
-                              lowerCaseMessage.startsWith("você pode") ||
-                              lowerCaseMessage.startsWith("você consegue") ||
-                              lowerCaseMessage.startsWith("você sabe") ||
-                              questionWordsPT.some(word => lowerCaseMessage.startsWith(word)) ||
-                              questionWordsEN.some(word => lowerCaseMessage.startsWith(word))
-    
-    return hasQuestionKeyword && (hasQuestionMark || startsWithQuestion)
-  }
+  // Função isQuestion removida - agora usamos a detecção do backend
 
   const handleCopyUrl = async () => {
     const recipeUrl = `${window.location.origin}/recipe/${recipe?.id}`;
