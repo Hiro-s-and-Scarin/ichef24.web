@@ -344,6 +344,7 @@ export function EditRecipeModal({
 
     try {
       let finalImageUrl = data.image_url;
+      let finalImageKey = recipe.image_key; // Preservar image_key existente
 
       // Se há um arquivo de imagem, fazer upload primeiro
       if (data.image_file) {
@@ -359,6 +360,7 @@ export function EditRecipeModal({
 
           if (response.data.success) {
             finalImageUrl = response.data.data.urlSigned;
+            finalImageKey = response.data.data.key; // Capturar novo image_key
             toast.success("Imagem enviada com sucesso!");
           } else {
             toast.error("Erro ao enviar imagem: " + response.data.message);
@@ -394,6 +396,7 @@ export function EditRecipeModal({
         tags:
           data.tags?.filter((tag): tag is string => tag !== undefined) || [],
         image_url: finalImageUrl,
+        image_key: finalImageKey, // Incluir image_key
         is_ai_generated: data.is_ai_generated,
         ai_prompt: data.ai_prompt,
         ai_model_version: data.ai_model_version,

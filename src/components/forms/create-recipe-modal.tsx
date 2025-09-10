@@ -155,6 +155,7 @@ export function CreateRecipeModal({
   const onSubmit = async (data: CreateRecipeFormData) => {
     try {
       let finalImageUrl = data.image_url;
+      let finalImageKey = undefined;
 
       if (data.image_file) {
         try {
@@ -169,6 +170,7 @@ export function CreateRecipeModal({
 
           if (response.data.success) {
             finalImageUrl = response.data.data.urlSigned;
+            finalImageKey = response.data.data.key; // Capturar image_key
             toast.success("Imagem enviada com sucesso!");
           } else {
             toast.error("Erro ao enviar imagem: " + response.data.message);
@@ -193,6 +195,7 @@ export function CreateRecipeModal({
           data.tags?.filter((tag: string | undefined) => tag !== undefined) ||
           [],
         image_url: finalImageUrl,
+        image_key: finalImageKey, // Incluir image_key
         is_ai_generated: data.is_ai_generated,
         ai_prompt: data.ai_prompt,
         ai_model_version: data.ai_model_version,

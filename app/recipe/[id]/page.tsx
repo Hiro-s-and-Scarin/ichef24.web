@@ -100,6 +100,7 @@ export default function RecipePage() {
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history })
         
       } else {
         const recipeDataString = JSON.stringify(updatedRecipe)
@@ -110,6 +111,7 @@ export default function RecipePage() {
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history })
         
         if (savedRecipe?.id) {
           router.push(`/recipe/${savedRecipe.id}`)
@@ -200,6 +202,7 @@ export default function RecipePage() {
           const imageData = await searchImageMutation.mutateAsync((recipeData as any).title_translate)
           if (imageData?.data?.url_signed) {
             (recipeData as any).image_url = imageData.data.url_signed
+            (recipeData as any).image_key = imageData.data.key // Capturar image_key
           }
         } catch (error) {
           (recipeData as any).image_url = (recipeData as any).image_url || "/placeholder.jpg"

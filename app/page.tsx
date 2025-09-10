@@ -152,25 +152,36 @@ function HomePageContent() {
       })
       
       // Buscar imagem pelo title_translate (como no modal AI)
+      let finalRecipe = { ...recipe }
       if ((recipe as any).title_translate) {
         try {
           const imageData = await searchImageMutation.mutateAsync((recipe as any).title_translate)
           if (imageData?.data?.url_signed) {
-            (recipe as any).image_url = imageData.data.url_signed
+            finalRecipe = {
+              ...recipe,
+              image_url: imageData.data.url_signed,
+              image_key: imageData.data.key // Capturar image_key
+            }
           }
         } catch (error) {
           // Usar imagem padrão se falhar
-          (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg"
+          finalRecipe = {
+            ...recipe,
+            image_url: (recipe as any).image_url || "/placeholder.jpg"
+          }
         }
       } else {
         // Se não tem title_translate, usar imagem padrão
-        (recipe as any).image_url = (recipe as any).image_url || "/placeholder.jpg"
+        finalRecipe = {
+          ...recipe,
+          image_url: (recipe as any).image_url || "/placeholder.jpg"
+        }
       }
       
       setDashboardState(prev => ({ 
         ...prev, 
         isGenerating: false, 
-        generatedRecipe: recipe,
+        generatedRecipe: finalRecipe,
         isModalOpen: true
       }))
       toast.success("Receita gerada com sucesso!")
@@ -202,6 +213,7 @@ function HomePageContent() {
         cuisine_type: dashboardState.generatedRecipe.cuisine_type || "",
         tags: dashboardState.generatedRecipe.tags || [],
         image_url: dashboardState.generatedRecipe.image_url || "",
+        image_key: dashboardState.generatedRecipe.image_key || undefined, // Incluir image_key
         is_ai_generated: true,
         ai_prompt: dashboardState.inputValue,
         is_public: true
