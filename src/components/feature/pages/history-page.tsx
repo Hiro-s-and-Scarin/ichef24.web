@@ -20,7 +20,7 @@ import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
 import { useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
-import { useUserRecipes } from "@/network/hooks/recipes/useUserRecipes";
+import { useUserHistory } from "@/network/hooks/recipes/useUserHistory";
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -47,13 +47,22 @@ export function HistoryPageContent() {
     isCreateAIModalOpen: false,
   });
 
-  const { data: recipesData, isLoading } = useUserRecipes({
+  const { data: historyData, isLoading } = useUserHistory({
     title: searchTerm || undefined,
     page: currentPage,
     limit: 4,
   });
 
-  const recipes = recipesData?.data || [];
+  // Extrair as receitas do histórico
+  const recipes = historyData?.data?.map((historyItem: any) => historyItem.recipe).filter(Boolean) || [];
+  
+  // Simular estrutura de paginação para manter compatibilidade
+  const recipesData = {
+    data: recipes,
+    totalPages: Math.ceil(recipes.length / 4), // Simular paginação
+    currentPage: currentPage,
+    total: recipes.length
+  };
 
   const deleteRecipeMutation = useDeleteRecipe();
 
@@ -64,6 +73,7 @@ export function HistoryPageContent() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
     } catch (error) {
       toast.error(t("error.general"));
     }
@@ -139,6 +149,7 @@ export function HistoryPageContent() {
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
 
     setModalState((prev) => ({
       ...prev,
@@ -150,6 +161,7 @@ export function HistoryPageContent() {
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
 
     setModalState((prev) => ({
       ...prev,
@@ -162,6 +174,7 @@ export function HistoryPageContent() {
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
   };
 
   const handleAIRecipeEdit = (updatedRecipe: unknown) => {
@@ -169,6 +182,7 @@ export function HistoryPageContent() {
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
     queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
   };
 
   return (
