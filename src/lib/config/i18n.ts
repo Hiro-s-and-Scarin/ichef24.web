@@ -106,6 +106,26 @@ const resources = {
       "favorites.no.favorites": "Nenhum favorito encontrado",
       "favorites.remove": "Remover dos Favoritos",
 
+      // My Recipe Book Page
+      "myRecipeBook.title": "Meu livro de Receitas",
+      "myRecipeBook.subtitle": "Suas receitas salvas no livro",
+      "myRecipeBook.tabs.myRecipes": "Minhas Receitas",
+      "myRecipeBook.tabs.favorites": "Favoritos",
+      "myRecipeBook.search.myRecipes.placeholder": "Buscar minhas receitas...",
+      "myRecipeBook.search.favorites.placeholder": "Buscar receitas favoritas...",
+      "myRecipeBook.no.myRecipes": "Nenhuma receita criada",
+      "myRecipeBook.no.myRecipes.desc": "Você ainda não criou nenhuma receita. Comece criando suas próprias receitas!",
+      "myRecipeBook.no.favorites": "Nenhuma receita favorita",
+      "myRecipeBook.no.favorites.desc": "Você ainda não tem receitas favoritas. Explore as receitas e adicione suas favoritas!",
+      
+      // Upgrade Card
+      "myRecipeBook.upgrade.title": "Livro de Receitas Premium",
+      "myRecipeBook.upgrade.description": "O Livro de Receitas está disponível apenas nos planos Chef e Master Chef. Faça upgrade para salvar e organizar suas receitas favoritas!",
+      "myRecipeBook.upgrade.feature1": "Salve receitas ilimitadas",
+      "myRecipeBook.upgrade.feature2": "Organize por categorias",
+      "myRecipeBook.upgrade.feature3": "Acesso offline",
+      "myRecipeBook.upgrade.button": "Fazer Upgrade Agora",
+
       // Community Page
       "community.title": "Comunidade iChef24",
       "community.subtitle":
@@ -1070,6 +1090,26 @@ const resources = {
       "favorites.filters": "Filters",
       "favorites.no.favorites": "No favorites found",
       "favorites.remove": "Remove from Favorites",
+
+      // My Recipe Book Page
+      "myRecipeBook.title": "My Recipe Book",
+      "myRecipeBook.subtitle": "Your recipes saved in the book",
+      "myRecipeBook.tabs.myRecipes": "My Recipes",
+      "myRecipeBook.tabs.favorites": "Favorites",
+      "myRecipeBook.search.myRecipes.placeholder": "Search my recipes...",
+      "myRecipeBook.search.favorites.placeholder": "Search favorite recipes...",
+      "myRecipeBook.no.myRecipes": "No recipes created",
+      "myRecipeBook.no.myRecipes.desc": "You haven't created any recipes yet. Start by creating your own recipes!",
+      "myRecipeBook.no.favorites": "No favorite recipes",
+      "myRecipeBook.no.favorites.desc": "You don't have any favorite recipes yet. Explore recipes and add your favorites!",
+      
+      // Upgrade Card
+      "myRecipeBook.upgrade.title": "Premium Recipe Book",
+      "myRecipeBook.upgrade.description": "The Recipe Book is only available on Chef and Master Chef plans. Upgrade to save and organize your favorite recipes!",
+      "myRecipeBook.upgrade.feature1": "Save unlimited recipes",
+      "myRecipeBook.upgrade.feature2": "Organize by categories",
+      "myRecipeBook.upgrade.feature3": "Offline access",
+      "myRecipeBook.upgrade.button": "Upgrade Now",
 
       // Community Page
       "community.title": "iChef24 Community",

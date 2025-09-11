@@ -21,7 +21,7 @@ export function Header() {
   const navItems = [
     { href: "/home", label: t("header.home"), icon: ChefHat },
     { href: "/history", label: t("header.history"), icon: Clock },
-    { href: "/my-recipe-book", label: "Minhas Receitas", icon: Heart },
+    { href: "/my-recipe-book", label: t("myRecipeBook.title"), icon: Heart },
     { href: "/community", label: t("header.community"), icon: Users },
     { href: "/plans", label: t("header.plans"), icon: ChefHat },
   ];

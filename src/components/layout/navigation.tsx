@@ -15,7 +15,7 @@ export function Navigation() {
   const navItems = [
     { href: "/", label: t("header.home") },
     { href: "/history", label: t("header.history") },
-    { href: "/my-recipe-book", label: "Minhas Receitas" },
+    { href: "/my-recipe-book", label: t("myRecipeBook.title") },
     { href: "/plans", label: t("header.plans") },
   ];
 

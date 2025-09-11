@@ -138,10 +138,10 @@ export function FavoritesPageContent() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                   <Heart className="text-red-500 fill-red-500" />
-                  Meu livro de Receitas
+                  {t("myRecipeBook.title")}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Suas receitas salvas no livro
+                  {t("myRecipeBook.subtitle")}
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -160,33 +160,32 @@ export function FavoritesPageContent() {
                   </div>
                   
                   <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                    Livro de Receitas Premium
+                    {t("myRecipeBook.upgrade.title")}
                   </h2>
                   
                   <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    O Livro de Receitas está disponível apenas nos planos Chef e Master Chef. 
-                    Faça upgrade para salvar e organizar suas receitas favoritas!
+                    {t("myRecipeBook.upgrade.description")}
                   </p>
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-left">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">Salve receitas ilimitadas</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature1")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-left">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">Organize por categorias</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature2")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-left">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">Acesso offline</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature3")}</span>
                     </div>
                   </div>
                   
                   <div className="mt-8">
                     <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white">
                       <Link href="/plans">
-                        Fazer Upgrade Agora
+                        {t("myRecipeBook.upgrade.button")}
                       </Link>
                     </Button>
                   </div>
@@ -235,7 +234,7 @@ export function FavoritesPageContent() {
               className="flex items-center gap-2"
             >
               <History className="w-4 h-4" />
-              Minhas Receitas
+              {t("myRecipeBook.tabs.myRecipes")}
             </Button>
             <Button
               variant={activeTab === "favorites" ? "default" : "outline"}
@@ -249,7 +248,7 @@ export function FavoritesPageContent() {
               className="flex items-center gap-2"
             >
               <Heart className="w-4 h-4" />
-              Favoritos
+              {t("myRecipeBook.tabs.favorites")}
             </Button>
           </div>
 
@@ -262,8 +261,8 @@ export function FavoritesPageContent() {
                   <Input
                     placeholder={
                       activeTab === "recipes" 
-                        ? "Buscar minhas receitas..." 
-                        : "Buscar receitas favoritas..."
+                        ? t("myRecipeBook.search.myRecipes.placeholder")
+                        : t("myRecipeBook.search.favorites.placeholder")
                     }
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -356,12 +355,12 @@ export function FavoritesPageContent() {
                     <Heart className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                    {activeTab === "recipes" ? "Nenhuma receita criada" : "Nenhuma receita favorita"}
+                    {activeTab === "recipes" ? t("myRecipeBook.no.myRecipes") : t("myRecipeBook.no.favorites")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     {activeTab === "recipes" 
-                      ? "Você ainda não criou nenhuma receita. Comece criando suas próprias receitas!"
-                      : "Você ainda não tem receitas favoritas. Explore as receitas e adicione suas favoritas!"
+                      ? t("myRecipeBook.no.myRecipes.desc")
+                      : t("myRecipeBook.no.favorites.desc")
                     }
                   </p>
                 </CardContent>
