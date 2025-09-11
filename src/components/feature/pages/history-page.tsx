@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Search,
-
+  Heart,
   History,
   Trash2,
   Edit,
@@ -19,7 +19,7 @@ import { EditRecipeAIModal } from "@/components/forms/edit-recipe-ai-modal";
 import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
-import { useDeleteRecipe } from "@/network/hooks/recipes/useRecipes";
+import { useDeleteRecipe, useFavoriteRecipes } from "@/network/hooks/recipes/useRecipes";
 import { useUserHistory } from "@/network/hooks/recipes/useUserHistory";
 import { Recipe as RecipeType } from "@/types/recipe";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ export function HistoryPageContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"history" | "favorites">("history");
 
   const [modalState, setModalState] = useState({
     selectedRecipe: null as RecipeType | null,
@@ -47,14 +48,22 @@ export function HistoryPageContent() {
     isCreateAIModalOpen: false,
   });
 
-  const { data: historyData, isLoading } = useUserHistory({
+  const { data: historyData, isLoading: isHistoryLoading } = useUserHistory({
     title: searchTerm || undefined,
     page: currentPage,
     limit: 4,
   });
 
-  // Extrair as receitas do histórico
-  const recipes = historyData?.data?.map((historyItem: any) => historyItem.recipe).filter(Boolean) || [];
+  const { data: favoritesData, isLoading: isFavoritesLoading } = useFavoriteRecipes({
+    title: searchTerm || undefined,
+    page: currentPage,
+    limit: 4,
+  });
+
+  // Extrair as receitas do histórico ou favoritos baseado na aba ativa
+  const recipes = activeTab === "history" 
+    ? historyData?.data?.map((historyItem: any) => historyItem.recipe).filter(Boolean) || []
+    : favoritesData?.data || [];
   
   // Simular estrutura de paginação para manter compatibilidade
   const recipesData = {
@@ -63,6 +72,8 @@ export function HistoryPageContent() {
     currentPage: currentPage,
     total: recipes.length
   };
+
+  const isLoading = activeTab === "history" ? isHistoryLoading : isFavoritesLoading;
 
   const deleteRecipeMutation = useDeleteRecipe();
 
@@ -193,14 +204,45 @@ export function HistoryPageContent() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <History className="text-orange-500" />
-                {t("history.title")}
+                {activeTab === "history" ? (
+                  <History className="text-orange-500" />
+                ) : (
+                  <Heart className="text-red-500" />
+                )}
+                {activeTab === "history" ? t("history.title") : "Receitas Favoritas"}
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                {t("history.subtitle")}
+                {activeTab === "history" ? t("history.subtitle") : "Suas receitas favoritas"}
               </p>
             </div>
             
+            {/* Tab Navigation */}
+            <div className="flex gap-2">
+              <Button
+                variant={activeTab === "history" ? "default" : "outline"}
+                onClick={() => {
+                  setActiveTab("history");
+                  setCurrentPage(1);
+                  setSearchTerm("");
+                }}
+                className="flex items-center gap-2"
+              >
+                <History className="w-4 h-4" />
+                Histórico
+              </Button>
+              <Button
+                variant={activeTab === "favorites" ? "default" : "outline"}
+                onClick={() => {
+                  setActiveTab("favorites");
+                  setCurrentPage(1);
+                  setSearchTerm("");
+                }}
+                className="flex items-center gap-2"
+              >
+                <Heart className="w-4 h-4" />
+                Favoritos
+              </Button>
+            </div>
           </div>
 
           
@@ -212,7 +254,11 @@ export function HistoryPageContent() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder={t("history.search.placeholder")}
+                    placeholder={
+                      activeTab === "history" 
+                        ? t("history.search.placeholder")
+                        : "Buscar receitas favoritas..."
+                    }
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 border-gray-200 dark:border-gray-600"
@@ -278,24 +324,33 @@ export function HistoryPageContent() {
             <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
               <CardContent className="p-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
-                  <History className="w-8 h-8 text-gray-400" />
+                  {activeTab === "history" ? (
+                    <History className="w-8 h-8 text-gray-400" />
+                  ) : (
+                    <Heart className="w-8 h-8 text-gray-400" />
+                  )}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                  {t("history.no.recipes")}
+                  {activeTab === "history" ? t("history.no.recipes") : "Nenhuma receita favorita"}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  {t("history.no.recipes.desc")}
-                </p>
-                <Button
-                  onClick={() =>
-                    setModalState((prev) => ({
-                      ...prev,
-                      isCreateAIModalOpen: true,
-                    }))
+                  {activeTab === "history" 
+                    ? t("history.no.recipes.desc") 
+                    : "Você ainda não favoritou nenhuma receita. Explore as receitas e adicione suas favoritas!"
                   }
-                >
-                  {t("dashboard.ai.button")}
-                </Button>
+                </p>
+                {activeTab === "history" && (
+                  <Button
+                    onClick={() =>
+                      setModalState((prev) => ({
+                        ...prev,
+                        isCreateAIModalOpen: true,
+                      }))
+                    }
+                  >
+                    {t("dashboard.ai.button")}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
