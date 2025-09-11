@@ -41,6 +41,10 @@ export function RecipeCard({
   const likeRecipeMutation = useLikeRecipe();
 
   useEffect(() => {
+    setIsFavorite(initialIsFavorite);
+  }, [initialIsFavorite]);
+
+  useEffect(() => {
     if (user && recipe.user_is_liked) {
       const userHasLiked = recipe.user_is_liked.includes(Number(user.id));
       setIsLiked(userHasLiked);
@@ -54,31 +58,26 @@ export function RecipeCard({
   const handleToggleFavorite = async () => {
     try {
       if (isFavorite) {
-        await removeFromFavoritesMutation.mutateAsync(recipe.id);
+        await removeFromFavoritesMutation.mutateAsync(String(recipe.id));
         setIsFavorite(false);
-        queryClient.invalidateQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        queryClient.refetchQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
       } else {
-        await addToFavoritesMutation.mutateAsync(recipe.id);
+        await addToFavoritesMutation.mutateAsync(String(recipe.id));
         setIsFavorite(true);
-        // Invalidar queries de favoritos diretamente no componente
-        console.log("Invalidating favorites queries from component...");
-        queryClient.invalidateQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        queryClient.refetchQueries({ 
-          queryKey: queryKeys.recipes.favorites,
-          exact: false 
-        });
-        console.log("Favorites queries invalidated and refetched!");
       }
+      
+      // Invalidar todas as queries relacionadas a favoritos
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.favorites,
+        exact: false 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.user,
+        exact: false 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.all,
+        exact: false 
+      });
     } catch (error) {
       toast.error("Erro ao alterar favoritos");
     }
@@ -172,6 +171,7 @@ export function RecipeCard({
             e.stopPropagation();
             handleToggleFavorite();
           }}
+          disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
           className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
         >
           <Heart

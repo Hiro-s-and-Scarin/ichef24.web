@@ -282,11 +282,12 @@ export function HistoryPageContent() {
               {/* Recipes Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
                 {currentRecipes.map((recipe: RecipeType) => (
-                  <div key={recipe.id} className="relative">
-                    <RecipeCard 
-                      recipe={recipe} 
-                      onClick={() => openRecipeModal(recipe)}
-                    />
+                   <div key={recipe.id} className="relative">
+                     <RecipeCard 
+                       recipe={recipe} 
+                       onClick={() => openRecipeModal(recipe)}
+                       isFavorite={activeTab === "favorites"}
+                     />
                     <div className="absolute top-2 right-2 flex gap-2 z-10">
                       <Button
                         size="sm"
