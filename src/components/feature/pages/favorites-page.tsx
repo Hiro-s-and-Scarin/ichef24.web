@@ -12,7 +12,6 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { RecipeModal } from "@/components/common/recipe-modal";
 import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
 
 import { RecipeCard } from "@/components/common/recipe-card";
@@ -43,9 +42,7 @@ export function FavoritesPageContent() {
   const [activeTab, setActiveTab] = useState<"recipes" | "favorites">("recipes");
 
   const [modalState, setModalState] = useState({
-    selectedRecipe: null as any,
     recipeToEdit: null as any,
-    isRecipeModalOpen: false,
     isEditModalOpen: false,
   });
 
@@ -112,11 +109,7 @@ export function FavoritesPageContent() {
   };
 
   const openRecipeModal = (recipe: Recipe) => {
-    setModalState((prev) => ({
-      ...prev,
-      selectedRecipe: recipe,
-      isRecipeModalOpen: true,
-    }));
+    router.push(`/recipe/${recipe.id}`);
   };
 
   // Dados baseados na aba ativa
@@ -369,18 +362,6 @@ export function FavoritesPageContent() {
         </div>
       </div>
 
-      {/* Recipe Modal */}
-      {modalState.selectedRecipe && (
-        <RecipeModal
-          recipe={modalState.selectedRecipe}
-          isOpen={modalState.isRecipeModalOpen}
-          onClose={() =>
-            setModalState((prev) => ({ ...prev, isRecipeModalOpen: false }))
-          }
-          onFavorite={() => modalState.selectedRecipe && removeFavorite(modalState.selectedRecipe.id)}
-          isFavorite={true}
-        />
-      )}
 
       {/* Edit Recipe Modal */}
       <EditRecipeModal
