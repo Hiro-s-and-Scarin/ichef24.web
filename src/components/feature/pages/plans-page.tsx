@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, Check, Sparkles, Crown, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useGetStripeProducts } from "@/network/hooks/stripe";
 import { useCreateFreePlan, useGetFreePlanStatus } from "@/network/hooks/plans";
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 export function PlansPageContent() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const { formatCurrency, getCurrentCurrency } = useCurrencyFormatter();
   const currentCurrency = getCurrentCurrency();
@@ -29,8 +31,19 @@ export function PlansPageContent() {
 
   // Recarregar produtos quando moeda ou ciclo de cobrança mudar
   useEffect(() => {
-    // A query será automaticamente recarregada devido às mudanças na queryKey
-  }, [currentCurrency, billingCycle]);
+    queryClient.invalidateQueries({ 
+      queryKey: ["stripe", "products"],
+      exact: false 
+    });
+  }, [currentCurrency, billingCycle, queryClient]);
+
+  // Invalidar queries quando a linguagem mudar
+  useEffect(() => {
+    queryClient.invalidateQueries({ 
+      queryKey: ["stripe", "products"],
+      exact: false 
+    });
+  }, [i18n.language, queryClient]);
 
   const plans: Plan[] = useMemo(() => {
     // Plano gratuito sempre disponível
