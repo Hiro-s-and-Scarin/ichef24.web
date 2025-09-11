@@ -405,6 +405,7 @@ const resources = {
       "plans.contact.subtitle":
         "Nossa equipe está aqui para ajudar você a escolher o melhor plano.",
       "plans.contact.button": "Falar com Suporte",
+      "plans.view.all": "Ver Todos os Planos",
 
       // Recipe Cards
       "recipe.time": "min",
@@ -1277,6 +1278,7 @@ const resources = {
       "plans.contact.subtitle":
         "Our team is here to help you choose the best plan.",
       "plans.contact.button": "Contact Support",
+      "plans.view.all": "View All Plans",
 
       // Recipe Cards
       "recipe.time": "min",

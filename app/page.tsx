@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { useCurrentUser } from "@/network/hooks/users/useUsers"
 import { useGetStripeProducts } from "@/network/hooks/stripe/useStripe"
+import { PlansSection } from "@/components/sections/plans-section"
 
 export default function HomePage() {
   return (
@@ -213,7 +214,6 @@ function HomePageContent() {
         cuisine_type: dashboardState.generatedRecipe.cuisine_type || "",
         tags: dashboardState.generatedRecipe.tags || [],
         image_url: dashboardState.generatedRecipe.image_url || "",
-        image_key: dashboardState.generatedRecipe.image_key || undefined, // Incluir image_key
         is_ai_generated: true,
         ai_prompt: dashboardState.inputValue,
         is_public: true
@@ -374,6 +374,9 @@ function HomePageContent() {
           <MainFeaturesSection />
         </div>
       </div>
+
+      {/* Plans Section */}
+      <PlansSection />
 
       {/* Modal de Login - Estilo iChef */}
       {dashboardState.showLoginModal && (
