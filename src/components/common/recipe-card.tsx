@@ -78,6 +78,10 @@ export function RecipeCard({
         queryKey: queryKeys.recipes.all,
         exact: false 
       });
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.recipes.my,
+        exact: false 
+      });
     } catch (error) {
       toast.error("Erro ao alterar favoritos");
     }

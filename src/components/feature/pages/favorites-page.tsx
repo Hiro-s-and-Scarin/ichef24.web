@@ -7,58 +7,69 @@ import { Input } from "@/components/ui/input";
 import {
   Search,
   Heart,
-  Share2,
-  Clock,
-  Users,
-  Star,
-  Filter,
+  History,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { RecipeModal } from "@/components/common/recipe-modal";
+import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
 
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
-import { FilterModal } from "@/components/forms/filter-modal";
 import {
+  useRecipes,
   useFavoriteRecipes,
   useRemoveFromFavorites,
+  useDeleteRecipe,
 } from "@/network/hooks/recipes/useRecipes";
 import { useCurrentUser } from "@/network/hooks/users/useUsers";
 import { useTranslation } from "react-i18next";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { useRouter } from "next/navigation";
 
-import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys";
 import { toast } from "sonner";
-import { Recipe, FavoriteRecipe } from "@/types/recipe";
+import { Recipe } from "@/types/recipe";
 
 export function FavoritesPageContent() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { hasRecipeBookAccess, isFreePlan } = usePlanAccess();
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"recipes" | "favorites">("recipes");
 
   const [modalState, setModalState] = useState({
-    selectedRecipe: null as Recipe | null,
+    selectedRecipe: null as any,
+    recipeToEdit: null as any,
     isRecipeModalOpen: false,
-    isFilterModalOpen: false,
-    isCreateAIModalOpen: false,
+    isEditModalOpen: false,
   });
 
   // TanStack Query hooks
   const {
-    data: favorites,
-    isLoading,
+    data: userRecipes,
+    isLoading: isLoadingRecipes,
+  } = useRecipes({
+    page: currentPage,
+    limit: 12,
+    title: searchTerm || undefined,
+  });
+
+  const {
+    data: favoritesData,
+    isLoading: isLoadingFavorites,
   } = useFavoriteRecipes({
     page: currentPage,
     limit: 12,
     title: searchTerm || undefined,
-    tags: selectedFilters,
   });
+
   const removeFromFavoritesMutation = useRemoveFromFavorites();
+  const deleteRecipeMutation = useDeleteRecipe();
 
 
 
@@ -70,6 +81,36 @@ export function FavoritesPageContent() {
     }
   };
 
+  const openEditModal = (recipe: Recipe) => {
+    setModalState({
+      ...modalState,
+      recipeToEdit: recipe,
+      isEditModalOpen: true,
+    });
+  };
+
+  const closeEditModal = () => {
+    setModalState({
+      ...modalState,
+      recipeToEdit: null,
+      isEditModalOpen: false,
+    });
+  };
+
+  const handleDeleteRecipe = async (recipeId: number) => {
+    if (window.confirm("Tem certeza que deseja excluir esta receita?")) {
+      try {
+        await deleteRecipeMutation.mutateAsync(recipeId);
+        toast.success("Receita excluída com sucesso");
+        // Invalidar queries para atualizar a lista
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false });
+        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false });
+      } catch (error) {
+        toast.error("Erro ao excluir receita");
+      }
+    }
+  };
+
   const openRecipeModal = (recipe: Recipe) => {
     setModalState((prev) => ({
       ...prev,
@@ -78,13 +119,85 @@ export function FavoritesPageContent() {
     }));
   };
 
-  const currentFavorites = favorites?.data || [];
-  const totalPages = favorites?.pagination?.totalPages || 1;
+  // Dados baseados na aba ativa
+  const currentData = activeTab === "recipes" ? userRecipes : favoritesData;
+  const isLoading = activeTab === "recipes" ? isLoadingRecipes : isLoadingFavorites;
+  const currentRecipes = currentData?.data || [];
+  const totalPages = currentData?.pagination?.totalPages || 1;
 
-  const handleApplyFilters = (filters: string[]) => {
-    setSelectedFilters(filters);
-    setCurrentPage(1); // Reset to first page when filters change
-  };
+
+
+  // Se não tem acesso ao Livro de Receitas (plano free), mostra página de upgrade
+  if (isFreePlan) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Page Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <Heart className="text-red-500 fill-red-500" />
+                  Meu livro de Receitas
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Suas receitas salvas no livro
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button variant="outline" asChild>
+                  <Link href="/home">{t("common.back")}</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Upgrade Card */}
+            <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
+              <CardContent className="p-8 text-center">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Heart className="w-10 h-10 text-white fill-white" />
+                  </div>
+                  
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                    Livro de Receitas Premium
+                  </h2>
+                  
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    O Livro de Receitas está disponível apenas nos planos Chef e Master Chef. 
+                    Faça upgrade para salvar e organizar suas receitas favoritas!
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-700 dark:text-gray-300">Salve receitas ilimitadas</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-700 dark:text-gray-300">Organize por categorias</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-700 dark:text-gray-300">Acesso offline</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white">
+                      <Link href="/plans">
+                        Fazer Upgrade Agora
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">
@@ -95,52 +208,50 @@ export function FavoritesPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <Heart className="text-red-500 fill-red-500" />
-                {t("favorites.title")}
+                Meu livro de Receitas
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                {t("favorites.subtitle")}
+                Suas receitas salvas no livro
               </p>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="outline" asChild>
-                <Link href="/home">{t("common.back")}</Link>
+                <Link href="/history">{t("common.back")}</Link>
               </Button>
             </div>
           </div>
 
-          {/* Stats Card */}
-          <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-red-500">
-                    {favorites?.pagination?.total || 0}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("favorites.title")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-500">4.8</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.rating")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-500">25min</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("history.stats.time")}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500">3</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("recipe.difficulty")}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Tab Navigation */}
+          <div className="flex gap-2">
+            <Button
+              variant={activeTab === "recipes" ? "default" : "outline"}
+              onClick={() => {
+                setActiveTab("recipes");
+                setCurrentPage(1);
+                setSearchTerm("");
+                // Invalidar queries para garantir dados atualizados
+                queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false });
+              }}
+              className="flex items-center gap-2"
+            >
+              <History className="w-4 h-4" />
+              Minhas Receitas
+            </Button>
+            <Button
+              variant={activeTab === "favorites" ? "default" : "outline"}
+              onClick={() => {
+                setActiveTab("favorites");
+                setCurrentPage(1);
+                setSearchTerm("");
+                // Invalidar queries para garantir dados atualizados
+                queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites, exact: false });
+              }}
+              className="flex items-center gap-2"
+            >
+              <Heart className="w-4 h-4" />
+              Favoritos
+            </Button>
+          </div>
 
           {/* Search and Filters */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
@@ -149,45 +260,15 @@ export function FavoritesPageContent() {
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder={t("favorites.search.placeholder")}
+                    placeholder={
+                      activeTab === "recipes" 
+                        ? "Buscar minhas receitas..." 
+                        : "Buscar receitas favoritas..."
+                    }
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 border-gray-200 dark:border-gray-600"
                   />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setModalState((prev) => ({
-                        ...prev,
-                        isFilterModalOpen: true,
-                      }))
-                    }
-                    className="border-gray-200 dark:border-gray-600"
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    {t("favorites.filters")}
-                  </Button>
-                  <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg p-1">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.grid")}
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="px-3"
-                    >
-                      {t("history.view.mode.list")}
-                    </Button>
-                  </div>
                 </div>
               </div>
             </CardContent>
@@ -203,123 +284,56 @@ export function FavoritesPageContent() {
             </div>
           ) : (
             <>
-              {/* Favorites Grid/List */}
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                  {currentFavorites.map((favorite: FavoriteRecipe) => {
-                    // Verificar se a receita existe antes de renderizar
-                    if (!favorite.recipe) {
-                      return null;
-                    }
-
-                    // Criar uma cópia limpa da receita para evitar problemas de referência
-                    const cleanRecipe = {
-                      id: favorite.recipe.id,
-                      user_id: favorite.recipe.user_id,
-                      title: favorite.recipe.title,
-                      description: favorite.recipe.description,
-                      cooking_time: favorite.recipe.cooking_time,
-                      servings: favorite.recipe.servings,
-                      difficulty_level: favorite.recipe.difficulty_level,
-                      cuisine_type: favorite.recipe.cuisine_type,
-                      tags: favorite.recipe.tags,
-                      image_url: favorite.recipe.image_url,
-                      ingredients: favorite.recipe.ingredients,
-                      steps: favorite.recipe.steps,
-                      is_ai_generated: favorite.recipe.is_ai_generated,
-                      ai_prompt: favorite.recipe.ai_prompt,
-                      ai_model_version: favorite.recipe.ai_model_version,
-                      is_public: favorite.recipe.is_public,
-                      views_count: favorite.recipe.views_count,
-                      likes_count: favorite.recipe.likes_count,
-                      user_is_liked: favorite.recipe.user_is_liked || [],
-                      createdAt: favorite.recipe.createdAt,
-                      updatedAt: favorite.recipe.updatedAt,
-                    };
-
-                    return (
+              {/* Recipes Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                {activeTab === "recipes" ? (
+                  // Receitas do usuário
+                  currentRecipes.map((recipe: Recipe) => (
+                    <div key={recipe.id} className="relative">
                       <RecipeCard
-                        key={favorite.id}
-                        recipe={cleanRecipe}
-                        onClick={() => openRecipeModal(cleanRecipe)}
-                        isFavorite={true}
+                        recipe={recipe}
+                        onClick={() => openRecipeModal(recipe)}
+                        isFavorite={false}
                       />
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="space-y-4 max-w-4xl mx-auto">
-                  {currentFavorites.map((favorite: FavoriteRecipe) => (
-                    <Card
-                      key={favorite.id}
-                      className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden"
-                    >
-                      <div className="flex">
-                        <div className="w-32 h-24 relative flex-shrink-0">
-                          <Image
-                            src={
-                              favorite.recipe?.image_url ||
-                              "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"
-                            }
-                            alt={favorite.recipe?.title || "Receita"}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-800 dark:text-white text-lg mb-1">
-                                {favorite.recipe?.title}
-                              </h3>
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
-                                {favorite.recipe?.description}
-                              </p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                <div className="flex items-center space-x-1">
-                                  <Clock className="w-4 h-4" />
-                                  <span>
-                                    {favorite.recipe?.cooking_time}{" "}
-                                    {t("recipe.time")}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <Users className="w-4 h-4" />
-                                  <span>
-                                    {favorite.recipe?.servings}{" "}
-                                    {t("recipe.servings")}
-                                  </span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <Star className="w-4 h-4 text-yellow-400" />
-                                  <span>
-                                    {favorite.recipe?.difficulty_level}/5
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2 ml-4">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  removeFavorite(favorite.recipe?.id)
-                                }
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-                              >
-                                <Heart className="w-4 h-4 fill-current" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <Share2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="absolute top-2 right-2 flex gap-2 z-10">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(recipe);
+                          }}
+                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteRecipe(recipe.id);
+                          }}
+                          disabled={deleteRecipeMutation.isPending}
+                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                    </div>
+                  ))
+                ) : (
+                  // Receitas favoritas
+                  currentRecipes.map((recipe: Recipe) => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      onClick={() => openRecipeModal(recipe)}
+                      isFavorite={true}
+                    />
+                  ))
+                )}
+              </div>
             </>
           )}
 
@@ -335,29 +349,21 @@ export function FavoritesPageContent() {
           )}
 
           {!isLoading &&
-            (!currentFavorites || currentFavorites.length === 0) && (
+            (!currentRecipes || currentRecipes.length === 0) && (
               <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="p-12 text-center space-y-4">
                   <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto">
                     <Heart className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                    {t("favorites.no.favorites")}
+                    {activeTab === "recipes" ? "Nenhuma receita criada" : "Nenhuma receita favorita"}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Você ainda não tem receitas favoritas. Comece explorando e
-                    salvando suas receitas preferidas!
-                  </p>
-                  <Button
-                    onClick={() =>
-                      setModalState((prev) => ({
-                        ...prev,
-                        isCreateAIModalOpen: true,
-                      }))
+                    {activeTab === "recipes" 
+                      ? "Você ainda não criou nenhuma receita. Comece criando suas próprias receitas!"
+                      : "Você ainda não tem receitas favoritas. Explore as receitas e adicione suas favoritas!"
                     }
-                  >
-                    {t("dashboard.ai.button")}
-                  </Button>
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -372,38 +378,49 @@ export function FavoritesPageContent() {
           onClose={() =>
             setModalState((prev) => ({ ...prev, isRecipeModalOpen: false }))
           }
-          onFavorite={() => removeFavorite(modalState.selectedRecipe.id)}
+          onFavorite={() => modalState.selectedRecipe && removeFavorite(modalState.selectedRecipe.id)}
           isFavorite={true}
         />
       )}
 
-      {/* Filter Modal */}
-      <FilterModal
-        isOpen={modalState.isFilterModalOpen}
-        onClose={() =>
-          setModalState((prev) => ({ ...prev, isFilterModalOpen: false }))
+      {/* Edit Recipe Modal */}
+      <EditRecipeModal
+        recipe={
+          modalState.recipeToEdit
+            ? {
+                id: Number(modalState.recipeToEdit.id),
+                user_id: modalState.recipeToEdit.user_id || 0,
+                title: modalState.recipeToEdit.title,
+                description: modalState.recipeToEdit.description || "",
+                ingredients: modalState.recipeToEdit.ingredients || [],
+                steps: modalState.recipeToEdit.steps || [],
+                cooking_time: modalState.recipeToEdit.cooking_time,
+                servings: modalState.recipeToEdit.servings,
+                difficulty_level: modalState.recipeToEdit.difficulty_level,
+                cuisine_type: modalState.recipeToEdit.cuisine_type || "",
+                tags: modalState.recipeToEdit.tags || [],
+                image_url: modalState.recipeToEdit.image_url,
+                is_ai_generated: modalState.recipeToEdit.is_ai_generated || false,
+                ai_prompt: modalState.recipeToEdit.ai_prompt || "",
+                ai_model_version: modalState.recipeToEdit.ai_model_version || "",
+                is_public: modalState.recipeToEdit.is_public ?? true,
+                views_count: modalState.recipeToEdit.views_count || 0,
+                likes_count: modalState.recipeToEdit.likes_count || 0,
+                createdAt: modalState.recipeToEdit.createdAt || "",
+                updatedAt: modalState.recipeToEdit.updatedAt || "",
+              }
+            : null
         }
-        filters={{ tags: selectedFilters }}
-        onFiltersChange={(newFilters: { tags?: string[] }) =>
-          handleApplyFilters(newFilters.tags || [])
-        }
-      />
-
-      {/* Create Recipe AI Modal */}
-      <CreateRecipeAIModal
-        isOpen={modalState.isCreateAIModalOpen}
-        onClose={() =>
-          setModalState((prev) => ({ ...prev, isCreateAIModalOpen: false }))
-        }
-        onSave={(recipe) => {
-          setModalState((prev) => ({ ...prev, isCreateAIModalOpen: false }));
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.recipes.favorites,
-          });
-          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
-          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+        isOpen={modalState.isEditModalOpen}
+        onClose={closeEditModal}
+        onSave={() => {
+          closeEditModal();
+          // Invalidar queries para atualizar a lista
+          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false });
+          queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false });
         }}
       />
+
     </div>
   );
 }

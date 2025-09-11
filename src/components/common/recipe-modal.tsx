@@ -158,7 +158,7 @@ export function RecipeModal({
 
           {/* Tags */}
           <div className="flex flex-wrap gap-3">
-            {recipe.tags.map((tag, index) => (
+            {recipe.tags && recipe.tags.map((tag, index) => (
               <Badge
                 key={index}
                 className="bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-800 border-2 border-orange-200 dark:from-orange-900/30 dark:to-yellow-900/30 dark:text-orange-300 dark:border-orange-700 rounded-full px-4 py-2 text-sm font-medium shadow-sm"
@@ -208,7 +208,7 @@ export function RecipeModal({
                   </h3>
                 </div>
                 <div className="space-y-6">
-                  {recipe.instructions.map((instruction, index) => (
+                  {recipe.instructions && recipe.instructions.map((instruction, index) => (
                     <div key={index} className="flex gap-4">
                       <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                         {index + 1}

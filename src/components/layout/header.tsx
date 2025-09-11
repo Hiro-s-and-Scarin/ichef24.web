@@ -9,17 +9,19 @@ import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useAuth } from "@/contexts/auth-context";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { hasRecipeBookAccess } = usePlanAccess();
 
   const navItems = [
     { href: "/home", label: t("header.home"), icon: ChefHat },
     { href: "/history", label: t("header.history"), icon: Clock },
-    { href: "/favorites", label: t("header.favorites"), icon: Heart },
+    { href: "/my-recipe-book", label: "Minhas Receitas", icon: Heart },
     { href: "/community", label: t("header.community"), icon: Users },
     { href: "/plans", label: t("header.plans"), icon: ChefHat },
   ];
