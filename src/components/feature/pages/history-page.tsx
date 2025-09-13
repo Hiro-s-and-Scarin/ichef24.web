@@ -69,14 +69,6 @@ export function HistoryPageContent() {
     if (!favoritesData?.data) return false;
     return favoritesData.data.some((recipe: any) => recipe.id === recipeId);
   };
-  
-  // Simular estrutura de paginação para manter compatibilidade
-  const recipesData = {
-    data: recipes,
-    totalPages: Math.ceil(recipes.length / 4), // Simular paginação
-    currentPage: currentPage,
-    total: recipes.length
-  };
 
   const isLoading = isHistoryLoading;
 
@@ -421,11 +413,11 @@ export function HistoryPageContent() {
       /> */}
 
       {/* Paginação */}
-      {recipesData && recipesData.totalPages > 1 && (
-        <div className="mt-8  flex justify-center">
+      {historyData && historyData.totalPages > 1 && (
+        <div className="mt-8 flex justify-center">
           <Pagination
             currentPage={currentPage}
-            totalPages={recipesData.totalPages}
+            totalPages={historyData.totalPages}
             onPageChange={setCurrentPage}
           />
         </div>
