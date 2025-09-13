@@ -18,6 +18,7 @@ import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
 import {
   useRecipes,
+  useMyRecipes,
   useFavoriteRecipes,
   useRemoveFromFavorites,
   useDeleteRecipe,
@@ -50,9 +51,7 @@ export function FavoritesPageContent() {
   const {
     data: userRecipes,
     isLoading: isLoadingRecipes,
-  } = useRecipes({
-    page: currentPage,
-    limit: 12,
+  } = useMyRecipes({
     title: searchTerm || undefined,
   });
 

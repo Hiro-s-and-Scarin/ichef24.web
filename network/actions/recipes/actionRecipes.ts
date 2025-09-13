@@ -42,8 +42,10 @@ export async function deleteFavoriteRecipe(recipeId: string | number): Promise<{
 }
 
 export async function getMyRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
-  // Usar a rota /recipes com filtros para buscar receitas do usuário atual
-  const { data } = await api.get("/recipes", { params })
+  // Usar a rota /recipes sem parâmetros de paginação para aplicar limite do plano
+  const { title } = params;
+  const queryParams = title ? { title } : {};
+  const { data } = await api.get("/recipes", { params: queryParams })
   return data
 }
 
@@ -59,7 +61,7 @@ export async function getRecipeCategories(): Promise<string[]> {
 
 export async function postRecipeReview(recipeId: string, body: { rating: number; comment?: string }): Promise<{ message: string }> {
   // Esta funcionalidade não existe no backend ainda
-  return { message: "Funcionalidade de reviews não implementada" }
+  throw new Error("Funcionalidade de reviews não implementada")
 }
 
 export async function postGenerateRecipeWithAI(body: AIRecipeRequest): Promise<Recipe> {
@@ -79,7 +81,7 @@ export async function putUpdateAIRecipe(id: string | number, recipeData: string)
 
 export async function postImproveRecipeWithAI(recipeId: string, body: { prompt: string }): Promise<Recipe> {
   // Esta funcionalidade não existe no backend ainda
-  return { message: "Funcionalidade de melhoria de receitas não implementada" } as any
+  throw new Error("Funcionalidade de melhoria de receitas não implementada")
 }
 
 export async function getTopRecipes(): Promise<RecipeResponse> {
