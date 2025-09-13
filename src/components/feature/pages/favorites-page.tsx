@@ -94,17 +94,16 @@ export function FavoritesPageContent() {
     });
   };
 
-  const handleDeleteRecipe = async (recipeId: number) => {
-    if (window.confirm("Tem certeza que deseja excluir esta receita?")) {
-      try {
-        await deleteRecipeMutation.mutateAsync(recipeId);
-        toast.success("Receita excluída com sucesso");
-        // Invalidar queries para atualizar a lista
-        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all, exact: false });
-        queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my, exact: false });
-      } catch (error) {
-        toast.error("Erro ao excluir receita");
-      }
+  const handleDeleteRecipe = async (recipeId: string) => {
+    try {
+      await deleteRecipeMutation.mutateAsync(recipeId);
+      toast.success(t("notification.deleted"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
+    } catch (error) {
+      toast.error(t("error.general"));
     }
   };
 
@@ -304,7 +303,7 @@ export function FavoritesPageContent() {
                           variant="outline"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteRecipe(recipe.id);
+                            handleDeleteRecipe(String(recipe.id));
                           }}
                           disabled={deleteRecipeMutation.isPending}
                           className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
