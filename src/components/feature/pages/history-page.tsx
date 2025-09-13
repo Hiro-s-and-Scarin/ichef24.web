@@ -17,7 +17,6 @@ import { RecipeModal } from "@/components/common/recipe-modal";
 import { CreateRecipeModal } from "@/components/forms/create-recipe-modal";
 import { EditRecipeModal } from "@/components/forms/edit-recipe-modal";
 import { EditRecipeAIModal } from "@/components/forms/edit-recipe-ai-modal";
-import { CreateRecipeAIModal } from "@/components/forms/create-recipe-ai-modal";
 import { RecipeCard } from "@/components/common/recipe-card";
 import { Pagination } from "@/components/common/pagination";
 import { useDeleteRecipe, useFavoriteRecipes } from "@/network/hooks/recipes/useRecipes";
@@ -46,7 +45,6 @@ export function HistoryPageContent() {
     isCreateModalOpen: false,
     isEditModalOpen: false,
     isEditAIModalOpen: false,
-    isCreateAIModalOpen: false,
   });
 
   const { data: historyData, isLoading: isHistoryLoading } = useUserHistory({
@@ -177,13 +175,6 @@ export function HistoryPageContent() {
     }));
   };
 
-  const handleAIRecipeCreate = (newRecipe: unknown) => {
-    // Invalidar queries para atualizar o histórico
-    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.user });
-    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my });
-    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all });
-    queryClient.invalidateQueries({ queryKey: queryKeys.recipes.history });
-  };
 
   const handleAIRecipeEdit = (updatedRecipe: unknown) => {
     // Invalidar queries para atualizar o histórico
@@ -304,18 +295,6 @@ export function HistoryPageContent() {
                 <p className="text-gray-600 dark:text-gray-300">
                   {t("history.no.recipes.desc")}
                 </p>
-                {(
-                  <Button
-                    onClick={() =>
-                      setModalState((prev) => ({
-                        ...prev,
-                        isCreateAIModalOpen: true,
-                      }))
-                    }
-                  >
-                    {t("dashboard.ai.button")}
-                  </Button>
-                )}
               </CardContent>
             </Card>
           )}
@@ -383,14 +362,6 @@ export function HistoryPageContent() {
         onSave={handleCreateRecipe}
       />
 
-      {/* Create AI Recipe Modal */}
-      <CreateRecipeAIModal
-        isOpen={modalState.isCreateAIModalOpen}
-        onClose={() =>
-          setModalState((prev) => ({ ...prev, isCreateAIModalOpen: false }))
-        }
-        onSave={handleAIRecipeCreate}
-      />
 
       {/* Edit Recipe with AI Modal */}
       {modalState.recipeToEditWithAI && (
