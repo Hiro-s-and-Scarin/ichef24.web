@@ -198,7 +198,7 @@ export function FavoritesPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <Heart className="text-red-500 fill-red-500" />
-                Minhas Receitas
+                Meu livro de Receitas
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
                 Suas receitas salvas no livro
@@ -279,37 +279,16 @@ export function FavoritesPageContent() {
                 {activeTab === "recipes" ? (
                   // Receitas do usuário
                   currentRecipes.map((recipe: Recipe) => (
-                    <div key={recipe.id} className="relative">
+                    <div key={recipe.id} className="relative group">
                       <RecipeCard
                         recipe={recipe}
                         onClick={() => openRecipeModal(recipe)}
                         isFavorite={false}
+                        showActions={true}
+                        onEdit={() => openEditModal(recipe)}
+                        onDelete={() => handleDeleteRecipe(String(recipe.id))}
+                        isDeleting={deleteRecipeMutation.isPending}
                       />
-                      <div className="absolute top-2 right-2 flex gap-2 z-10">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditModal(recipe);
-                          }}
-                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteRecipe(String(recipe.id));
-                          }}
-                          disabled={deleteRecipeMutation.isPending}
-                          className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 border-red-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
                     </div>
                   ))
                 ) : (

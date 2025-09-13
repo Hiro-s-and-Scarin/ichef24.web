@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { translateDynamicData } from "@/lib/config/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Clock, Users, Star, Eye, ThumbsUp, Copy } from "lucide-react";
+import { Heart, Clock, Users, Star, Eye, ThumbsUp, Copy, Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Recipe } from "@/types/recipe";
@@ -22,12 +22,20 @@ interface RecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
   isFavorite?: boolean;
+  showActions?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }
 
 export function RecipeCard({
   recipe,
   onClick,
   isFavorite: initialIsFavorite = false,
+  showActions = false,
+  onEdit,
+  onDelete,
+  isDeleting = false,
 }: RecipeCardProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -176,12 +184,41 @@ export function RecipeCard({
             handleToggleFavorite();
           }}
           disabled={addToFavoritesMutation.isPending || removeFromFavoritesMutation.isPending}
-          className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
+          className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8 z-10"
         >
           <Heart
             className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-400"}`}
           />
         </Button>
+
+        {/* Action Buttons - Show when showActions is true */}
+        {showActions && (
+          <div className="absolute top-2 right-2 flex gap-2 z-20">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.();
+              }}
+              className="bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full w-8 h-8"
+            >
+              <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.();
+              }}
+              disabled={isDeleting}
+              className="bg-white/90 dark:bg-gray-800/90 hover:bg-red-50 dark:hover:bg-red-950 rounded-full w-8 h-8"
+            >
+              <Trash2 className="w-4 h-4 text-red-600" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <CardContent className="p-4 flex-1 flex flex-col">
