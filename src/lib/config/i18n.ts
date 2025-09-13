@@ -107,7 +107,7 @@ const resources = {
       "favorites.remove": "Remover dos Favoritos",
 
       // My Recipe Book Page
-      "myRecipeBook.title": "Meu livro de Receitas",
+      "myRecipeBook.title": "Minhas Receitas",
       "myRecipeBook.subtitle": "Suas receitas salvas no livro",
       "myRecipeBook.tabs.myRecipes": "Minhas Receitas",
       "myRecipeBook.tabs.favorites": "Favoritos",
