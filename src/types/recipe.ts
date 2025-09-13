@@ -63,12 +63,16 @@ export interface RecipeParams {
 
 export interface RecipeResponse {
   data: Recipe[];
-  pagination: {
+  pagination?: {
     page: number;
     limit: number;
     total: number;
     totalPages: number;
   };
+  // Campos de paginação diretos (para compatibilidade com histórico)
+  currentPage?: number;
+  totalPages?: number;
+  totalItems?: number;
 }
 
 export interface FavoriteResponse {

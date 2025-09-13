@@ -43,9 +43,10 @@ export async function deleteFavoriteRecipe(recipeId: string | number): Promise<{
 
 export async function getMyRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
   // Para planos Premium, usar paginação normal; para outros planos, aplicar limite do plano
-  const {  page, limit } = params;
+  const { title, page, limit } = params;
   const queryParams: any = {};
   
+  if (title) queryParams.title = title;
   if (page) queryParams.page = page;
   if (limit) queryParams.limit = limit;
   

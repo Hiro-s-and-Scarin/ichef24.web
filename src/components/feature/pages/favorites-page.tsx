@@ -114,11 +114,11 @@ export function FavoritesPageContent() {
 
   const currentData = activeTab === "recipes" ? userRecipes : favoritesData;
   const isLoading = activeTab === "recipes" ? isLoadingRecipes : isLoadingFavorites;
-  const currentRecipes = currentData?.data || [];
+  const currentRecipes = (currentData as any)?.data || [];
   
   const totalPages = activeTab === "recipes" 
-    ? (currentData?.pagination?.totalPages || 1)
-    : (currentData?.pagination?.totalPages || 1);
+    ? ((currentData as any)?.totalPages || 1)
+    : ((currentData as any)?.pagination?.totalPages || 1);
 
 
 
