@@ -50,7 +50,7 @@ export function HistoryPageContent() {
   const { data: historyData, isLoading: isHistoryLoading } = useUserHistory({
     title: searchTerm || undefined,
     page: currentPage,
-    limit: 4,
+    limit: 8,
   });
 
   // Buscar favoritos para verificar se as receitas estão favoritadas

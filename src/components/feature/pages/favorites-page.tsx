@@ -53,6 +53,8 @@ export function FavoritesPageContent() {
     isLoading: isLoadingRecipes,
   } = useMyRecipes({
     title: searchTerm || undefined,
+    page: currentPage,
+    limit: 8,
   });
 
   const {
@@ -60,7 +62,7 @@ export function FavoritesPageContent() {
     isLoading: isLoadingFavorites,
   } = useFavoriteRecipes({
     page: currentPage,
-    limit: 12,
+    limit: 8,
     title: searchTerm || undefined,
   });
 
@@ -110,15 +112,16 @@ export function FavoritesPageContent() {
     router.push(`/recipe/${recipe.id}`);
   };
 
-  // Dados baseados na aba ativa
   const currentData = activeTab === "recipes" ? userRecipes : favoritesData;
   const isLoading = activeTab === "recipes" ? isLoadingRecipes : isLoadingFavorites;
   const currentRecipes = currentData?.data || [];
-  const totalPages = currentData?.pagination?.totalPages || 1;
+  
+  const totalPages = activeTab === "recipes" 
+    ? (currentData?.pagination?.totalPages || 1)
+    : (currentData?.pagination?.totalPages || 1);
 
 
 
-  // Se não tem acesso ao Livro de Receitas (plano free), mostra página de upgrade
   if (isFreePlan) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-black dark:via-gray-900 dark:to-black">

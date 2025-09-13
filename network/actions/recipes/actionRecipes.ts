@@ -42,9 +42,13 @@ export async function deleteFavoriteRecipe(recipeId: string | number): Promise<{
 }
 
 export async function getMyRecipes(params: RecipeParams = {}): Promise<RecipeResponse> {
-  // Usar a rota /recipes sem parâmetros de paginação para aplicar limite do plano
-  const { title } = params;
-  const queryParams = title ? { title } : {};
+  // Para planos Premium, usar paginação normal; para outros planos, aplicar limite do plano
+  const {  page, limit } = params;
+  const queryParams: any = {};
+  
+  if (page) queryParams.page = page;
+  if (limit) queryParams.limit = limit;
+  
   const { data } = await api.get("/recipes", { params: queryParams })
   return data
 }
