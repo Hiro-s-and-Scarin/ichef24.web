@@ -201,10 +201,10 @@ export function FavoritesPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <Heart className="text-red-500 fill-red-500" />
-                Meu livro de Receitas
+                {t("myRecipeBook.title")}
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                Suas receitas salvas no livro
+                {t("myRecipeBook.subtitle")}
               </p>
             </div>
             <div className="flex items-center gap-4">
