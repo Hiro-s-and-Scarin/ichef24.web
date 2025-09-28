@@ -111,38 +111,38 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
       className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
       onClick={handleViewDetails}
     >
-      <CardHeader className="pb-3">
-        <div className="flex items-start gap-3">
-          <Avatar className="w-10 h-10">
+      <CardHeader className="pb-3 sm:pb-3 p-4 sm:p-4">
+        <div className="flex items-start gap-3 sm:gap-3">
+          <Avatar className="w-10 h-10 sm:w-10 sm:h-10">
             <AvatarImage src={post.user?.avatar_url} alt={post.user?.name} />
-            <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-sm">
+            <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-sm sm:text-sm">
               {post.user?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-gray-800 dark:text-white text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 mb-1">
+              <h3 className="font-semibold text-gray-800 dark:text-white text-sm sm:text-sm">
                 {post.user?.name || t("community.post.user")}
               </h3>
               {post.is_featured && (
                 <Badge
                   variant="secondary"
-                  className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs"
+                  className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-sm w-fit"
                 >
                   {t("community.post.featured")}
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
+                <Calendar className="w-4 h-4" />
                 {formatDate(post.createdAt)}
               </div>
 
               {post.difficulty_level && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-sm w-fit">
                   {post.difficulty_level}
                 </Badge>
               )}
@@ -151,16 +151,16 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 sm:space-y-3 p-4 sm:p-4 pt-0">
         {/* Título */}
         {post.title && (
-          <h4 className="font-semibold text-gray-800 dark:text-white text-base group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2 break-words">
+          <h4 className="font-semibold text-gray-800 dark:text-white text-base sm:text-base group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2 break-words">
             {truncateText(post.title, 50)}
           </h4>
         )}
 
         {/* Conteúdo truncado */}
-        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3 break-words overflow-hidden text-ellipsis max-w-full">
+        <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-sm leading-relaxed line-clamp-3 break-words overflow-hidden text-ellipsis max-w-full">
           {truncateText(post.content, 80)}
         </p>
 
@@ -222,8 +222,8 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
         )}
 
         {/* Estatísticas e Ações */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 sm:pt-3 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Eye className="w-3 h-3" />
               {post.views_count || 0}
@@ -240,19 +240,19 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLike}
-              className={`flex items-center gap-1 p-2 h-8 ${
+              className={`flex items-center gap-1 p-1.5 sm:p-2 h-7 sm:h-8 ${
                 isLiked
                   ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                   : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
               }`}
             >
               <Heart
-                className={`w-4 h-4 ${isLiked ? "text-red-500 fill-current" : "text-gray-500"}`}
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${isLiked ? "text-red-500 fill-current" : "text-gray-500"}`}
               />
               <span className="text-xs">{localLikesCount}</span>
             </Button>
@@ -261,7 +261,7 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               variant="ghost"
               size="sm"
               onClick={handleCopyUrl}
-              className="flex items-center gap-1 p-2 h-8 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
+              className="flex items-center gap-1 p-1.5 sm:p-2 h-7 sm:h-8 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20"
               title={t("community.post.copy.link")}
             >
               <Copy className="w-3 h-3" />
@@ -271,10 +271,10 @@ export function PostCardCompact({ post, onLikePost }: PostCardCompactProps) {
               variant="outline"
               size="sm"
               onClick={handleViewDetails}
-              className="flex items-center gap-1 p-2 h-8 text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex items-center gap-1 p-1.5 sm:p-2 h-7 sm:h-8 text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <ExternalLink className="w-3 h-3" />
-              {t("community.post.view.details")}
+              <span className="hidden sm:inline">{t("community.post.view.details")}</span>
             </Button>
           </div>
         </div>

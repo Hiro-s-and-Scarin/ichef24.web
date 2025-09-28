@@ -128,8 +128,8 @@ export function Header() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-2xl z-50 animate-in slide-in-from-top-2 duration-300">
-          <div className="container mx-auto px-6 py-8">
+        <div className="md:hidden fixed inset-0 top-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-2xl z-50 animate-in slide-in-from-top-2 duration-300 h-screen">
+          <div className="container mx-auto px-6 py-8 h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">

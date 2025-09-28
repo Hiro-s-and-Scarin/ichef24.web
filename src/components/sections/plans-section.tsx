@@ -215,6 +215,19 @@ export function PlansSection() {
 
   const handleSubscribe = useCallback(
     async (plan: Plan) => {
+      // Verificar se o usuário está logado
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, string>);
+
+      if (!cookies.jwt) {
+        toast.info("Faça login para continuar com a assinatura!");
+        router.push('/login');
+        return;
+      }
+
       if (plan.amount === 0) {
         try {
           setIsLoading(true);
@@ -231,8 +244,6 @@ export function PlansSection() {
             "Plano gratuito ativado com sucesso! Bem-vindo ao iChef!"
           );
 
-          // Destruir o cookie do token e redirecionar para login
-          document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
           router.push('/');
         } catch (error: unknown) {
           console.error('Erro ao criar plano gratuito:', error);
@@ -475,17 +486,6 @@ export function PlansSection() {
                 ))}
               </div>
 
-              {/* View All Plans Button */}
-              <div className="text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/plans")}
-                  className="inline-flex items-center gap-2 border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-medium px-6 py-3 rounded-xl transition-all duration-300"
-                >
-                  {t("plans.view.all")}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
             </>
           )}
         </div>

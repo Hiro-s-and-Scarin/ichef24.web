@@ -185,27 +185,27 @@ export default function Community() {
       case 'posts':
         return (
           <div className="space-y-6">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
                   {t("community.posts.title")}
                 </h2>
-                                 <p className="text-gray-600 dark:text-gray-400">
-                   {searchQuery.trim() 
-                     ? `${filteredPosts.length} de ${postsData?.total || posts.length} posts`
-                     : `${postsData?.total || posts.length} posts`
-                   }
-                 </p>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  {searchQuery.trim() 
+                    ? `${filteredPosts.length} de ${postsData?.total || posts.length} posts`
+                    : `${postsData?.total || posts.length} posts`
+                  }
+                </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                <div className="relative flex-1 sm:flex-none sm:min-w-[300px]">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     value={searchQuery}
                     onChange={(e) => handleSearchChange(e.target.value)}
                     placeholder={t("community.search.posts.placeholder")}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 text-sm sm:text-base"
                   />
                   {searchQuery && (
                     <Button
@@ -221,9 +221,9 @@ export default function Community() {
                 
                 <Button 
                   onClick={() => setIsCreatingPost(true)}
-                  className="bg-orange-500 hover:bg-orange-600 whitespace-nowrap"
+                  className="bg-orange-500 hover:bg-orange-600 whitespace-nowrap text-sm sm:text-base"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   {t("community.new.post")}
                 </Button>
               </div>
@@ -374,40 +374,40 @@ export default function Community() {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+            <h1 className="text-3xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-4">
               {t("community.title")}
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-base sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               {t("community.subtitle")}
             </p>
           </div>
 
           {/* Navegação das Seções */}
           <div className="flex justify-center">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 border border-gray-200 dark:border-gray-700">
-              <div className="flex space-x-2">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-2 sm:p-2 border border-gray-200 dark:border-gray-700 w-full max-w-md">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                 <Button
                   variant={activeSection === 'posts' ? 'default' : 'ghost'}
                   onClick={() => setActiveSection('posts')}
-                  className={activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                  className={`text-sm sm:text-sm ${activeSection === 'posts' ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
+                  <MessageSquare className="w-4 h-4 sm:w-4 sm:h-4 mr-2 sm:mr-2" />
                   {t("community.tabs.posts")}
                 </Button>
                 <Button
                   variant={activeSection === 'top-chefs' ? 'default' : 'ghost'}
                   onClick={() => setActiveSection('top-chefs')}
-                  className={activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                  className={`text-sm sm:text-sm ${activeSection === 'top-chefs' ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                 >
-                  <Users className="w-4 h-4 mr-2" />
+                  <Users className="w-4 h-4 sm:w-4 sm:h-4 mr-2 sm:mr-2" />
                   {t("community.tabs.topChefs")}
                 </Button>
                 <Button
                   variant={activeSection === 'top-recipes' ? 'default' : 'ghost'}
                   onClick={() => setActiveSection('top-recipes')}
-                  className={activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                  className={`text-sm sm:text-sm ${activeSection === 'top-recipes' ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                 >
-                  <ChefHat className="w-4 h-4 mr-2" />
+                  <ChefHat className="w-4 h-4 sm:w-4 sm:h-4 mr-2 sm:mr-2" />
                   {t("community.tabs.topRecipes")}
                 </Button>
               </div>

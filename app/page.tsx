@@ -294,20 +294,20 @@ function HomePageContent() {
         
         {/* Conteúdo Hero */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-          {/* Logo e Título */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="w-20 h-20 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-3xl flex items-center justify-center shadow-2xl">
-              <ChefHat className="w-12 h-12 text-white" />
-            </div>
-            <h1 className="text-7xl md:text-9xl font-black text-white drop-shadow-2xl">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400">
-                iChef24
-              </span>
-            </h1>
-          </div>
+                  {/* Logo e Título */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-4 mb-8 sm:mb-8">
+                    <div className="w-20 h-20 sm:w-20 sm:h-20 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-3xl sm:rounded-3xl flex items-center justify-center shadow-2xl">
+                      <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                    </div>
+                    <h1 className="text-6xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white drop-shadow-2xl">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400">
+                        iChef24
+                      </span>
+                    </h1>
+                  </div>
           
           {/* Subtítulo Principal */}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-5 lg:mb-6 drop-shadow-xl leading-tight text-center">
+          <h2 className="text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 sm:mb-4 md:mb-5 lg:mb-6 drop-shadow-xl leading-tight text-center">
             Seu chef pessoal 24h por dia
           </h2>
 
@@ -316,13 +316,13 @@ function HomePageContent() {
             <form onSubmit={handleInputSubmit} className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-3xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
               <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-orange-200 dark:border-gray-700 overflow-hidden">
-                <Input
-                  value={dashboardState.inputValue}
-                  onChange={handleInputChange}
-                  placeholder={t("ai.welcome.message")}
-                  className="w-full h-16 px-8 text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
-                  disabled={dashboardState.isGenerating}
-                />
+                        <Input
+                          value={dashboardState.inputValue}
+                          onChange={handleInputChange}
+                          placeholder={t("ai.welcome.message")}
+                          className="w-full h-16 px-8 text-base sm:text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white"
+                          disabled={dashboardState.isGenerating}
+                        />
                 <Button
                   type="submit"
                   className="absolute right-2 top-2 h-12 w-12 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -338,11 +338,11 @@ function HomePageContent() {
             </form>
             
             {/* Sugestões */}
-            <div className="mt-6">
-              <p className="text-gray-200 text-sm mb-4">
+            <div className="mt-6 sm:mt-6">
+              <p className="text-gray-200 text-sm sm:text-sm mb-4 sm:mb-4">
                 {t("ai.suggestions")}
               </p>
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-3">
                 {[
                   "Bolo de Chocolate",
                   "Lasanha Vegana", 
@@ -356,7 +356,7 @@ function HomePageContent() {
                     size="sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                     disabled={dashboardState.isGenerating}
-                    className="rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-sm sm:text-sm rounded-full border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-300 bg-white/90 dark:bg-gray-800/90 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-200 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {suggestion}
                   </Button>
@@ -388,35 +388,35 @@ function HomePageContent() {
           ></div>
           
           {/* Modal */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Conteúdo do Modal */}
-            <div className="p-8 text-center">
+            <div className="p-6 sm:p-8 text-center">
               {/* Logo e Título */}
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg">
-                  <ChefHat className="w-6 h-6 text-white" />
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gray-800 dark:text-white">
+                <span className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
                   iChef24
                 </span>
               </div>
               
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                 Continue com iChef24
               </h2>
               
-              <p className="text-gray-600 dark:text-gray-400 mb-8">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
                 Para usar o iChef24, crie uma conta ou faça login em uma existente.
               </p>
               
               {/* Botões de Ação */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2 sm:gap-3">
                 <Button
                   onClick={() => {
                     handleCloseLoginModal()
                     router.push('/register')
                   }}
-                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   Criar Conta
                 </Button>
@@ -427,7 +427,7 @@ function HomePageContent() {
                     handleCloseLoginModal()
                     router.push('/login')
                   }}
-                  className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold py-3 rounded-xl transition-all duration-300"
+                  className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-xl transition-all duration-300"
                 >
                   Fazer Login
                 </Button>
@@ -438,7 +438,7 @@ function HomePageContent() {
                 variant="ghost"
                 size="sm"
                 onClick={handleCloseLoginModal}
-                className="mt-6 text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 transition-colors"
+                className="mt-4 sm:mt-6 text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 transition-colors text-xs sm:text-sm"
               >
                 Fechar
               </Button>

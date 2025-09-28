@@ -77,22 +77,22 @@ function LoginPageContent() {
       
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl flex items-center justify-center">
-              <ChefHat className="w-7 h-7 text-white" />
+        <div className="text-center mb-8 sm:mb-8">
+          <Link href="/" className="inline-flex items-center gap-3 sm:gap-3">
+            <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl flex items-center justify-center">
+              <ChefHat className="w-7 h-7 sm:w-7 sm:h-7 text-white" />
             </div>
-            <span className="text-3xl font-bold text-gray-800 dark:text-white">iChef24</span>
+            <span className="text-3xl sm:text-3xl font-bold text-gray-800 dark:text-white">iChef24</span>
           </Link>
         </div>
 
         <Card className="bg-white/95 dark:bg-gray-800/95 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl text-gray-800 dark:text-white">{t("auth.welcome")}</CardTitle>
-            <p className="text-gray-600 dark:text-gray-300">{t("auth.welcome.subtitle")}</p>
+          <CardHeader className="text-center space-y-2 p-8 sm:p-8">
+            <CardTitle className="text-2xl sm:text-2xl text-gray-800 dark:text-white">{t("auth.welcome")}</CardTitle>
+            <p className="text-base sm:text-base text-gray-600 dark:text-gray-300">{t("auth.welcome.subtitle")}</p>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 sm:space-y-6 p-8 sm:p-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
                 <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-md text-red-400 text-sm">

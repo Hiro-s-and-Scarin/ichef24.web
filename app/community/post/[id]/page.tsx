@@ -118,8 +118,7 @@ export default function PostDetailPage() {
     try {
       await createCommentMutation.mutateAsync({ postId: postId, content: commentContent })
       setCommentContent("")
-      toast.success(t("community.post.comment.added.success"))
-      
+      // O hook useCreatePostComment já faz a invalidação necessária
 
     } catch (error) {
       toast.error(t("community.post.comment.error"))
@@ -161,45 +160,45 @@ export default function PostDetailPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button 
               variant="ghost" 
               onClick={handleGoBack}
-              className="p-2 hover:bg-orange-100 dark:hover:bg-orange-900/20"
+              className="p-2 sm:p-2 hover:bg-orange-100 dark:hover:bg-orange-900/20"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 sm:w-5 sm:h-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+            <h1 className="text-xl sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-white">
               {t("community.post.title")}
             </h1>
           </div>
 
           {/* Post Principal */}
           <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-            <CardHeader>
-              <div className="space-y-4">
+            <CardHeader className="p-6 sm:p-6">
+              <div className="space-y-4 sm:space-y-4">
                 {/* Header do Post */}
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="w-12 h-12">
+                  <div className="flex items-center gap-4 sm:gap-4">
+                    <Avatar className="w-12 h-12 sm:w-12 sm:h-12">
                       <AvatarImage src={post.user?.avatar_url} alt={post.user?.name} />
-                      <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-lg font-semibold">
+                      <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-lg sm:text-lg font-semibold">
                         {post.user?.name?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     
                     <div>
-                      <h3 className="font-semibold text-gray-800 dark:text-white text-lg">
+                      <h3 className="font-semibold text-gray-800 dark:text-white text-lg sm:text-lg">
                         {post.user?.name || t("community.post.user.default")}
                       </h3>
                       
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                        <Calendar className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-sm sm:text-sm text-gray-500 dark:text-gray-400">
+                        <Calendar className="w-4 h-4 sm:w-4 sm:h-4" />
                         <span>{post?.createdAt ? formatDate(post.createdAt) : t("community.post.date.not.available")}</span>
                       </div>
                       
                       {post.difficulty_level && (
-                        <Badge variant="secondary" className="mt-2">
+                        <Badge variant="secondary" className="mt-2 sm:mt-2 text-sm">
                           {post.difficulty_level}
                         </Badge>
                       )}
@@ -209,15 +208,15 @@ export default function PostDetailPage() {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
               {/* Título e Conteúdo */}
               {post.title && (
-                <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">
                   {post.title}
                 </h2>
               )}
               
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg">
                 {post.content}
               </p>
 
@@ -305,25 +304,25 @@ export default function PostDetailPage() {
               )}
 
               {/* Estatísticas e Ações */}
-              <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-6">
+              <div className="pt-4 sm:pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                   <div className="flex items-center gap-2">
-                    <Eye className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                       {post.views_count || 0} {t("community.post.views")}
                     </span>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                       {post.comments_count || 0} {t("community.post.comments")}
                     </span>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <Share2 className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                       {post.shares_count || 0} {t("community.post.shares")}
                     </span>
                   </div>
@@ -334,28 +333,28 @@ export default function PostDetailPage() {
 
           {/* Seção de Comentários */}
           <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-            <CardHeader>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                {t("community.post.comments.title", { count: comments.length })}
+            <CardHeader className="p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
+                Comentários ({comments.length})
               </h3>
             </CardHeader>
             
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
               {/* Formulário de Comentário */}
-              <form onSubmit={handleCreateComment} className="flex gap-3">
+              <form onSubmit={handleCreateComment} className="flex gap-2 sm:gap-3">
                 <Input
                   value={commentContent}
                   onChange={(e) => setCommentContent(e.target.value)}
                   placeholder={t("community.post.add.comment.placeholder")}
-                  className="flex-1"
+                  className="flex-1 text-sm sm:text-base"
                   disabled={isSubmittingComment}
                 />
                 <Button 
                   type="submit" 
                   disabled={isSubmittingComment || !commentContent.trim()}
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="bg-orange-500 hover:bg-orange-600 px-3 sm:px-4"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </form>
 
@@ -375,26 +374,26 @@ export default function PostDetailPage() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-3 sm:space-y-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                   {comments.map((comment: { id: number; user?: { name?: string; avatar_url?: string }; content: string; createdAt: string }) => (
-                    <div key={comment.id} className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                      <Avatar className="w-10 h-10">
+                    <div key={comment.id} className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
                         <AvatarImage src={comment.user?.avatar_url} alt={comment.user?.name} />
-                        <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-sm">
+                        <AvatarFallback className="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-xs sm:text-sm">
                           {comment.user?.name?.charAt(0) || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-medium text-gray-800 dark:text-white">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                          <span className="font-medium text-gray-800 dark:text-white text-sm sm:text-base">
                             {comment.user?.name || t("community.post.user.default")}
                           </span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             {formatDate(comment.createdAt)}
                           </span>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
                           {comment.content}
                         </p>
                       </div>

@@ -64,8 +64,10 @@ export function HistoryPageContent() {
 
   // Função para verificar se uma receita está favoritada
   const isRecipeFavorited = (recipeId: number) => {
-    if (!favoritesData?.data) return false;
-    return favoritesData.data.some((recipe: any) => recipe.id === recipeId);
+    if (!favoritesData) return false;
+    const data = (favoritesData as any)?.data;
+    if (!data || !Array.isArray(data)) return false;
+    return data.some((recipe: any) => recipe.id === recipeId);
   };
 
   const isLoading = isHistoryLoading;
@@ -189,40 +191,38 @@ export function HistoryPageContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <History className="text-orange-500" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <History className="text-orange-500 w-6 h-6 sm:w-8 sm:h-8" />
                 {t("history.title")}
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 {t("history.subtitle")}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <Button variant="outline" asChild>
-                <Link href="/home">{t("common.back")}</Link>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="outline" asChild size="sm" className="text-xs sm:text-sm">
+                <Link href="/">{t("common.back")}</Link>
               </Button>
             </div>
-            
           </div>
 
           
 
           {/* Search and Filters */}
           <Card className="bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="relative flex-1 max-w-md">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-between">
+                <div className="relative flex-1 max-w-md w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
                     placeholder={t("history.search.placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-gray-200 dark:border-gray-600"
+                    className="pl-10 border-gray-200 dark:border-gray-600 text-sm sm:text-base"
                   />
                 </div>
-                
               </div>
             </CardContent>
           </Card>
