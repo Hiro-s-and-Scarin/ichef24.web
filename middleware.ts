@@ -17,7 +17,10 @@ export function middleware(request: NextRequest) {
     '/profile',
     '/recipe',
     '/my-recipe-book',
-    '/plans'
+    '/plans',
+    '/checkout',
+    '/community',
+    '/plans-required'
   ]
 
   // Verificar se a rota atual requer autenticação
