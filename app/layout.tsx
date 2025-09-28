@@ -7,10 +7,8 @@ import { QueryProvider } from "@/providers/query-provider"
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import { Toaster } from "@/components/ui/sonner"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useTokenCapture } from "@/network/hooks/auth/useTokenCapture"
-import { parseCookies } from 'nookies'
-import { useEffect } from "react"
 
 
 const Header = dynamic(() => import("@/components/layout/header").then(mod => ({ default: mod.Header })), { 
@@ -57,20 +55,7 @@ const AuthProvider = dynamic(() => import("@/contexts/auth-context").then(mod =>
 const inter = Inter({ subsets: ["latin"] })
 
 function RouteProtector({ children, isAuthPage }: { children: React.ReactNode, isAuthPage: boolean }) {
-  const router = useRouter()
   const pathname = usePathname()
-
-  useEffect(() => {
-    // Se não for uma página pública (auth page), verificar se o usuário está logado
-    if (!isAuthPage) {
-      const cookies = parseCookies()
-      const token = cookies.jwt
-
-      if (!token) {
-        router.replace('/')
-      }
-    }
-  }, [pathname, router, isAuthPage])
 
   // Para páginas de autenticação pura (/login, /register, /auth/register, /forgot-password, /reset-password, /auth/reset-password), não mostrar header
   if (pathname === '/login' || pathname === '/register' || pathname === '/auth/register' || pathname === '/forgot-password' || pathname === '/reset-password' || pathname === '/auth/reset-password') {

@@ -107,11 +107,15 @@ export function useConfirmForgotPassword() {
 }
 
 export function useMe() {
+  const cookies = parseCookies()
+  const token = cookies.jwt
+
   return useQuery({
     queryKey: queryKeys.auth.me,
     queryFn: async () => await getMe(),
     retry: 0,
     staleTime: 1000 * 60 * 5,
+    enabled: !!token, // Só executar se houver token
   })
 }
 

@@ -38,13 +38,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
   const logoutMutation = useLogout();
   const { data: userData, isLoading: isUserLoading } = useMe();
 
+  // Controlar montagem para evitar problemas de hidratação
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Só executar após montagem para evitar inconsistências SSR/CSR
+    if (!mounted) return;
+
     if (userData) {
       const mappedUser: User = {
         id: userData.id,
@@ -58,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
     }
     setIsLoading(isUserLoading);
-  }, [userData, isUserLoading]);
+  }, [userData, isUserLoading, mounted]);
 
   useWebSocket(user?.email);
 
