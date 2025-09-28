@@ -308,7 +308,7 @@ function HomePageContent() {
           
           {/* Subtítulo Principal */}
           <h2 className="text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 sm:mb-4 md:mb-5 lg:mb-6 drop-shadow-xl leading-tight text-center">
-            Seu chef pessoal 24h por dia
+            {t("home.hero.subtitle")}
           </h2>
 
           {/* Input de busca principal */}
@@ -340,16 +340,16 @@ function HomePageContent() {
             {/* Sugestões */}
             <div className="mt-6 sm:mt-6">
               <p className="text-gray-200 text-sm sm:text-sm mb-4 sm:mb-4">
-                {t("ai.suggestions")}
+                {t("home.hero.suggestions.title")}
               </p>
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-3">
-                {[
-                  "Bolo de Chocolate",
-                  "Lasanha Vegana", 
-                  "Sushi Caseiro",
-                  "Pizza Margherita",
-                  "Smoothie Detox"
-                ].map((suggestion) => (
+                      <div className="flex flex-wrap justify-center gap-3 sm:gap-3">
+                        {[
+                          t("home.hero.suggestions.chocolate"),
+                          t("home.hero.suggestions.vegan"), 
+                          t("home.hero.suggestions.sushi"),
+                          t("home.hero.suggestions.pizza"),
+                          t("home.hero.suggestions.smoothie")
+                        ].map((suggestion) => (
                   <Button
                     key={suggestion}
                     variant="outline"
@@ -402,11 +402,11 @@ function HomePageContent() {
               </div>
               
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-                Continue com iChef24
+                {t("home.modal.title")}
               </h2>
               
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
-                Para usar o iChef24, crie uma conta ou faça login em uma existente.
+                {t("home.modal.description")}
               </p>
               
               {/* Botões de Ação */}
@@ -418,7 +418,7 @@ function HomePageContent() {
                   }}
                   className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  Criar Conta
+                  {t("home.modal.create.account")}
                 </Button>
                 
                 <Button
@@ -429,7 +429,7 @@ function HomePageContent() {
                   }}
                   className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-xl transition-all duration-300"
                 >
-                  Fazer Login
+                  {t("home.modal.login")}
                 </Button>
               </div>
               
@@ -440,7 +440,7 @@ function HomePageContent() {
                 onClick={handleCloseLoginModal}
                 className="mt-4 sm:mt-6 text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 transition-colors text-xs sm:text-sm"
               >
-                Fechar
+                {t("common.close")}
               </Button>
             </div>
           </div>

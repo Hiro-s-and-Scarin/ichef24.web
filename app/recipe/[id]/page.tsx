@@ -49,16 +49,7 @@ export default function RecipePage() {
   const [recipeState, setRecipeState] = useState<RecipePageState>({
     mounted: false,
     chatInput: "",
-    chatMessages: [
-      {
-        type: "ai",
-        message: "Olá! Sou o Chef AI. Como posso ajudar você com esta receita?",
-        timestamp: new Date().toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
-    ],
+    chatMessages: [],
     isGenerating: false,
     lastGeneratedRecipe: null,
     isQuestionLoading: false,
@@ -94,7 +85,7 @@ export default function RecipePage() {
           id: recipe.id,
           recipeData: JSON.stringify(updatedRecipe)
         })
-        toast.success("Receita atualizada com sucesso!")
+        toast.success(t("recipe.details.updated.success"))
         
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
@@ -105,7 +96,7 @@ export default function RecipePage() {
       } else {
         const recipeDataString = JSON.stringify(updatedRecipe)
         const savedRecipe = await saveAIRecipeMutation.mutateAsync(recipeDataString)
-        toast.success("Receita salva com sucesso!")
+        toast.success(t("recipe.details.saved.success"))
         
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.all })
         queryClient.invalidateQueries({ queryKey: queryKeys.recipes.my })
@@ -116,11 +107,11 @@ export default function RecipePage() {
         if (savedRecipe?.id) {
           router.push(`/recipe/${savedRecipe.id}`)
         } else {
-          toast.error("Erro ao salvar receita: ID não encontrado")
+          toast.error(t("recipe.details.save.error.id"))
         }
       }
     } catch (error) {
-      toast.error("Erro ao salvar receita")
+      toast.error(t("recipe.details.save.error"))
     }
   }
 
@@ -245,7 +236,7 @@ export default function RecipePage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recipes.favorites })
 
     } catch (error) {
-      toast.error("Erro ao processar mensagem")
+      toast.error(t("recipe.details.process.error"))
       setRecipeState(prev => ({ ...prev, isGenerating: false, isQuestionLoading: false }))
     }
   }
@@ -258,9 +249,9 @@ export default function RecipePage() {
     
     try {
       await navigator.clipboard.writeText(recipeUrl);
-      toast.success("Link da receita copiado para a área de transferência!");
+      toast.success(t('recipe.details.share.copied'));
     } catch (error) {
-      toast.error("Erro ao copiar link");
+      toast.error(t('recipe.details.share.error'));
     }
   };
 
@@ -272,12 +263,12 @@ export default function RecipePage() {
     }
 
     if (!recipe?.id) {
-      toast.error("Receita não encontrada")
+      toast.error(t("recipe.details.not.found.error"))
       return
     }
 
     if (isRecipeLiked) {
-      toast.info("Você já curtiu esta receita")
+      toast.info(t("recipe.details.already.liked"))
       return
     }
 
@@ -288,7 +279,7 @@ export default function RecipePage() {
         // Atualizar estado local
         setRecipeLikesCount(result.likes_count || recipeLikesCount + 1)
         setIsRecipeLiked(true)
-        toast.success("Receita curtida com sucesso!")
+        toast.success(t("recipe.details.liked.success"))
       }
     } catch (error) {
       toast.error(t("recipe.like.error"))
@@ -306,8 +297,20 @@ export default function RecipePage() {
   }, [recipe, user])
 
   useEffect(() => {
-    updateRecipeState({ mounted: true })
-  }, [])
+    updateRecipeState({ 
+      mounted: true,
+      chatMessages: [
+        {
+          type: "ai",
+          message: t("recipe.details.ai.welcome"),
+          timestamp: new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]
+    })
+  }, [t])
 
   if (!mounted || isLoading) {
     return (
@@ -316,7 +319,7 @@ export default function RecipePage() {
           <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 dark:from-gray-600 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat className="w-8 h-8 text-white dark:text-gray-200" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300">{t('common.loading')} receita...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('recipe.details.loading')}</p>
         </div>
       </div>
     )
@@ -329,9 +332,9 @@ export default function RecipePage() {
           <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 dark:from-gray-600 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat className="w-8 h-8 text-white dark:text-gray-200" />
           </div>
-          <p className="text-gray-600 dark:text-gray-300">Erro ao carregar receita</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('recipe.details.error')}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            {error instanceof Error ? error.message : 'Receita não encontrada'}
+            {error instanceof Error ? error.message : t('recipe.details.not.found')}
           </p>
         </div>
       </div>
@@ -366,11 +369,11 @@ export default function RecipePage() {
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 mb-6">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                <span>{recipe.cooking_time || 'N/A'} minutos</span>
+                <span>{recipe.cooking_time || 'N/A'} {t('recipe.details.minutes')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                <span>{recipe.servings || 'N/A'} porções</span>
+                <span>{recipe.servings || 'N/A'} {t('recipe.details.servings')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5" />
@@ -378,7 +381,7 @@ export default function RecipePage() {
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-5 h-5" />
-                <span>Favoritos</span>
+                <span>{t('recipe.details.favorites')}</span>
               </div>
               <div className="flex items-center gap-2 ml-auto">
                 <Button
@@ -426,7 +429,7 @@ export default function RecipePage() {
               <CardContent className="p-4 sm:p-6">
                 <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4 sm:mb-6">
                   <Leaf className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                  Ingredientes
+                  {t('recipe.details.ingredients')}
                 </h3>
                 <ul className="space-y-3">
                   {Array.isArray(recipe.ingredients) ? recipe.ingredients.map((ingredient, index: number) => (
@@ -437,7 +440,7 @@ export default function RecipePage() {
                       </span>
                     </li>
                   )) : (
-                    <li className="text-gray-400 dark:text-gray-500">Ingredientes não disponíveis</li>
+                    <li className="text-gray-400 dark:text-gray-500">{t('recipe.details.ingredients.not.available')}</li>
                   )}
                 </ul>
               </CardContent>
@@ -448,7 +451,7 @@ export default function RecipePage() {
               <CardContent className="p-4 sm:p-6">
                 <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4 sm:mb-6">
                   <Utensils className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                  Modo de Preparo
+                  {t('recipe.details.preparation')}
                 </h3>
                 <ol className="space-y-4">
                   {Array.isArray(recipe.steps) ? recipe.steps.map((step, index: number) => (
@@ -461,7 +464,7 @@ export default function RecipePage() {
                       </span>
                     </li>
                   )) : (
-                    <li className="text-gray-400 dark:text-gray-500">Instruções não disponíveis</li>
+                    <li className="text-gray-400 dark:text-gray-500">{t('recipe.details.instructions.not.available')}</li>
                   )}
                 </ol>
               </CardContent>
@@ -473,10 +476,10 @@ export default function RecipePage() {
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3 mb-4">
                 <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
-                Converse com o Chef AI
+                {t('recipe.details.chat.title')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Tire dúvidas sobre a receita, peça dicas de substituições para fazer a receita ainda melhor!
+                {t('recipe.details.chat.description')}
               </p>
               
               {/* Chat Messages */}
@@ -501,7 +504,7 @@ export default function RecipePage() {
                         )}
                         <div className="flex-1">
                           <span className="text-sm font-semibold opacity-90">
-                            {message.type === "ai" ? "iChef24 AI" : "Você"}
+                            {message.type === "ai" ? "iChef24 AI" : t('common.you')}
                           </span>
                           <span className="text-sm opacity-70 ml-3 font-mono">
                             {message.timestamp}
@@ -513,7 +516,7 @@ export default function RecipePage() {
                         {/* Para perguntas: mostrar apenas o diálogo */}
                         {message.isQuestion ? (
                           <div className="text-sm leading-relaxed whitespace-pre-line">
-                            {message.message || message.userInteractionMessage || "Entendi sua pergunta. Como posso ajudar você com esta receita?"}
+                            {message.message || message.userInteractionMessage || t("recipe.details.ai.question.default")}
                           </div>
                         ) : (
                           /* Para receitas: mostrar apenas o AIRecipeCard */
@@ -559,7 +562,7 @@ export default function RecipePage() {
                                     {message.recipeData.servings && (
                                       <div className="flex items-center space-x-1">
                                         <Users className="w-4 h-4" />
-                                        <span>{message.recipeData.servings} porções</span>
+                                        <span>{message.recipeData.servings} {t('recipe.details.servings')}</span>
                                       </div>
                                     )}
                                   </div>
@@ -568,9 +571,9 @@ export default function RecipePage() {
                                   {message.recipeData.difficulty_level && (
                                     <div className="mb-3">
                                       <span className="inline-block px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
-                                        {message.recipeData.difficulty_level === 1 ? "Fácil" : 
-                                         message.recipeData.difficulty_level === 2 ? "Médio" : 
-                                         message.recipeData.difficulty_level === 3 ? "Difícil" : "Não especificado"}
+                                        {message.recipeData.difficulty_level === 1 ? t('recipe.details.difficulty.easy') : 
+                                         message.recipeData.difficulty_level === 2 ? t('recipe.details.difficulty.medium') : 
+                                         message.recipeData.difficulty_level === 3 ? t('recipe.details.difficulty.hard') : t('recipe.details.difficulty.not.specified')}
                                       </span>
                                     </div>
                                   )}
@@ -609,7 +612,7 @@ export default function RecipePage() {
                             </div>
                           </div>
                           <p className="text-sm text-orange-600 dark:text-orange-300">
-                            {recipeState.isQuestionLoading ? "Buscando respostas..." : "Criando sua receita especial..."}
+                            {recipeState.isQuestionLoading ? t('recipe.details.chat.searching') : t('recipe.details.chat.generating')}
                           </p>
                         </div>
                       </div>
@@ -627,7 +630,7 @@ export default function RecipePage() {
                       className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Salvar Receita
+                      {t('recipe.details.save.recipe')}
                     </Button>
                   </div>
                 </div>
@@ -641,7 +644,7 @@ export default function RecipePage() {
                     <Input
                       value={recipeState.chatInput}
                       onChange={handleChatInputChange}
-                      placeholder="Descreva sua receita dos sonhos..."
+                      placeholder={t('recipe.details.chat.placeholder')}
                       className="relative h-14 pr-20 bg-white dark:bg-slate-800 border-2 border-orange-300 dark:border-slate-600 text-orange-900 dark:text-white rounded-2xl focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300 shadow-lg text-sm group-hover:shadow-xl group-hover:scale-[1.02]"
                       disabled={recipeState.isGenerating}
                     />

@@ -335,7 +335,7 @@ export default function PostDetailPage() {
           <Card className="bg-white/90 dark:bg-gray-800/90 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             <CardHeader className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                Comentários ({comments.length})
+                {t("community.post.comments.title", { count: comments.length })}
               </h3>
             </CardHeader>
             

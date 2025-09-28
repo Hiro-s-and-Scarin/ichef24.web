@@ -92,6 +92,9 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
             <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
               {chef.recipeCount}
             </p>
+            <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+              {t("community.topChefs.recipes.count")}
+            </p>
           </div>
 
           <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -100,6 +103,9 @@ export function TopChefCard({ chef, rank }: TopChefCardProps) {
             </div>
             <p className="text-2xl font-bold text-red-600 dark:text-red-400">
               {chef.totalLikes}
+            </p>
+            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+              {t("community.topChefs.total.likes")}
             </p>
           </div>
         </div>
