@@ -17,14 +17,26 @@ import {
   Mail,
   Calendar,
   Shield,
+  XCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useUpdateProfile } from "@/network/hooks/auth/useAuth";
+import { useCancelSubscription } from "@/network/hooks/stripe/useStripe";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { ProfileFormData } from "@/types/forms";
 
@@ -33,6 +45,8 @@ export default function Profile() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isCancelSubscriptionDialogOpen, setIsCancelSubscriptionDialogOpen] = useState(false);
+  const cancelSubscriptionMutation = useCancelSubscription();
 
   const {
     register: registerProfile,
@@ -416,6 +430,33 @@ export default function Profile() {
                       </div>
                     </div>
 
+                    {/* Cancel Subscription */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                          <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 dark:text-white text-base sm:text-lg">
+                            Cancelar Assinatura
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Cancele sua assinatura atual. Você voltará para o plano gratuito.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <Button
+                          onClick={() => setIsCancelSubscriptionDialogOpen(true)}
+                          variant="outline"
+                          className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/30 text-base w-full sm:w-auto h-12"
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Cancelar Assinatura
+                        </Button>
+                      </div>
+                    </div>
+
                     {/* Account Deletion Warning */}
                     <div className="p-4 sm:p-5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                       <div className="flex items-start gap-3 sm:gap-4">
@@ -435,6 +476,37 @@ export default function Profile() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Cancel Subscription Confirmation Dialog */}
+              <AlertDialog open={isCancelSubscriptionDialogOpen} onOpenChange={setIsCancelSubscriptionDialogOpen}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancelar Assinatura</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja cancelar sua assinatura? Você voltará para o plano gratuito imediatamente e perderá acesso aos benefícios do plano atual.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={cancelSubscriptionMutation.isPending}>
+                      Não, manter assinatura
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={async () => {
+                        try {
+                          await cancelSubscriptionMutation.mutateAsync();
+                          setIsCancelSubscriptionDialogOpen(false);
+                        } catch (error) {
+                          // Error já é tratado no hook
+                        }
+                      }}
+                      disabled={cancelSubscriptionMutation.isPending}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      {cancelSubscriptionMutation.isPending ? "Cancelando..." : "Sim, cancelar assinatura"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </TabsContent>
           </Tabs>
         </div>

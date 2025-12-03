@@ -57,4 +57,22 @@ export interface CreateCheckoutResponse {
 export async function createStripeCheckout(checkoutData: CreateCheckoutRequest): Promise<CreateCheckoutResponse> {
   const { data } = await api.post("/stripe/checkout", checkoutData);
   return data;
+}
+
+export interface CancelSubscriptionResponse {
+  success: boolean;
+  data: {
+    success: boolean;
+    message: string;
+    cancel_at_period_end: boolean;
+    current_period_end: string | null;
+    canceled_at: string | null;
+    status: string;
+  };
+  message: string;
+}
+
+export async function cancelSubscription(): Promise<CancelSubscriptionResponse> {
+  const { data } = await api.post("/stripe/subscription/cancel");
+  return data;
 } 

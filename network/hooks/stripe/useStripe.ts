@@ -1,9 +1,10 @@
 "use client"
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getStripeProducts, createStripeCheckout } from "@/network/actions/stripe";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getStripeProducts, createStripeCheckout, cancelSubscription } from "@/network/actions/stripe";
 import { StripeProductsResponse } from "@/src/types";
 import { toast } from "sonner";
+import { queryKeys } from "@/lib/config/query-keys";
 
 export function useCreatePayment() {
   return useMutation({
@@ -34,6 +35,21 @@ export function useCreateStripeCheckout() {
     },
     onError: (error: any) => {
       toast.error("Erro ao criar checkout")
+    },
+  });
+}
+
+export function useCancelSubscription() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cancelSubscription,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+      toast.success(data.message || "Assinatura cancelada com sucesso!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erro ao cancelar assinatura");
     },
   });
 } 
