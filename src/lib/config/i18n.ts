@@ -361,7 +361,7 @@ const resources = {
       "notification.updated": "Atualizado com sucesso!",
 
       // Plans Page
-      "plans.title": "Escolha seu Plano",
+      "plans.title": "Escolha seu plano",
       "plans.subtitle": "Planos flexíveis para todos os tipos de chef",
       "plans.monthly": "Mensal",
       "plans.yearly": "Anual",

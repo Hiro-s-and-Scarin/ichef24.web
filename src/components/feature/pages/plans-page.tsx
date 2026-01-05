@@ -285,10 +285,12 @@ export function PlansPageContent() {
           {/* Header Section */}
           <div className="text-center space-y-6 mb-16">
             <h1 className="text-5xl font-bold text-gray-800 dark:text-white">
-              {t("plans.title")}{" "}
+              {t("plans.title").split(" ")[0]}{" "}
               <span className="bg-gradient-to-r from-[#f54703] to-[#ff7518] bg-clip-text text-transparent">
-                {t("plans.title").split(" ")[1]}
+                {t("plans.title").split(" ")[1]}{" "}
               </span>
+              {t("plans.title").split(" ")[2]}{" "}
+
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {t("plans.subtitle")}
