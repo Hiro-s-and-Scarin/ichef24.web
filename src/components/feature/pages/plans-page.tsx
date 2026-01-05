@@ -140,9 +140,8 @@ export function PlansPageContent() {
           t("plans.pro.features.recipes"),
           t("plans.pro.features.generation"),
           t("plans.pro.features.personalized"),
-          "10 receitas salvas no histórico",
-          t("plans.pro.features.filters"),
-          t("plans.pro.features.support"),
+          "5 receitas salvas no histórico",
+          t("plans.free.features.support"),
         ];
       case "premium":
       case "master":
@@ -150,16 +149,14 @@ export function PlansPageContent() {
           t("plans.premium.features.recipes"),
           t("plans.premium.features.ai"),
           t("plans.premium.features.planning"),
-          t("plans.premium.features.shopping"),
           t("plans.premium.features.exclusive"),
-          t("plans.premium.features.support"),
+          t("plans.free.features.support"),
         ];
       case "enterprise":
         return [
           t("plans.premium.features.recipes"),
           t("plans.premium.features.ai"),
           t("plans.premium.features.planning"),
-          t("plans.premium.features.shopping"),
           t("plans.premium.features.exclusive"),
         ];
       default:
@@ -188,8 +185,8 @@ export function PlansPageContent() {
     const currentPrice = getPlanPrice(plan);
     
     if (currentPrice === 0) return "free";
-    if (currentPrice <= 3) return "basic";      // Plano médio: $3
-    if (currentPrice <= 5) return "premium";    // Plano avançado: $5
+    if (currentPrice <= 17.9) return "basic";      // Plano médio: $3
+    if (currentPrice <= 27.9) return "premium";    // Plano avançado: $5
     return "enterprise";                         // Planos acima de $5
   }, [getPlanPrice]);
 

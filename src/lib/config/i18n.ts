@@ -387,7 +387,7 @@ const resources = {
       "plans.pro.name": "Plano Chef",
       "plans.pro.subtitle": "Mais Popular",
       "plans.pro.description":
-        "Para quem cozinha com frequência e quer organizar melhor suas preferidas.",
+        "Para quem cozinha com frequência e quer organizar melhor suas receitas favoritas.",
       "plans.pro.features.recipes": "10 receitas favoritadas",
       "plans.pro.features.generation": "Geração de 5 receitas por dia",
       "plans.pro.features.personalized": "Receitas personalizadas avançadas",
@@ -399,7 +399,7 @@ const resources = {
       "plans.premium": "Premium",
       "plans.premium.name": "Plano Master Chef",
       "plans.premium.description":
-        "Para quem ama cozinhar e quer saber tudo o que descobrir.",
+        "Para quem ama cozinhar e quer salvar tudo em seu Livro de Receitas Digital.",
       "plans.premium.features.recipes": "Receitas salvas ilimitadas",
       "plans.premium.features.ai": "IA premium com sugestões avançadas",
       "plans.premium.features.planning": "Planejamento de cardápio semanal",
@@ -1330,7 +1330,7 @@ const resources = {
       "plans.free": "Free",
       "plans.free.name": "Apprentice Plan",
       "plans.free.description":
-        "Perfect for testing the app and understanding how it makes your kitchen life easier.",
+        "Ideal to test the app and see how iChef24 makes cooking easier.",
       "plans.free.features.recipes": "Up to 5 saved recipes",
       "plans.free.features.generation": "Basic recipe generation",
       "plans.free.features.access": "Access to popular recipes",
@@ -1342,7 +1342,7 @@ const resources = {
       "plans.pro.name": "Chef Plan",
       "plans.pro.subtitle": "Most Popular",
       "plans.pro.description":
-        "For those who cook frequently and want to better organize their favorites.",
+        "For frequent cooks who want to organize their favorite recipes.",
       "plans.pro.features.recipes": "10 saved recipes",
       "plans.pro.features.generation": "Unlimited recipe generation",
       "plans.pro.features.personalized": "Advanced personalized recipes",
@@ -1354,7 +1354,7 @@ const resources = {
       "plans.premium": "Premium",
       "plans.premium.name": "Master Chef Plan",
       "plans.premium.description":
-        "For those who love cooking and want to discover everything.",
+        "For cooking lovers who want to save everything in their Digital Recipe Book",
       "plans.premium.features.recipes": "Unlimited saved recipes",
       "plans.premium.features.ai": "Premium AI with advanced suggestions",
       "plans.premium.features.planning": "Weekly menu planning",
