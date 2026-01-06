@@ -147,8 +147,8 @@ export function PlansPageContent() {
       case "master":
         return [
           t("plans.premium.features.recipes"),
-          t("plans.premium.features.ai"),
-          t("plans.premium.features.planning"),
+          t("plans.premium.features.generation"),
+          t("plans.pro.features.personalized"),
           t("plans.premium.features.exclusive"),
           t("plans.free.features.support"),
         ];
@@ -164,31 +164,67 @@ export function PlansPageContent() {
     }
   }, [t]);
 
-  // Função para obter o preço baseado no ciclo de cobrança
-  const getPlanPrice = useCallback((plan: Plan) => {
-    if (plan.amount === 0) return 0;
-    
-    if (billingCycle === 'yearly' && plan.price?.yearly && plan.price.yearly > 0) {
-      return plan.price.yearly;
-    }
-    
-    if (billingCycle === 'monthly' && plan.price?.monthly && plan.price.monthly > 0) {
-      return plan.price.monthly;
-    }
-    
-    // Fallback para o preço padrão se não houver preço específico para o ciclo
-    return plan.amount;
-  }, [billingCycle]);
+const getPlanPrice = useCallback((plan: Plan) => {
+  if (plan.amount === 0) return 0;
+  
+  if (billingCycle === 'yearly' && plan.price?.yearly && plan.price.yearly > 0) {
+    return plan.price.yearly;
+  }
+  
+  if (billingCycle === 'monthly' && plan.price?.monthly && plan.price.monthly > 0) {
+    return plan.price.monthly;
+  }
+  
+  // Fallback para o preço padrão se não houver preço específico para o ciclo
+  return plan.amount;
+}, [billingCycle]);
 
-  // Função para determinar o tipo de plano baseado no preço atual
-  const getCurrentPlanType = useCallback((plan: Plan) => {
-    const currentPrice = getPlanPrice(plan);
+
+// Função para determinar o tipo de plano baseado no preço atual
+const getCurrentPlanType = useCallback((plan: Plan) => {
+  const currentPrice = getPlanPrice(plan);
+  
+  if (currentPrice === 0) return "free";
+  
+  // Detectar moeda
+  const isBRL = plan.currency === 'BRL' || plan.currency === 'brl' || currentPrice > 10;
+  
+  if (isBRL) {
+    // BRL: Chef (17.9 mensal / 162 anual) e Master Chef (27.9 mensal / 279 anual)
+    if (
+      (currentPrice >= 15 && currentPrice < 22) ||  // Mensal Chef ~17.9
+      (currentPrice >= 150 && currentPrice <= 170)  // Anual Chef ~162
+    ) {
+      return "basic";
+    }
     
-    if (currentPrice === 0) return "free";
-    if (currentPrice <= 17.9) return "basic";      // Plano médio: $3
-    if (currentPrice <= 27.9) return "premium";    // Plano avançado: $5
-    return "enterprise";                         // Planos acima de $5
-  }, [getPlanPrice]);
+    if (
+      (currentPrice >= 22 && currentPrice <= 30) ||  // Mensal Master ~27.9
+      (currentPrice >= 270 && currentPrice <= 290)   // Anual Master ~279
+    ) {
+      return "premium";
+    }
+  } else {
+    // USD: Chef ($4 mensal / $36 anual) e Master Chef ($6 mensal / $60 anual)
+    if (
+      (currentPrice >= 3 && currentPrice < 5) ||    // Mensal Chef ~$4
+      (currentPrice >= 30 && currentPrice <= 40)    // Anual Chef ~$36
+    ) {
+      return "basic";
+    }
+    
+    if (
+      (currentPrice >= 5 && currentPrice <= 7) ||   // Mensal Master ~$6
+      (currentPrice >= 55 && currentPrice <= 65)    // Anual Master ~$60
+    ) {
+      return "premium";
+    }
+  }
+  
+  return "enterprise";
+}, [getPlanPrice, billingCycle]);
+
+
 
 
 
@@ -238,9 +274,6 @@ export function PlansPageContent() {
     }
     
     // Debug logs
-    console.log('Plan:', plan);
-    console.log('Stripe Products Data:', stripeProductsData);
-    console.log('Billing Cycle:', billingCycle);
     
     // Encontrar o preço correto baseado no ciclo de cobrança selecionado
     let priceId = plan.stripe_subscription_id; // Fallback para o ID do produto
@@ -252,7 +285,6 @@ export function PlansPageContent() {
         product => product.id === plan.stripe_subscription_id
       );
       
-      console.log('Found Stripe Product:', stripeProduct);
       
       if (stripeProduct) {
         // Buscar o preço baseado no ciclo de cobrança selecionado
@@ -260,17 +292,13 @@ export function PlansPageContent() {
           price.recurring?.interval === (billingCycle === 'monthly' ? 'month' : 'year') && price.active
         );
         
-        console.log('Target Price:', targetPrice);
-        console.log('All Prices:', stripeProduct.prices);
         
         if (targetPrice) {
           priceId = targetPrice.id;
-          console.log('Using Price ID:', priceId);
         }
       }
     }
 
-    console.log('Final Price ID:', priceId);
 
     // Redirecionar para checkout com o ID do preço correto
     router.push(

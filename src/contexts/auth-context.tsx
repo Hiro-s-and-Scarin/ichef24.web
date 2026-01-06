@@ -100,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    console.log('🔐 AuthContext: Executando logout...');
     
     // Limpar estado local imediatamente
     setUser(null);
@@ -108,7 +107,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Executar logout no backend e limpar cookies
     logoutMutation.mutate();
     
-    console.log('🔐 AuthContext: Logout executado');
   };
 
   return (

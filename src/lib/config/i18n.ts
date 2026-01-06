@@ -25,10 +25,12 @@ const resources = {
       "home.cta": "Começar Agora",
       "home.hero.title": "iChef24",
       "home.hero.subtitle": "Seu Chef pessoal, 24h por dia!",
-      "home.hero.description": "Com o iChef24 você cria receitas em segundos com os ingredientes que tem em casa!",
+      "home.hero.description":
+        "Com o iChef24 você cria receitas em segundos com os ingredientes que tem em casa!",
       "home.hero.cta": "Experimente agora mesmo!",
       "home.hero.input.placeholder": "Que receita você quer criar hoje?",
-      "home.hero.suggestions.title": "Não sabe por onde começar? Experimente uma dessas:",
+      "home.hero.suggestions.title":
+        "Não sabe por onde começar? Experimente uma dessas:",
       "home.hero.suggestions.chocolate": "Bolo de Chocolate",
       "home.hero.suggestions.vegan": "Lasanha Vegana",
       "home.hero.suggestions.sushi": "Sushi Caseiro",
@@ -63,19 +65,28 @@ const resources = {
       // Main Features Section
       "mainFeatures.title": "Recursos Principais",
       "mainFeatures.subtitle": "Descubra todas as funcionalidades do iChef24",
-      "mainFeatures.description": "Uma plataforma completa para criar, compartilhar e descobrir receitas incríveis com o poder da inteligência artificial.",
-      "mainFeatures.personalized.title": "Livro digital de receitas personalizadas",
-      "mainFeatures.personalized.desc": "Receitas criadas especialmente para você com base nos seus gostos e ingredientes",
+      "mainFeatures.description":
+        "Uma plataforma completa para criar, compartilhar e descobrir receitas incríveis com o poder da inteligência artificial.",
+      "mainFeatures.personalized.title":
+        "Livro digital de receitas personalizadas",
+      "mainFeatures.personalized.desc":
+        "Receitas criadas especialmente para você com base nos seus gostos e ingredientes",
       "mainFeatures.assistant.title": "Assistente Inteligente",
-      "mainFeatures.assistant.desc": "Tire suas dúvidas sobre culinária a qualquer hora com o iChef24.",
+      "mainFeatures.assistant.desc":
+        "Tire suas dúvidas sobre culinária a qualquer hora com o iChef24.",
       "mainFeatures.instant.title": "Comunidades",
-      "mainFeatures.instant.desc": "Troque experiências culinárias com chefs do mundo inteiro!",
+      "mainFeatures.instant.desc":
+        "Troque experiências culinárias com chefs do mundo inteiro!",
       "mainFeatures.favorites.title": "Favoritos",
-      "mainFeatures.favorites.desc": "Salve suas receitas preferidas e acesse de qualquer dispositivo, sempre organizadas",
+      "mainFeatures.favorites.desc":
+        "Salve suas receitas preferidas e acesse de qualquer dispositivo, sempre organizadas",
       "mainFeatures.dietary.title": "Restrições Alimentares",
-      "mainFeatures.dietary.desc": "Adaptações automáticas para dietas sem glúten, lactose ou açúcar",
-      "mainFeatures.links.title": "Salva e compartilhe links de receitas da internet",
-      "mainFeatures.links.desc": "Organize e acesse facilmente suas receitas favoritas de qualquer site",
+      "mainFeatures.dietary.desc":
+        "Adaptações automáticas para dietas sem glúten, lactose ou açúcar",
+      "mainFeatures.links.title":
+        "Salva e compartilhe links de receitas da internet",
+      "mainFeatures.links.desc":
+        "Organize e acesse facilmente suas receitas favoritas de qualquer site",
 
       // History Page
       "history.title": "Histórico de Receitas",
@@ -112,15 +123,19 @@ const resources = {
       "myRecipeBook.tabs.myRecipes": "Minhas Receitas",
       "myRecipeBook.tabs.favorites": "Favoritos",
       "myRecipeBook.search.myRecipes.placeholder": "Buscar minhas receitas...",
-      "myRecipeBook.search.favorites.placeholder": "Buscar receitas favoritas...",
+      "myRecipeBook.search.favorites.placeholder":
+        "Buscar receitas favoritas...",
       "myRecipeBook.no.myRecipes": "Nenhuma receita criada",
-      "myRecipeBook.no.myRecipes.desc": "Você ainda não criou nenhuma receita. Comece criando suas próprias receitas!",
+      "myRecipeBook.no.myRecipes.desc":
+        "Você ainda não criou nenhuma receita. Comece criando suas próprias receitas!",
       "myRecipeBook.no.favorites": "Nenhuma receita favorita",
-      "myRecipeBook.no.favorites.desc": "Você ainda não tem receitas favoritas. Explore as receitas e adicione suas favoritas!",
-      
+      "myRecipeBook.no.favorites.desc":
+        "Você ainda não tem receitas favoritas. Explore as receitas e adicione suas favoritas!",
+
       // Upgrade Card
       "myRecipeBook.upgrade.title": "Livro de Receitas Premium",
-      "myRecipeBook.upgrade.description": "O Livro de Receitas está disponível apenas nos planos Chef e Master Chef. Faça upgrade para salvar e organizar suas receitas favoritas!",
+      "myRecipeBook.upgrade.description":
+        "O Livro de Receitas está disponível apenas nos planos Chef e Master Chef. Faça upgrade para salvar e organizar suas receitas favoritas!",
       "myRecipeBook.upgrade.feature1": "Salve receitas ilimitadas",
       "myRecipeBook.upgrade.feature2": "Organize por categorias",
       "myRecipeBook.upgrade.feature3": "Acesso offline",
@@ -149,9 +164,11 @@ const resources = {
       "community.new.post": "Novo Post",
       "community.posts.title": "Posts da Comunidade",
       "community.posts.no.posts": "Nenhum post encontrado",
-      "community.posts.no.posts.desc": "Seja o primeiro a compartilhar algo interessante na comunidade!",
+      "community.posts.no.posts.desc":
+        "Seja o primeiro a compartilhar algo interessante na comunidade!",
       "community.posts.no.posts.search": "Nenhum post encontrado",
-      "community.posts.no.posts.search.desc": "Não encontramos posts para '{query}'. Tente uma busca diferente.",
+      "community.posts.no.posts.search.desc":
+        "Não encontramos posts para '{query}'. Tente uma busca diferente.",
       "community.search.posts.placeholder": "Buscar posts...",
       "community.post.views": "visualizações",
       "community.post.comments": "comentários",
@@ -166,7 +183,7 @@ const resources = {
       "community.post.user": "Usuário",
       "community.post.featured": "Destaque",
 
-      // Top Chefs Section 
+      // Top Chefs Section
       "community.topChefs.title": "Top Chefs da Comunidade",
       "community.topChefs.subtitle": "Chefs com as receitas mais curtidas",
       "community.topChefs.subtitle.en": "Chefs with the most liked recipes",
@@ -174,7 +191,7 @@ const resources = {
       "community.topChefs.no.chefs.desc":
         "Ainda não há chefs com receitas na comunidade.",
       "community.topChefs.rank.1": "🥇 1º Lugar",
-      "community.topChefs.rank.2": "🥈 2º Lugar", 
+      "community.topChefs.rank.2": "🥈 2º Lugar",
       "community.topChefs.rank.3": "🥉 3º Lugar",
       "community.topChefs.experienced": "Chef Experiente",
       "community.topChefs.popular.recipes": "Receitas Populares",
@@ -186,7 +203,7 @@ const resources = {
       "community.topChefs.performance.label": "Desempenho:",
       "community.topChefs.recipes.count.short": "receitas",
       "community.topChefs.likes.count.short": "curtidas",
-      
+
       // Community Post Card
       "community.post.featured": "Destaque",
       "community.post.user": "Usuário",
@@ -223,7 +240,8 @@ const resources = {
       // Featured Recipes Section
       "community.trending.subtitle": "Receitas mais avaliadas e curtidas",
       "community.trending.no.recipes": "Nenhuma receita em destaque",
-      "community.trending.no.recipes.desc": "Ainda não há receitas em destaque na comunidade",
+      "community.trending.no.recipes.desc":
+        "Ainda não há receitas em destaque na comunidade",
       "community.trending.rank.first": "Top Receita",
       "community.trending.rank.second": "2ª Melhor",
       "community.trending.rank.third": "3ª Melhor",
@@ -236,14 +254,15 @@ const resources = {
       "community.trending.easy": "Fácil",
       "community.trending.medium": "Médio",
       "community.trending.hard": "Difícil",
-      
+
       // Post Detail Page
       "community.post.not.found": "Post não encontrado",
       "community.post.back.to.community": "Voltar para Comunidade",
       "community.post.title": "Post da Comunidade",
       "community.post.recipe.linked": "Receita Vinculada",
       "community.post.no.comments": "Nenhum comentário ainda",
-      "community.post.no.comments.desc": "Seja o primeiro a comentar neste post!",
+      "community.post.no.comments.desc":
+        "Seja o primeiro a comentar neste post!",
       "community.post.add.comment.placeholder": "Adicione um comentário...",
       "community.post.comments.title": "Comentários ({count})",
       "community.post.date.not.available": "Data não disponível",
@@ -252,9 +271,10 @@ const resources = {
       "community.post.recipe.not.found": "Receita não encontrada",
       "community.post.recipe.already.liked": "Você já curtiu esta receita",
       "community.post.recipe.liked.success": "Receita curtida com sucesso!",
-      "community.post.comment.added.success": "Comentário adicionado com sucesso!",
+      "community.post.comment.added.success":
+        "Comentário adicionado com sucesso!",
       "community.post.comment.error": "Erro ao criar comentário",
-      
+
       // Community Post Actions
       "community.post.created.success": "Post criado com sucesso!",
       "community.post.created.error": "Erro ao criar post",
@@ -401,6 +421,7 @@ const resources = {
       "plans.premium.description":
         "Para quem ama cozinhar e quer salvar tudo em seu Livro de Receitas Digital.",
       "plans.premium.features.recipes": "Receitas salvas ilimitadas",
+      "plans.premium.features.generation": "Geração de 20 receitas por dia",
       "plans.premium.features.ai": "IA premium com sugestões avançadas",
       "plans.premium.features.planning": "Planejamento de cardápio semanal",
       "plans.premium.features.shopping": "Lista de compras automática",
@@ -531,30 +552,30 @@ const resources = {
       "form.difficulty.easy": "Fácil",
       "form.difficulty.medium": "Médio",
       "form.difficulty.hard": "Difícil",
-    "form.difficulty.very.hard": "Muito Difícil",
-    "form.difficulty.expert": "Expert",
-    "form.select.difficulty": "Selecione a dificuldade",
-    "form.cuisine.type": "Tipo de Cozinha",
-    "form.cuisine.type.placeholder": "Ex: Italiana, Brasileira, Asiática...",
-    "form.image": "Imagem da Receita",
-    "form.image.current": "Imagem atual da receita",
-    "form.image.url.alternative": "Ou insira uma URL da imagem:",
-    "form.image.url.placeholder": "https://example.com/image.jpg",
-    "form.ingredients.name.placeholder": "Nome do ingrediente",
-    "form.ingredients.amount.placeholder": "Quantidade",
-    "form.instructions.step.placeholder": "Descreva este passo...",
-    "form.ingredients.add": "Adicionar Ingrediente",
-    "form.ingredients.placeholder": "Digite um ingrediente...",
-    "form.instructions.add": "Adicionar Instrução",
-    "form.instructions.placeholder": "Digite uma instrução...",
-    "form.ai.assistant": "Assistente de IA",
-    "form.ai.hide.chat": "Ocultar Chat",
-    "form.ai.open.chat": "Abrir Chat",
-    "form.ai.chat.placeholder": "Peça ajuda para melhorar a receita...",
-    "form.ai.thinking": "Pensando...",
-    "form.ai.new.version": "Nova Versão da Receita",
-    "form.ai.model": "IA",
-    "form.saving": "Salvando...",
+      "form.difficulty.very.hard": "Muito Difícil",
+      "form.difficulty.expert": "Expert",
+      "form.select.difficulty": "Selecione a dificuldade",
+      "form.cuisine.type": "Tipo de Cozinha",
+      "form.cuisine.type.placeholder": "Ex: Italiana, Brasileira, Asiática...",
+      "form.image": "Imagem da Receita",
+      "form.image.current": "Imagem atual da receita",
+      "form.image.url.alternative": "Ou insira uma URL da imagem:",
+      "form.image.url.placeholder": "https://example.com/image.jpg",
+      "form.ingredients.name.placeholder": "Nome do ingrediente",
+      "form.ingredients.amount.placeholder": "Quantidade",
+      "form.instructions.step.placeholder": "Descreva este passo...",
+      "form.ingredients.add": "Adicionar Ingrediente",
+      "form.ingredients.placeholder": "Digite um ingrediente...",
+      "form.instructions.add": "Adicionar Instrução",
+      "form.instructions.placeholder": "Digite uma instrução...",
+      "form.ai.assistant": "Assistente de IA",
+      "form.ai.hide.chat": "Ocultar Chat",
+      "form.ai.open.chat": "Abrir Chat",
+      "form.ai.chat.placeholder": "Peça ajuda para melhorar a receita...",
+      "form.ai.thinking": "Pensando...",
+      "form.ai.new.version": "Nova Versão da Receita",
+      "form.ai.model": "IA",
+      "form.saving": "Salvando...",
 
       // AI Chat
       "ai.title": "iChef24 AI",
@@ -623,7 +644,8 @@ const resources = {
       "error.copy.link": "Erro ao copiar link",
       "error.upload.image": "Erro ao fazer upload da imagem",
       "error.generate.recipe": "Erro ao gerar receita. Tente novamente.",
-      "error.timeout.recipe": "Tempo limite excedido. A geração de receita pode levar alguns minutos.",
+      "error.timeout.recipe":
+        "Tempo limite excedido. A geração de receita pode levar alguns minutos.",
       "error.save.recipe": "Erro ao salvar receita. Tente novamente.",
       "error.improve.recipe":
         "Desculpe, ocorreu um erro ao melhorar a receita. Por favor, tente novamente.",
@@ -644,8 +666,10 @@ const resources = {
       "error.plan.no.active.plan":
         "Você precisa ativar um plano para usar esta funcionalidade. Escolha um plano e comece a criar receitas incríveis!",
       "plans.required.title": "Plano Obrigatório",
-      "plans.required.subtitle": "Para usar a plataforma iChef24, você precisa assinar um plano",
-      "plans.required.description": "Escolha o plano ideal para você e comece a criar receitas incríveis com IA avançada",
+      "plans.required.subtitle":
+        "Para usar a plataforma iChef24, você precisa assinar um plano",
+      "plans.required.description":
+        "Escolha o plano ideal para você e comece a criar receitas incríveis com IA avançada",
       "plans.required.cta": "Ver Planos",
       "error.rate.limit":
         "Limite de requisições excedido. Tente novamente em alguns minutos.",
@@ -721,10 +745,11 @@ const resources = {
       "success.plan.cancelled": "Plano cancelado com sucesso!",
       "success.plan.reactivated": "Plano reativado com sucesso!",
       "success.free.plan.created": "Plano gratuito criado com sucesso!",
-      
+
       // Profile Page
       "profile.title": "Configurações do Perfil",
-      "profile.subtitle": "Gerencie suas informações pessoais e configurações de conta",
+      "profile.subtitle":
+        "Gerencie suas informações pessoais e configurações de conta",
       "profile.overview.member.since": "Membro desde",
       "profile.tabs.account": "Dados da Conta",
       "profile.tabs.preferences": "Preferências",
@@ -746,21 +771,26 @@ const resources = {
       "profile.preferences.language.title": "Idioma",
       "profile.preferences.language.desc": "Escolha o idioma da interface",
       "profile.preferences.status.title": "Status da Conta",
-      "profile.preferences.status.desc": "Sua conta está ativa e funcionando normalmente",
+      "profile.preferences.status.desc":
+        "Sua conta está ativa e funcionando normalmente",
       "profile.preferences.status.active": "Ativo",
       "profile.security.title": "Segurança da Conta",
       "profile.security.logout.title": "Sair da Conta",
-      "profile.security.logout.desc": "Encerre sua sessão atual e saia da aplicação",
+      "profile.security.logout.desc":
+        "Encerre sua sessão atual e saia da aplicação",
       "profile.security.logout.button": "Sair",
       "profile.security.password.title": "Senha da Conta",
-      "profile.security.password.desc": "Mantenha sua conta segura com uma senha forte",
+      "profile.security.password.desc":
+        "Mantenha sua conta segura com uma senha forte",
       "profile.security.password.button": "Alterar Senha",
       "profile.security.warning.title": "Importante",
-      "profile.security.warning.desc": "Suas receitas e dados permanecerão seguros e você poderá fazer login novamente a qualquer momento.",
-      
+      "profile.security.warning.desc":
+        "Suas receitas e dados permanecerão seguros e você poderá fazer login novamente a qualquer momento.",
+
       // Login Modal
       "login.modal.title": "Continue com iChef24",
-      "login.modal.description": "Para usar o iChef24, crie uma conta ou faça login em uma existente.",
+      "login.modal.description":
+        "Para usar o iChef24, crie uma conta ou faça login em uma existente.",
       "login.modal.create.account": "Criar Conta",
       "login.modal.login": "Fazer Login",
       "login.modal.close": "Fechar",
@@ -771,7 +801,7 @@ const resources = {
       "recipe.modal.save": "Ver Receita",
       "recipe.modal.saving": "Salvando...",
       "recipe.modal.view": "Ver receita",
-      
+
       // Register Page
       "register.title": "Criar Conta",
       "register.subtitle": "Junte-se à comunidade iChef24",
@@ -795,13 +825,14 @@ const resources = {
       "register.selected.plan": "Plano Selecionado:",
       "register.passwords.dont.match": "As senhas não coincidem!",
       "register.must.accept.terms": "Você deve aceitar os termos de uso!",
-      "register.error.creating": "Erro ao criar conta. Verifique os dados e tente novamente.",
+      "register.error.creating":
+        "Erro ao criar conta. Verifique os dados e tente novamente.",
       "register.plan.free": "Plano Aprendiz (Grátis)",
       "register.plan.chef": "Plano Chef",
       "register.plan.master.chef": "Plano Master Chef",
       "register.plan.premium": "Premium",
       "register.plan.free.badge": "Grátis",
-      
+
       // Checkout Success
       "checkout.success.title": "Pagamento Confirmado!",
       "checkout.success.subtitle":
@@ -813,7 +844,7 @@ const resources = {
       "checkout.success.tip":
         "💡 Dica: Verifique seu email para receber o recibo de pagamento do Stripe.",
       "checkout.success.default.plan": "Premium",
-      
+
       // Forgot Password
       "forgot.password.title": "Esqueceu sua senha?",
       "forgot.password.subtitle":
@@ -827,7 +858,7 @@ const resources = {
       "forgot.password.success.subtitle":
         "Verifique sua caixa de entrada para instruções de recuperação de senha",
       "forgot.password.success.back": "Voltar ao Login",
-      
+
       // Forgot Password Extended
       "forgot.password.confirm.code": "Confirme o código",
       "forgot.password.confirm.subtitle":
@@ -849,7 +880,7 @@ const resources = {
       "forgot.password.password.changed": "Senha alterada com sucesso!",
       "forgot.password.error.send.code": "Erro ao enviar código",
       "forgot.password.error.invalid.code": "Código inválido ou expirado",
-      
+
       // Stripe Test
       "stripe.test.title": "Teste de Pagamento Stripe",
       "stripe.test.subtitle": "Teste usando Stripe Checkout oficial",
@@ -975,26 +1006,32 @@ const resources = {
       "recipe.details.servings": "porções",
       "recipe.details.favorites": "Favoritos",
       "recipe.details.ingredients": "Ingredientes",
-      "recipe.details.ingredients.not.available": "Ingredientes não disponíveis",
+      "recipe.details.ingredients.not.available":
+        "Ingredientes não disponíveis",
       "recipe.details.preparation": "Modo de Preparo",
       "recipe.details.instructions.not.available": "Instruções não disponíveis",
       "recipe.details.chat.title": "Converse com o Chef AI",
-      "recipe.details.chat.description": "Tire dúvidas sobre a receita, peça dicas de substituições para fazer a receita ainda melhor!",
+      "recipe.details.chat.description":
+        "Tire dúvidas sobre a receita, peça dicas de substituições para fazer a receita ainda melhor!",
       "recipe.details.chat.placeholder": "Descreva sua receita dos sonhos...",
       "recipe.details.chat.generating": "Criando sua receita especial...",
       "recipe.details.chat.searching": "Buscando respostas...",
       "recipe.details.save.recipe": "Salvar Receita",
-      "recipe.details.share.copied": "Link da receita copiado para a área de transferência!",
+      "recipe.details.share.copied":
+        "Link da receita copiado para a área de transferência!",
       "recipe.details.share.error": "Erro ao copiar link",
       "recipe.details.difficulty.easy": "Fácil",
       "recipe.details.difficulty.medium": "Médio",
       "recipe.details.difficulty.hard": "Difícil",
       "recipe.details.difficulty.not.specified": "Não especificado",
-      "recipe.details.ai.welcome": "Olá! Sou o Chef AI. Como posso ajudar você com esta receita?",
-      "recipe.details.ai.question.default": "Entendi sua pergunta. Como posso ajudar você com esta receita?",
+      "recipe.details.ai.welcome":
+        "Olá! Sou o Chef AI. Como posso ajudar você com esta receita?",
+      "recipe.details.ai.question.default":
+        "Entendi sua pergunta. Como posso ajudar você com esta receita?",
       "recipe.details.updated.success": "Receita atualizada com sucesso!",
       "recipe.details.saved.success": "Receita salva com sucesso!",
-      "recipe.details.save.error.id": "Erro ao salvar receita: ID não encontrado",
+      "recipe.details.save.error.id":
+        "Erro ao salvar receita: ID não encontrado",
       "recipe.details.save.error": "Erro ao salvar receita",
       "recipe.details.process.error": "Erro ao processar mensagem",
       "recipe.details.not.found.error": "Receita não encontrada",
@@ -1015,7 +1052,8 @@ const resources = {
 
       // Home Page Modal
       "home.modal.title": "Continue com iChef24",
-      "home.modal.description": "Para usar o iChef24, crie uma conta ou faça login em uma existente.",
+      "home.modal.description":
+        "Para usar o iChef24, crie uma conta ou faça login em uma existente.",
       "home.modal.create.account": "Criar Conta",
       "home.modal.login": "Fazer Login",
       "common.search": "Buscar",
@@ -1073,10 +1111,12 @@ const resources = {
       "home.cta": "Get Started",
       "home.hero.title": "iChef24",
       "home.hero.subtitle": "Your personal Chef, 24h a day!",
-      "home.hero.description": "With iChef24 you create recipes in seconds with the ingredients you have at home!",
+      "home.hero.description":
+        "With iChef24 you create recipes in seconds with the ingredients you have at home!",
       "home.hero.cta": "Try it right now!",
       "home.hero.input.placeholder": "What recipe do you want to create today?",
-      "home.hero.suggestions.title": "Don't know where to start? Try one of these:",
+      "home.hero.suggestions.title":
+        "Don't know where to start? Try one of these:",
       "home.hero.suggestions.chocolate": "Chocolate Cake",
       "home.hero.suggestions.vegan": "Vegan Lasagna",
       "home.hero.suggestions.sushi": "Homemade Sushi",
@@ -1101,7 +1141,8 @@ const resources = {
       "dashboard.features.recipes.desc":
         "Thousands of combinations based on your available ingredients",
       "dashboard.features.community.title": "Active Community",
-      "dashboard.features.community.desc": "Connect with other chefs, share experiences and discover new recipes",
+      "dashboard.features.community.desc":
+        "Connect with other chefs, share experiences and discover new recipes",
       "dashboard.features.easy.title": "Easy to Use",
       "dashboard.features.easy.desc": "Intuitive interface that anyone can use",
       "dashboard.loading": "Loading...",
@@ -1109,19 +1150,27 @@ const resources = {
       // Main Features Section
       "mainFeatures.title": "Main Features",
       "mainFeatures.subtitle": "Discover all the features of iChef24",
-      "mainFeatures.description": "A complete platform to create, share and discover amazing recipes with the power of artificial intelligence.",
+      "mainFeatures.description":
+        "A complete platform to create, share and discover amazing recipes with the power of artificial intelligence.",
       "mainFeatures.personalized.title": "Digital book of personalized recipes",
-      "mainFeatures.personalized.desc": "Recipes created especially for you based on your tastes and ingredients",
+      "mainFeatures.personalized.desc":
+        "Recipes created especially for you based on your tastes and ingredients",
       "mainFeatures.assistant.title": "Intelligent Assistant",
-      "mainFeatures.assistant.desc": "Ask your culinary questions anytime with iChef24.",
+      "mainFeatures.assistant.desc":
+        "Ask your culinary questions anytime with iChef24.",
       "mainFeatures.instant.title": "Communities",
-      "mainFeatures.instant.desc": "Exchange culinary experiences with chefs from all over the world!",
+      "mainFeatures.instant.desc":
+        "Exchange culinary experiences with chefs from all over the world!",
       "mainFeatures.favorites.title": "Favorites",
-      "mainFeatures.favorites.desc": "Save your favorite recipes and access them from any device, always organized",
+      "mainFeatures.favorites.desc":
+        "Save your favorite recipes and access them from any device, always organized",
       "mainFeatures.dietary.title": "Dietary Restrictions",
-      "mainFeatures.dietary.desc": "Automatic adaptations for gluten-free, lactose-free or sugar-free diets",
-      "mainFeatures.links.title": "Save and share recipe links from the internet",
-      "mainFeatures.links.desc": "Organize and easily access your favorite recipes from any site",
+      "mainFeatures.dietary.desc":
+        "Automatic adaptations for gluten-free, lactose-free or sugar-free diets",
+      "mainFeatures.links.title":
+        "Save and share recipe links from the internet",
+      "mainFeatures.links.desc":
+        "Organize and easily access your favorite recipes from any site",
 
       // History Page
       "history.title": "Recipe History",
@@ -1160,13 +1209,16 @@ const resources = {
       "myRecipeBook.search.myRecipes.placeholder": "Search my recipes...",
       "myRecipeBook.search.favorites.placeholder": "Search favorite recipes...",
       "myRecipeBook.no.myRecipes": "No recipes created",
-      "myRecipeBook.no.myRecipes.desc": "You haven't created any recipes yet. Start by creating your own recipes!",
+      "myRecipeBook.no.myRecipes.desc":
+        "You haven't created any recipes yet. Start by creating your own recipes!",
       "myRecipeBook.no.favorites": "No favorite recipes",
-      "myRecipeBook.no.favorites.desc": "You don't have any favorite recipes yet. Explore recipes and add your favorites!",
-      
+      "myRecipeBook.no.favorites.desc":
+        "You don't have any favorite recipes yet. Explore recipes and add your favorites!",
+
       // Upgrade Card
       "myRecipeBook.upgrade.title": "Premium Recipe Book",
-      "myRecipeBook.upgrade.description": "The Recipe Book is only available on Chef and Master Chef plans. Upgrade to save and organize your favorite recipes!",
+      "myRecipeBook.upgrade.description":
+        "The Recipe Book is only available on Chef and Master Chef plans. Upgrade to save and organize your favorite recipes!",
       "myRecipeBook.upgrade.feature1": "Save unlimited recipes",
       "myRecipeBook.upgrade.feature2": "Organize by categories",
       "myRecipeBook.upgrade.feature3": "Offline access",
@@ -1181,7 +1233,8 @@ const resources = {
       "community.post.title": "Community Post",
       "community.post.recipe.linked": "Linked Recipe",
       "community.post.no.comments": "No comments yet",
-      "community.post.no.comments.desc": "Be the first to comment on this post!",
+      "community.post.no.comments.desc":
+        "Be the first to comment on this post!",
       "community.post.add.comment.placeholder": "Add a comment...",
       "community.post.comments.title": "Comments ({count})",
       "community.post.date.not.available": "Date not available",
@@ -1192,7 +1245,7 @@ const resources = {
       "community.post.recipe.liked.success": "Recipe liked successfully!",
       "community.post.comment.added.success": "Comment added successfully!",
       "community.post.comment.error": "Error creating comment",
-      
+
       // Community Post Actions
       "community.post.created.success": "Post created successfully!",
       "community.post.created.error": "Error creating post",
@@ -1212,7 +1265,8 @@ const resources = {
       "community.topChefs.title": "Top Community Chefs",
       "community.topChefs.subtitle": "Chefs with the most liked recipes",
       "community.topChefs.no.chefs": "No chefs found",
-      "community.topChefs.no.chefs.desc": "There are no chefs with recipes in the community yet.",
+      "community.topChefs.no.chefs.desc":
+        "There are no chefs with recipes in the community yet.",
       "community.topChefs.experienced": "Experienced Chef",
       "community.topChefs.popular.recipes": "Popular Recipes",
       "community.topChefs.performance.label": "Performance:",
@@ -1224,7 +1278,8 @@ const resources = {
       "community.topChefs.rank.2": "🥈 2nd Place",
       "community.topChefs.rank.3": "🥉 3rd Place",
       "community.top.recipes.no.recipes": "No recipes found",
-      "community.top.recipes.no.recipes.desc": "There are no recipes in the community yet.",
+      "community.top.recipes.no.recipes.desc":
+        "There are no recipes in the community yet.",
       "community.top.recipes.subtitle": "Most rated and liked recipes",
       "community.top.recipes.rank.1": "🥇 Top Recipe",
       "community.top.recipes.rank.2": "🥈 2nd Best",
@@ -1241,7 +1296,7 @@ const resources = {
       "community.comments": "Comments",
       "community.chat.placeholder": "Type your message...",
       "community.chat.send": "Send",
-      
+
       // Community Post Card
       "community.post.featured": "Featured",
       "community.post.user": "User",
@@ -1275,7 +1330,8 @@ const resources = {
       // Featured Recipes Section
       "community.trending.subtitle": "Most rated and liked recipes",
       "community.trending.no.recipes": "No featured recipes",
-      "community.trending.no.recipes.desc": "There are no featured recipes in the community yet",
+      "community.trending.no.recipes.desc":
+        "There are no featured recipes in the community yet",
       "community.trending.rank.first": "Top Recipe",
       "community.trending.rank.second": "2nd Best",
       "community.trending.rank.third": "3rd Best",
@@ -1357,6 +1413,7 @@ const resources = {
         "For cooking lovers who want to save everything in their Digital Recipe Book",
       "plans.premium.features.recipes": "Unlimited saved recipes",
       "plans.premium.features.ai": "Premium AI with advanced suggestions",
+      "plans.premium.features.generation": "20 per day",
       "plans.premium.features.planning": "Weekly menu planning",
       "plans.premium.features.shopping": "Automatic shopping list",
       "plans.premium.features.nutrition": "Detailed nutritional analysis",
@@ -1617,7 +1674,8 @@ const resources = {
       "error.copy.link": "Error copying link",
       "error.upload.image": "Error uploading image",
       "error.generate.recipe": "Error generating recipe. Try again.",
-      "error.timeout.recipe": "Timeout exceeded. Recipe generation may take a few minutes.",
+      "error.timeout.recipe":
+        "Timeout exceeded. Recipe generation may take a few minutes.",
       "error.save.recipe": "Error saving recipe. Try again.",
       "error.improve.recipe":
         "Sorry, an error occurred while improving the recipe. Please try again.",
@@ -1641,8 +1699,10 @@ const resources = {
       "error.plan.no.active.plan":
         "You need to activate a plan to use this feature. Choose a plan and start creating amazing recipes!",
       "plans.required.title": "Plan Required",
-      "plans.required.subtitle": "To use the iChef24 platform, you need to subscribe to a plan",
-      "plans.required.description": "Choose the ideal plan for you and start creating amazing recipes with advanced AI",
+      "plans.required.subtitle":
+        "To use the iChef24 platform, you need to subscribe to a plan",
+      "plans.required.description":
+        "Choose the ideal plan for you and start creating amazing recipes with advanced AI",
       "plans.required.cta": "View Plans",
       "error.plan.expired":
         "Your plan has expired. Renew to continue using the service.",
@@ -1685,7 +1745,7 @@ const resources = {
       "success.plan.cancelled": "Plan cancelled successfully!",
       "success.plan.reactivated": "Plan reactivated successfully!",
       "success.free.plan.created": "Free plan created successfully!",
-      
+
       // Checkout Success
       "checkout.success.title": "Payment Confirmed!",
       "checkout.success.subtitle":
@@ -1697,7 +1757,7 @@ const resources = {
       "checkout.success.tip":
         "💡 Tip: Check your email to receive the Stripe payment receipt.",
       "checkout.success.default.plan": "Premium",
-      
+
       // Forgot Password
       "forgot.password.title": "Forgot your password?",
       "forgot.password.subtitle":
@@ -1711,7 +1771,7 @@ const resources = {
       "forgot.password.success.subtitle":
         "Check your inbox for password recovery instructions",
       "forgot.password.success.back": "Back to Login",
-      
+
       // Forgot Password Extended
       "forgot.password.confirm.code": "Confirm the code",
       "forgot.password.confirm.subtitle":
@@ -1733,7 +1793,7 @@ const resources = {
       "forgot.password.password.changed": "Password changed successfully!",
       "forgot.password.error.send.code": "Error sending code",
       "forgot.password.error.invalid.code": "Invalid or expired code",
-      
+
       // Stripe Test
       "stripe.test.title": "Stripe Payment Test",
       "stripe.test.subtitle": "Test using official Stripe Checkout",
@@ -1801,7 +1861,8 @@ const resources = {
       "recipe.details.preparation": "Preparation Method",
       "recipe.details.instructions.not.available": "Instructions not available",
       "recipe.details.chat.title": "Chat with Chef AI",
-      "recipe.details.chat.description": "Ask questions about the recipe, request substitution tips to make the recipe even better!",
+      "recipe.details.chat.description":
+        "Ask questions about the recipe, request substitution tips to make the recipe even better!",
       "recipe.details.chat.placeholder": "Describe your dream recipe...",
       "recipe.details.chat.generating": "Creating your special recipe...",
       "recipe.details.chat.searching": "Searching for answers...",
@@ -1812,8 +1873,10 @@ const resources = {
       "recipe.details.difficulty.medium": "Medium",
       "recipe.details.difficulty.hard": "Hard",
       "recipe.details.difficulty.not.specified": "Not specified",
-      "recipe.details.ai.welcome": "Hello! I'm Chef AI. How can I help you with this recipe?",
-      "recipe.details.ai.question.default": "I understand your question. How can I help you with this recipe?",
+      "recipe.details.ai.welcome":
+        "Hello! I'm Chef AI. How can I help you with this recipe?",
+      "recipe.details.ai.question.default":
+        "I understand your question. How can I help you with this recipe?",
       "recipe.details.updated.success": "Recipe updated successfully!",
       "recipe.details.saved.success": "Recipe saved successfully!",
       "recipe.details.save.error.id": "Error saving recipe: ID not found",
@@ -1837,7 +1900,8 @@ const resources = {
 
       // Home Page Modal
       "home.modal.title": "Continue with iChef24",
-      "home.modal.description": "To use iChef24, create an account or log in to an existing one.",
+      "home.modal.description":
+        "To use iChef24, create an account or log in to an existing one.",
       "home.modal.create.account": "Create Account",
       "home.modal.login": "Login",
       "common.search": "Search",
@@ -1871,9 +1935,7 @@ const resources = {
       "currency.name.usd": "dollars",
       "currency.name.eur": "euros",
       "currency.name.gbp": "pounds",
-      
 
-      
       // Error Messages
       "error.network": "Network error. Please check your connection.",
       "error.unauthorized": "You are not authorized to perform this action.",
@@ -1881,10 +1943,11 @@ const resources = {
       "error.server": "Server error. Please try again later.",
       "error.validation": "Please check your input and try again.",
       "error.timeout": "Request timeout. Please try again.",
-      
+
       // Profile Page
       "profile.title": "Profile Settings",
-      "profile.subtitle": "Manage your personal information and account settings",
+      "profile.subtitle":
+        "Manage your personal information and account settings",
       "profile.overview.member.since": "Member since",
       "profile.tabs.account": "Account Data",
       "profile.tabs.preferences": "Preferences",
@@ -1906,21 +1969,26 @@ const resources = {
       "profile.preferences.language.title": "Language",
       "profile.preferences.language.desc": "Choose the interface language",
       "profile.preferences.status.title": "Account Status",
-      "profile.preferences.status.desc": "Your account is active and working normally",
+      "profile.preferences.status.desc":
+        "Your account is active and working normally",
       "profile.preferences.status.active": "Active",
       "profile.security.title": "Account Security",
       "profile.security.logout.title": "Sign Out",
-      "profile.security.logout.desc": "End your current session and exit the application",
+      "profile.security.logout.desc":
+        "End your current session and exit the application",
       "profile.security.logout.button": "Sign Out",
       "profile.security.password.title": "Account Password",
-      "profile.security.password.desc": "Keep your account secure with a strong password",
+      "profile.security.password.desc":
+        "Keep your account secure with a strong password",
       "profile.security.password.button": "Change Password",
       "profile.security.warning.title": "Important",
-      "profile.security.warning.desc": "Your recipes and data will remain secure and you can log in again at any time.",
-      
+      "profile.security.warning.desc":
+        "Your recipes and data will remain secure and you can log in again at any time.",
+
       // Login Modal
       "login.modal.title": "Continue with iChef24",
-      "login.modal.description": "To use iChef24, create an account or log in to an existing one.",
+      "login.modal.description":
+        "To use iChef24, create an account or log in to an existing one.",
       "login.modal.create.account": "Create Account",
       "login.modal.login": "Log In",
       "login.modal.close": "Close",
@@ -1931,7 +1999,7 @@ const resources = {
       "recipe.modal.save": "Look Recipe",
       "recipe.modal.saving": "Saving...",
       "recipe.modal.view": "View recipe",
-      
+
       // Register Page
       "register.title": "Create Account",
       "register.subtitle": "Join the iChef24 community",
@@ -1955,13 +2023,14 @@ const resources = {
       "register.selected.plan": "Selected Plan:",
       "register.passwords.dont.match": "Passwords don't match!",
       "register.must.accept.terms": "You must accept the terms of use!",
-      "register.error.creating": "Error creating account. Check the data and try again.",
+      "register.error.creating":
+        "Error creating account. Check the data and try again.",
       "register.plan.free": "Apprentice Plan (Free)",
       "register.plan.chef": "Chef Plan",
       "register.plan.master.chef": "Master Chef Plan",
       "register.plan.premium": "Premium",
       "register.plan.free.badge": "Free",
-      
+
       // Forgot Password
       "forgot.password.title": "Forgot Password",
       "forgot.password.subtitle": "Enter your email to reset your password",
@@ -1970,7 +2039,7 @@ const resources = {
       "forgot.password.back": "Back to Login",
       "forgot.password.success": "Password reset link sent to your email!",
       "forgot.password.error": "Error sending reset link. Please try again.",
-      
+
       // Recipe Details
       "recipe.details.title": "Recipe Details",
       "recipe.details.ingredients": "Ingredients",

@@ -15,11 +15,9 @@ export function useWebSocket(userEmail?: string) {
 
   const connect = useCallback(() => {
     if (!userEmail) {
-      console.log('❌ useWebSocket: userEmail não definido');
       return;
     }
 
-    console.log('🔌 useWebSocket: Tentando conectar com email:', userEmail);
 
     // Conectar ao websocket do backend
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000', {
@@ -43,7 +41,6 @@ export function useWebSocket(userEmail?: string) {
 
     // Eventos de pagamento
     socketRef.current.on('SUCCESS', (data: WebSocketMessage) => {
-      console.log('🎉 EVENTO SUCCESS RECEBIDO:', data);
       toast.success(data.message, {
         description: `Pagamento confirmado para ${data.payer.name}`,
         duration: 5000,
@@ -51,7 +48,6 @@ export function useWebSocket(userEmail?: string) {
     });
 
     socketRef.current.on('REJECTED', (data: WebSocketMessage) => {
-      console.log('❌ EVENTO REJECTED RECEBIDO:', data);
       toast.error(data.message, {
         description: `Falha no pagamento para ${data.payer.name}`,
         duration: 5000,
@@ -59,7 +55,6 @@ export function useWebSocket(userEmail?: string) {
     });
 
     socketRef.current.on('PENDING', (data: WebSocketMessage) => {
-      console.log('⏳ EVENTO PENDING RECEBIDO:', data);
       toast.info(data.message, {
         description: `Status: ${data.payer.name}`,
         duration: 3000,

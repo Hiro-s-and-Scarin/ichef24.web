@@ -69,7 +69,6 @@ function CheckoutContent() {
       })
 
       if (result.data?.url) {
-        console.log('Redirecionando para checkout do Stripe:', result.data.url)
         setPaymentStatus('pending')
         toast.success("Redirecionando para o Stripe...")
         
@@ -134,18 +133,6 @@ function CheckoutContent() {
                 <span className="text-lg text-gray-500 dark:text-gray-400">
                   /{planDetails.billing_cycle === "monthly" ? "mês" : "ano"}
                 </span>
-              </div>
-              
-              <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-800 dark:text-white mb-3">Recursos Inclusos:</h4>
-                <ul className="space-y-2 text-left">
-                  {planDetails.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
               </div>
             </div>
           </div>

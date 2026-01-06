@@ -393,7 +393,6 @@ export default function Profile() {
                       <div className="flex-shrink-0">
                         <Button 
                           onClick={() => {
-                            console.log('🔐 Profile: Botão de logout clicado');
                             logout();
                           }} 
                           variant="destructive"

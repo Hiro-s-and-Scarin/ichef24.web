@@ -219,7 +219,6 @@ function HomePageContent() {
         is_public: true
       })
       
-      console.log('Receita salva:', savedRecipe)
       
       toast.success("Receita salva com sucesso!")
       
@@ -242,7 +241,6 @@ function HomePageContent() {
         recipeId = (savedRecipe as any).data.id
       }
       
-      console.log('Recipe ID para redirecionamento:', recipeId)
       
       if (recipeId) {
         router.push(`/recipe/${recipeId}`)

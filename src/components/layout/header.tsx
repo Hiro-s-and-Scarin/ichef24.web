@@ -79,7 +79,6 @@ export function Header() {
               variant="ghost"
               size="sm"
               onClick={() => {
-                console.log('🔐 Header: Botão de logout clicado');
                 logout();
               }}
               className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 text-sm"
