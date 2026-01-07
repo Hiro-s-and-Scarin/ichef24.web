@@ -160,21 +160,7 @@ export function FavoritesPageContent() {
                   <p className="text-gray-600 dark:text-gray-300 mb-6">
                     {t("myRecipeBook.upgrade.description")}
                   </p>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-left">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature1")}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-left">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature2")}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-left">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">{t("myRecipeBook.upgrade.feature3")}</span>
-                    </div>
-                  </div>
+                
                   
                   <div className="mt-8">
                     <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white">
