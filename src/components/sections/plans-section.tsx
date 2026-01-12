@@ -128,21 +128,21 @@ export function PlansSection() {
       case "free":
       case "trial":
       case "aprendiz":
-        return <ChefHat className="w-8 h-8 text-white" />;
+        return <ChefHat className="w-8 h-8" />;
       case "basic":
       case "chef":
-        return <Sparkles className="w-8 h-8 text-white" />;
+        return <Sparkles className="w-8 h-8" />;
       case "premium":
       case "master":
-        return <Crown className="w-8 h-8 text-white" />;
+        return <Crown className="w-8 h-8" />;
       case "enterprise":
-        return <Crown className="w-8 h-8 text-white" />;
+        return <Zap className="w-8 h-8" />;
       default:
-        return <ChefHat className="w-8 h-8 text-white" />;
+        return <ChefHat className="w-8 h-8" />;
     }
   }, []);
 
-  const getPlanFeatures = useCallback((planType: string) => {
+const getPlanFeatures = useCallback((planType: string) => {
     switch (planType.toLowerCase()) {
       case "free":
       case "trial":
@@ -160,26 +160,23 @@ export function PlansSection() {
           t("plans.pro.features.recipes"),
           t("plans.pro.features.generation"),
           t("plans.pro.features.personalized"),
-          "10 receitas salvas no histórico",
-          t("plans.pro.features.filters"),
-          t("plans.pro.features.support"),
+          "5 receitas salvas no histórico",
+          t("plans.free.features.support"),
         ];
       case "premium":
       case "master":
         return [
           t("plans.premium.features.recipes"),
-          t("plans.premium.features.ai"),
-          t("plans.premium.features.planning"),
-          t("plans.premium.features.shopping"),
+          t("plans.premium.features.generation"),
+          t("plans.pro.features.personalized"),
           t("plans.premium.features.exclusive"),
-          t("plans.premium.features.support"),
+          t("plans.free.features.support"),
         ];
       case "enterprise":
         return [
           t("plans.premium.features.recipes"),
           t("plans.premium.features.ai"),
           t("plans.premium.features.planning"),
-          t("plans.premium.features.shopping"),
           t("plans.premium.features.exclusive"),
         ];
       default:
@@ -187,17 +184,48 @@ export function PlansSection() {
     }
   }, [t]);
 
-  const getCurrentPlanType = useCallback(
-    (plan: Plan) => {
-      const currentPrice = getPlanPrice(plan);
-
-      if (currentPrice === 0) return "free";
-      if (currentPrice <= 3) return "basic"; // Plano médio: $3
-      if (currentPrice <= 5) return "premium"; // Plano avançado: $5
-      return "enterprise"; // Planos acima de $5
-    },
-    [getPlanPrice]
-  );
+  const getCurrentPlanType = useCallback((plan: Plan) => {
+  const currentPrice = getPlanPrice(plan);
+  
+  if (currentPrice === 0) return "free";
+  
+  // Detectar moeda
+  const isBRL = plan.currency === 'BRL' || plan.currency === 'brl' || currentPrice > 10;
+  
+  if (isBRL) {
+    // BRL: Chef (17.9 mensal / 162 anual) e Master Chef (27.9 mensal / 279 anual)
+    if (
+      (currentPrice >= 15 && currentPrice < 22) ||  // Mensal Chef ~17.9
+      (currentPrice >= 150 && currentPrice <= 170)  // Anual Chef ~162
+    ) {
+      return "basic";
+    }
+    
+    if (
+      (currentPrice >= 22 && currentPrice <= 30) ||  // Mensal Master ~27.9
+      (currentPrice >= 270 && currentPrice <= 290)   // Anual Master ~279
+    ) {
+      return "premium";
+    }
+  } else {
+    // USD: Chef ($4 mensal / $36 anual) e Master Chef ($6 mensal / $60 anual)
+    if (
+      (currentPrice >= 3 && currentPrice < 5) ||    // Mensal Chef ~$4
+      (currentPrice >= 30 && currentPrice <= 40)    // Anual Chef ~$36
+    ) {
+      return "basic";
+    }
+    
+    if (
+      (currentPrice >= 5 && currentPrice <= 7) ||   // Mensal Master ~$6
+      (currentPrice >= 55 && currentPrice <= 65)    // Anual Master ~$60
+    ) {
+      return "premium";
+    }
+  }
+  
+  return "enterprise";
+}, [getPlanPrice, billingCycle]);
 
   // Função para obter o texto do ciclo de cobrança
   const getBillingCycleText = useCallback(
