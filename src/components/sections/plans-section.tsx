@@ -64,7 +64,7 @@ export function PlansSection() {
       cancel_at_period_end: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      name: "Plano Gratuito",
+      name: "Aprendiz",
       stripe_subscription_id: "free_plan",
       metadata: {},
       price: {
